@@ -149,36 +149,38 @@ function initStarfield() {
 
     // Get current sky state with smooth interpolation
     function getSkyState(deltaTime) {
-        skyTime += deltaTime;
-        const currentPhase = skyPhases[currentPhaseIndex];
-        phaseProgress += deltaTime / currentPhase.duration;
+        // Clamp deltaTime to avoid huge jumps
+        const clampedDelta = Math.min(deltaTime, 100);
 
-        if (phaseProgress >= 1) {
-            phaseProgress = 0;
+        const currentPhase = skyPhases[currentPhaseIndex];
+        phaseProgress += clampedDelta / currentPhase.duration;
+
+        // Handle phase transition smoothly
+        while (phaseProgress >= 1) {
+            phaseProgress -= 1;
             currentPhaseIndex = (currentPhaseIndex + 1) % skyPhases.length;
         }
 
         const nextPhaseIndex = (currentPhaseIndex + 1) % skyPhases.length;
+        const currentPh = skyPhases[currentPhaseIndex];
         const nextPhase = skyPhases[nextPhaseIndex];
 
-        // Smooth easing
-        const ease = phaseProgress < 0.5
-            ? 2 * phaseProgress * phaseProgress
-            : 1 - Math.pow(-2 * phaseProgress + 2, 2) / 2;
+        // Linear interpolation (no easing jump)
+        const t = phaseProgress;
 
         // Interpolate colors
         const topColor = {
-            r: Math.round(currentPhase.colors.top.r + (nextPhase.colors.top.r - currentPhase.colors.top.r) * ease),
-            g: Math.round(currentPhase.colors.top.g + (nextPhase.colors.top.g - currentPhase.colors.top.g) * ease),
-            b: Math.round(currentPhase.colors.top.b + (nextPhase.colors.top.b - currentPhase.colors.top.b) * ease)
+            r: Math.round(currentPh.colors.top.r + (nextPhase.colors.top.r - currentPh.colors.top.r) * t),
+            g: Math.round(currentPh.colors.top.g + (nextPhase.colors.top.g - currentPh.colors.top.g) * t),
+            b: Math.round(currentPh.colors.top.b + (nextPhase.colors.top.b - currentPh.colors.top.b) * t)
         };
         const bottomColor = {
-            r: Math.round(currentPhase.colors.bottom.r + (nextPhase.colors.bottom.r - currentPhase.colors.bottom.r) * ease),
-            g: Math.round(currentPhase.colors.bottom.g + (nextPhase.colors.bottom.g - currentPhase.colors.bottom.g) * ease),
-            b: Math.round(currentPhase.colors.bottom.b + (nextPhase.colors.bottom.b - currentPhase.colors.bottom.b) * ease)
+            r: Math.round(currentPh.colors.bottom.r + (nextPhase.colors.bottom.r - currentPh.colors.bottom.r) * t),
+            g: Math.round(currentPh.colors.bottom.g + (nextPhase.colors.bottom.g - currentPh.colors.bottom.g) * t),
+            b: Math.round(currentPh.colors.bottom.b + (nextPhase.colors.bottom.b - currentPh.colors.bottom.b) * t)
         };
 
-        const starVisibility = currentPhase.starVisibility + (nextPhase.starVisibility - currentPhase.starVisibility) * ease;
+        const starVisibility = currentPh.starVisibility + (nextPhase.starVisibility - currentPh.starVisibility) * t;
 
         return { topColor, bottomColor, starVisibility };
     }
