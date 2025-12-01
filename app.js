@@ -76,7 +76,7 @@ function initStarfield() {
             color: color,
             alpha: Math.random() * 0.5 + 0.5,
             baseAlpha: Math.random() * 0.5 + 0.5,
-            twinkleSpeed: Math.random() * 0.02 + 0.005,
+            twinkleSpeed: Math.random() * 0.003 + 0.001,
             twinkleOffset: Math.random() * Math.PI * 2,
             // Some stars have glow
             hasGlow: size > 1.5 && Math.random() > 0.5
@@ -94,7 +94,7 @@ function initStarfield() {
             y: startY,
             startX: startX,
             startY: startY,
-            length: Math.random() * 80 + 50,
+            length: Math.random() * 100 + 80,
             speed: Math.random() * 15 + 10,
             angle: angle,
             alpha: 1,
