@@ -25,6 +25,26 @@ function initStarfield() {
     let shootingStars = [];
     let animationId;
 
+    // Sky cycle settings
+    const skyPhases = [
+        { name: 'night', duration: 15000, starVisibility: 1.0,
+          colors: { top: { r: 15, g: 12, b: 41 }, bottom: { r: 36, g: 36, b: 62 } } },
+        { name: 'lateNight', duration: 10000, starVisibility: 0.9,
+          colors: { top: { r: 20, g: 15, b: 50 }, bottom: { r: 48, g: 43, b: 99 } } },
+        { name: 'preDawn', duration: 12000, starVisibility: 0.5,
+          colors: { top: { r: 25, g: 25, b: 60 }, bottom: { r: 60, g: 50, b: 90 } } },
+        { name: 'dawn', duration: 10000, starVisibility: 0.2,
+          colors: { top: { r: 35, g: 45, b: 80 }, bottom: { r: 80, g: 70, b: 110 } } },
+        { name: 'preDawn', duration: 12000, starVisibility: 0.5,
+          colors: { top: { r: 25, g: 25, b: 60 }, bottom: { r: 60, g: 50, b: 90 } } },
+        { name: 'lateNight', duration: 10000, starVisibility: 0.9,
+          colors: { top: { r: 20, g: 15, b: 50 }, bottom: { r: 48, g: 43, b: 99 } } },
+    ];
+
+    let skyTime = 0;
+    let currentPhaseIndex = 0;
+    let phaseProgress = 0;
+
     // Star colors for realism (slight color variations)
     const starColors = [
         { r: 255, g: 255, b: 255 },  // Pure white
@@ -85,29 +105,94 @@ function initStarfield() {
 
     // Create shooting star
     function createShootingStar() {
-        const startX = Math.random() * width;
-        const startY = Math.random() * (height * 0.5); // Start in upper half
-        const angle = Math.PI / 4 + (Math.random() - 0.5) * 0.5; // Roughly diagonal
+        // Random starting edge (top or sides)
+        let startX, startY, angle;
+        const edge = Math.random();
+
+        if (edge < 0.6) {
+            // Start from top
+            startX = Math.random() * width;
+            startY = -10;
+            angle = Math.PI / 2 + (Math.random() - 0.5) * 1.2; // Downward with variation
+        } else if (edge < 0.8) {
+            // Start from left
+            startX = -10;
+            startY = Math.random() * (height * 0.4);
+            angle = Math.random() * 0.8 + 0.2; // Rightward-down
+        } else {
+            // Start from right
+            startX = width + 10;
+            startY = Math.random() * (height * 0.4);
+            angle = Math.PI - (Math.random() * 0.8 + 0.2); // Leftward-down
+        }
 
         return {
             x: startX,
             y: startY,
             startX: startX,
             startY: startY,
-            length: Math.random() * 100 + 80,
-            speed: Math.random() * 15 + 10,
+            length: Math.random() * 120 + 80,
+            speed: Math.random() * 20 + 5, // Wider speed range (5-25)
             angle: angle,
             alpha: 1,
             active: true
         };
     }
 
+    // Get current sky state with smooth interpolation
+    function getSkyState(deltaTime) {
+        skyTime += deltaTime;
+        const currentPhase = skyPhases[currentPhaseIndex];
+        phaseProgress += deltaTime / currentPhase.duration;
+
+        if (phaseProgress >= 1) {
+            phaseProgress = 0;
+            currentPhaseIndex = (currentPhaseIndex + 1) % skyPhases.length;
+        }
+
+        const nextPhaseIndex = (currentPhaseIndex + 1) % skyPhases.length;
+        const nextPhase = skyPhases[nextPhaseIndex];
+
+        // Smooth easing
+        const ease = phaseProgress < 0.5
+            ? 2 * phaseProgress * phaseProgress
+            : 1 - Math.pow(-2 * phaseProgress + 2, 2) / 2;
+
+        // Interpolate colors
+        const topColor = {
+            r: Math.round(currentPhase.colors.top.r + (nextPhase.colors.top.r - currentPhase.colors.top.r) * ease),
+            g: Math.round(currentPhase.colors.top.g + (nextPhase.colors.top.g - currentPhase.colors.top.g) * ease),
+            b: Math.round(currentPhase.colors.top.b + (nextPhase.colors.top.b - currentPhase.colors.top.b) * ease)
+        };
+        const bottomColor = {
+            r: Math.round(currentPhase.colors.bottom.r + (nextPhase.colors.bottom.r - currentPhase.colors.bottom.r) * ease),
+            g: Math.round(currentPhase.colors.bottom.g + (nextPhase.colors.bottom.g - currentPhase.colors.bottom.g) * ease),
+            b: Math.round(currentPhase.colors.bottom.b + (nextPhase.colors.bottom.b - currentPhase.colors.bottom.b) * ease)
+        };
+
+        const starVisibility = currentPhase.starVisibility + (nextPhase.starVisibility - currentPhase.starVisibility) * ease;
+
+        return { topColor, bottomColor, starVisibility };
+    }
+
+    // Draw sky gradient
+    function drawSky(skyState) {
+        const gradient = ctx.createLinearGradient(0, 0, 0, height);
+        gradient.addColorStop(0, `rgb(${skyState.topColor.r}, ${skyState.topColor.g}, ${skyState.topColor.b})`);
+        gradient.addColorStop(1, `rgb(${skyState.bottomColor.r}, ${skyState.bottomColor.g}, ${skyState.bottomColor.b})`);
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
+    }
+
     // Draw a single star
-    function drawStar(star, time) {
+    function drawStar(star, time, starVisibility) {
         // Calculate twinkle
         const twinkle = Math.sin(time * star.twinkleSpeed + star.twinkleOffset);
-        const alpha = star.baseAlpha + twinkle * 0.3;
+        const alpha = (star.baseAlpha + twinkle * 0.3) * starVisibility;
         const size = star.baseSize + twinkle * 0.2;
+
+        // Skip very dim stars during dawn
+        if (alpha < 0.1) return;
 
         ctx.beginPath();
 
@@ -201,11 +286,18 @@ function initStarfield() {
 
     // Main animation loop
     let lastShootingStarTime = 0;
-    function animate(time) {
-        ctx.clearRect(0, 0, width, height);
+    let lastFrameTime = 0;
 
-        // Draw all stars
-        stars.forEach(star => drawStar(star, time));
+    function animate(time) {
+        const deltaTime = lastFrameTime ? time - lastFrameTime : 16;
+        lastFrameTime = time;
+
+        // Get current sky state and draw sky
+        const skyState = getSkyState(deltaTime);
+        drawSky(skyState);
+
+        // Draw all stars with current visibility
+        stars.forEach(star => drawStar(star, time, skyState.starVisibility));
 
         // Handle shooting stars
         // Spawn new shooting star occasionally (every 3-8 seconds)
