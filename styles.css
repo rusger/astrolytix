@@ -31,8 +31,8 @@ body {
     position: relative;
 }
 
-/* Animated Stars Background */
-.stars, .stars2, .stars3 {
+/* Canvas Starfield Background */
+#starfield {
     position: fixed;
     top: 0;
     left: 0;
@@ -40,29 +40,6 @@ body {
     height: 100%;
     pointer-events: none;
     z-index: 0;
-}
-
-.stars {
-    background: transparent url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="white" opacity="0.8"/></svg>') repeat;
-    background-size: 50px 50px;
-    animation: twinkle 4s ease-in-out infinite;
-}
-
-.stars2 {
-    background: transparent url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="30" cy="70" r="0.8" fill="white" opacity="0.6"/></svg>') repeat;
-    background-size: 80px 80px;
-    animation: twinkle 6s ease-in-out infinite 1s;
-}
-
-.stars3 {
-    background: transparent url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="70" cy="30" r="0.5" fill="white" opacity="0.4"/></svg>') repeat;
-    background-size: 120px 120px;
-    animation: twinkle 8s ease-in-out infinite 2s;
-}
-
-@keyframes twinkle {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
 }
 
 /* Navigation */
