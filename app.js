@@ -25,20 +25,28 @@ function initStarfield() {
     let shootingStars = [];
     let animationId;
 
-    // Sky cycle settings
+    // Sky cycle settings - more dramatic transitions
     const skyPhases = [
-        { name: 'night', duration: 15000, starVisibility: 1.0,
-          colors: { top: { r: 15, g: 12, b: 41 }, bottom: { r: 36, g: 36, b: 62 } } },
-        { name: 'lateNight', duration: 10000, starVisibility: 0.9,
-          colors: { top: { r: 20, g: 15, b: 50 }, bottom: { r: 48, g: 43, b: 99 } } },
-        { name: 'preDawn', duration: 12000, starVisibility: 0.5,
-          colors: { top: { r: 25, g: 25, b: 60 }, bottom: { r: 60, g: 50, b: 90 } } },
-        { name: 'dawn', duration: 10000, starVisibility: 0.2,
-          colors: { top: { r: 35, g: 45, b: 80 }, bottom: { r: 80, g: 70, b: 110 } } },
-        { name: 'preDawn', duration: 12000, starVisibility: 0.5,
-          colors: { top: { r: 25, g: 25, b: 60 }, bottom: { r: 60, g: 50, b: 90 } } },
-        { name: 'lateNight', duration: 10000, starVisibility: 0.9,
-          colors: { top: { r: 20, g: 15, b: 50 }, bottom: { r: 48, g: 43, b: 99 } } },
+        { name: 'deepNight', duration: 8000, starVisibility: 1.0,
+          colors: { top: { r: 5, g: 5, b: 15 }, bottom: { r: 15, g: 15, b: 35 } } },
+        { name: 'night', duration: 6000, starVisibility: 1.0,
+          colors: { top: { r: 15, g: 10, b: 35 }, bottom: { r: 30, g: 25, b: 55 } } },
+        { name: 'violet', duration: 6000, starVisibility: 0.8,
+          colors: { top: { r: 40, g: 20, b: 70 }, bottom: { r: 70, g: 40, b: 100 } } },
+        { name: 'purple', duration: 5000, starVisibility: 0.6,
+          colors: { top: { r: 60, g: 30, b: 90 }, bottom: { r: 90, g: 50, b: 120 } } },
+        { name: 'preDawn', duration: 5000, starVisibility: 0.4,
+          colors: { top: { r: 40, g: 50, b: 100 }, bottom: { r: 70, g: 80, b: 130 } } },
+        { name: 'dawn', duration: 6000, starVisibility: 0.15,
+          colors: { top: { r: 50, g: 70, b: 120 }, bottom: { r: 100, g: 120, b: 160 } } },
+        { name: 'preDawn', duration: 5000, starVisibility: 0.4,
+          colors: { top: { r: 40, g: 50, b: 100 }, bottom: { r: 70, g: 80, b: 130 } } },
+        { name: 'purple', duration: 5000, starVisibility: 0.6,
+          colors: { top: { r: 60, g: 30, b: 90 }, bottom: { r: 90, g: 50, b: 120 } } },
+        { name: 'violet', duration: 6000, starVisibility: 0.8,
+          colors: { top: { r: 40, g: 20, b: 70 }, bottom: { r: 70, g: 40, b: 100 } } },
+        { name: 'night', duration: 6000, starVisibility: 1.0,
+          colors: { top: { r: 15, g: 10, b: 35 }, bottom: { r: 30, g: 25, b: 55 } } },
     ];
 
     let skyTime = 0;
