@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Stellar Vault</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Raleway', sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #0a0a1a 100%);
+            min-height: 100vh;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            text-align: center;
+            color: #d4af37;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #d4af37;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-family: 'Raleway', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        select option {
+            background: #1a1a3a;
+            color: #fff;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 50%, #d4af37 100%);
+            color: #1a1a3a;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(212, 175, 55, 0.2);
+            color: #d4af37;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(212, 175, 55, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .message.success {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.5);
+            color: #22c55e;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            color: #ef4444;
+        }
+
+        .message.info {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+            color: #3b82f6;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: #d4af37;
+            color: #1a1a3a;
+        }
+
+        .step.inactive {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .step.completed {
+            background: #22c55e;
+            color: #fff;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .row .form-group {
+            flex: 1;
+        }
+
+        .rate-limit-warning {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(26, 26, 58, 0.3);
+            border-radius: 50%;
+            border-top-color: #1a1a3a;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #d4af37;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Stellar Vault</h1>
+        <p class="subtitle">Subscription Management Portal</p>
+
+        <div class="step-indicator">
+            <div class="step active" id="step1-indicator">1</div>
+            <div class="step inactive" id="step2-indicator">2</div>
+        </div>
+
+        <!-- Step 1: Request Code -->
+        <div id="step1">
+            <div class="form-group">
+                <label for="adminEmail">Admin Email</label>
+                <input type="email" id="adminEmail" placeholder="your-admin@email.com" autocomplete="email">
+            </div>
+
+            <div class="form-group">
+                <label for="adminSecret">Admin Secret Key</label>
+                <input type="password" id="adminSecret" placeholder="Your secret key">
+            </div>
+
+            <button class="btn btn-primary" id="requestCodeBtn" onclick="requestCode()">
+                Request Verification Code
+            </button>
+        </div>
+
+        <!-- Step 2: Grant Subscription -->
+        <div id="step2" class="hidden">
+            <div class="form-group">
+                <label for="verificationCode">Verification Code (check your email)</label>
+                <input type="text" id="verificationCode" placeholder="6-digit code" maxlength="6" pattern="[0-9]{6}">
+            </div>
+
+            <hr style="border: none; border-top: 1px solid rgba(212, 175, 55, 0.2); margin: 25px 0;">
+
+            <div class="form-group">
+                <label for="targetEmail">Target User Email</label>
+                <input type="email" id="targetEmail" placeholder="friend@example.com">
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label for="subscriptionType">Type</label>
+                    <select id="subscriptionType">
+                        <option value="paid">Paid (Pro)</option>
+                        <option value="free">Free (Downgrade)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="subscriptionLength">Duration</label>
+                    <select id="subscriptionLength">
+                        <option value="monthly">1 Month</option>
+                        <option value="yearly" selected>1 Year</option>
+                        <option value="lifetime">Lifetime</option>
+                        <option value="custom">Custom Days</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group hidden" id="customDaysGroup">
+                <label for="customDays">Custom Days</label>
+                <input type="number" id="customDays" placeholder="Number of days" min="1" max="3650">
+            </div>
+
+            <button class="btn btn-primary" id="grantBtn" onclick="grantSubscription()">
+                Grant Subscription
+            </button>
+
+            <button class="btn btn-secondary" onclick="resetToStep1()">
+                Back to Step 1
+            </button>
+        </div>
+
+        <div id="message" class="message hidden"></div>
+
+        <p class="rate-limit-warning">Rate limited: 1 request per minute</p>
+
+        <a href="/" class="back-link">Return to Astrolytix</a>
+    </div>
+
+    <script>
+        // API base URL - change this to your actual server
+        const API_BASE = 'https://api.astrolytix.com';
+
+        // Rate limiting
+        let lastRequestTime = 0;
+        const RATE_LIMIT_MS = 60000; // 1 minute
+
+        // Store credentials for step 2
+        let storedAdminEmail = '';
+        let storedAdminSecret = '';
+
+        // Show/hide custom days input
+        document.getElementById('subscriptionLength').addEventListener('change', function() {
+            const customDaysGroup = document.getElementById('customDaysGroup');
+            if (this.value === 'custom') {
+                customDaysGroup.classList.remove('hidden');
+            } else {
+                customDaysGroup.classList.add('hidden');
+            }
+        });
+
+        function checkRateLimit() {
+            const now = Date.now();
+            const timeSince = now - lastRequestTime;
+            if (timeSince < RATE_LIMIT_MS) {
+                const waitSeconds = Math.ceil((RATE_LIMIT_MS - timeSince) / 1000);
+                showMessage(`Please wait ${waitSeconds} seconds before making another request`, 'error');
+                return false;
+            }
+            return true;
+        }
+
+        function showMessage(text, type) {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = `message ${type}`;
+            msg.classList.remove('hidden');
+        }
+
+        function hideMessage() {
+            document.getElementById('message').classList.add('hidden');
+        }
+
+        function setLoading(btn, loading) {
+            if (loading) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner"></span>Processing...';
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = btn.id === 'requestCodeBtn' ? 'Request Verification Code' : 'Grant Subscription';
+            }
+        }
+
+        function goToStep2() {
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+            document.getElementById('step1-indicator').className = 'step completed';
+            document.getElementById('step2-indicator').className = 'step active';
+        }
+
+        function resetToStep1() {
+            document.getElementById('step1').classList.remove('hidden');
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step1-indicator').className = 'step active';
+            document.getElementById('step2-indicator').className = 'step inactive';
+            hideMessage();
+        }
+
+        async function requestCode() {
+            if (!checkRateLimit()) return;
+
+            const adminEmail = document.getElementById('adminEmail').value.trim();
+            const adminSecret = document.getElementById('adminSecret').value;
+
+            if (!adminEmail || !adminSecret) {
+                showMessage('Please fill in all fields', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('requestCodeBtn');
+            setLoading(btn, true);
+            hideMessage();
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/request-code`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        admin_email: adminEmail,
+                        admin_secret: adminSecret
+                    })
+                });
+
+                lastRequestTime = Date.now();
+                const data = await response.json();
+
+                if (data.success) {
+                    storedAdminEmail = adminEmail;
+                    storedAdminSecret = adminSecret;
+                    showMessage('Verification code sent! Check your email.', 'success');
+                    setTimeout(() => {
+                        goToStep2();
+                        hideMessage();
+                    }, 1500);
+                } else {
+                    showMessage(data.error || 'Failed to send code', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+                console.error('Error:', error);
+            } finally {
+                setLoading(btn, false);
+            }
+        }
+
+        async function grantSubscription() {
+            if (!checkRateLimit()) return;
+
+            const verificationCode = document.getElementById('verificationCode').value.trim();
+            const targetEmail = document.getElementById('targetEmail').value.trim();
+            const subscriptionType = document.getElementById('subscriptionType').value;
+            const subscriptionLength = document.getElementById('subscriptionLength').value;
+            const customDays = document.getElementById('customDays').value;
+
+            if (!verificationCode || !targetEmail) {
+                showMessage('Please fill in all required fields', 'error');
+                return;
+            }
+
+            if (verificationCode.length !== 6 || !/^\d+$/.test(verificationCode)) {
+                showMessage('Verification code must be 6 digits', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('grantBtn');
+            setLoading(btn, true);
+            hideMessage();
+
+            const requestBody = {
+                admin_email: storedAdminEmail,
+                admin_secret: storedAdminSecret,
+                verification_code: verificationCode,
+                email: targetEmail,
+                subscription_type: subscriptionType,
+                subscription_length: subscriptionLength === 'custom' ? 'yearly' : subscriptionLength
+            };
+
+            if (subscriptionLength === 'custom' && customDays) {
+                requestBody.duration_days = parseInt(customDays, 10);
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/grant-subscription`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                lastRequestTime = Date.now();
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage(
+                        `Success! ${subscriptionType === 'paid' ? 'Pro' : 'Free'} subscription granted to ${targetEmail}. Expires: ${data.subscription_expiry}`,
+                        'success'
+                    );
+                    // Clear form for next use
+                    document.getElementById('verificationCode').value = '';
+                    document.getElementById('targetEmail').value = '';
+                } else {
+                    showMessage(data.error || 'Failed to grant subscription', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+                console.error('Error:', error);
+            } finally {
+                setLoading(btn, false);
+            }
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('adminSecret').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') requestCode();
+        });
+
+        document.getElementById('verificationCode').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') document.getElementById('targetEmail').focus();
+        });
+
+        document.getElementById('targetEmail').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') grantSubscription();
+        });
+    </script>
+</body>
+</html>

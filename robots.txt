@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Hidden admin pages - do not crawl
+Disallow: /stellar-vault-9k7m2x.html
