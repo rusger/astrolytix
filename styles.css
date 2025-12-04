@@ -603,6 +603,21 @@ footer {
     margin-top: 0.5rem;
 }
 
+.footer-links {
+    margin-top: 1rem;
+}
+
+.footer-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: var(--accent-gold);
+}
+
 /* Responsive Design */
 @media (max-width: 900px) {
     .feature-detail-content {
