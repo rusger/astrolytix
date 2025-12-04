@@ -12,6 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Animate elements on scroll
     initScrollAnimations();
+
+    // Initialize image carousels
+    initCarousels();
+
+    // Initialize feature detail visibility
+    initFeatureDetailAnimations();
 });
 
 // Realistic Canvas Starfield
@@ -352,9 +358,13 @@ function initSmoothScroll() {
             e.preventDefault();
             const target = document.querySelector(this.getAttribute('href'));
             if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
+                const headerOffset = 80; // Account for fixed header
+                const elementPosition = target.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
                 });
             }
         });
@@ -397,11 +407,11 @@ function initScrollAnimations() {
         });
     }, observerOptions);
 
-    // Observe feature cards
-    document.querySelectorAll('.feature-card').forEach((card, index) => {
+    // Observe feature tiles
+    document.querySelectorAll('.feature-tile').forEach((card, index) => {
         card.style.opacity = '0';
         card.style.transform = 'translateY(30px)';
-        card.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+        card.style.transition = `opacity 0.6s ease ${index * 0.05}s, transform 0.6s ease ${index * 0.05}s`;
         observer.observe(card);
     });
 
@@ -414,4 +424,96 @@ function initScrollAnimations() {
         }
     `;
     document.head.appendChild(style);
+}
+
+// Initialize feature detail section animations
+function initFeatureDetailAnimations() {
+    const observerOptions = {
+        threshold: 0.15,
+        rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.feature-detail').forEach(section => {
+        observer.observe(section);
+    });
+}
+
+// Initialize image carousels in phone mockups
+function initCarousels() {
+    const carousels = document.querySelectorAll('.screen-carousel');
+
+    carousels.forEach(carousel => {
+        const imagesAttr = carousel.dataset.images;
+        if (!imagesAttr) return;
+
+        const imageNames = imagesAttr.split(',');
+        if (imageNames.length <= 1) return;
+
+        // Create all images
+        const images = [];
+        imageNames.forEach((name, index) => {
+            if (index === 0) {
+                // First image already exists
+                const existingImg = carousel.querySelector('.carousel-image');
+                if (existingImg) {
+                    images.push(existingImg);
+                }
+            } else {
+                const img = document.createElement('img');
+                img.src = `pics4site/${name.trim()}`;
+                img.alt = 'App Screenshot';
+                img.className = 'carousel-image';
+                carousel.appendChild(img);
+                images.push(img);
+            }
+        });
+
+        // Create indicators
+        if (images.length > 1) {
+            const indicatorsContainer = document.createElement('div');
+            indicatorsContainer.className = 'carousel-indicators';
+
+            images.forEach((_, index) => {
+                const indicator = document.createElement('div');
+                indicator.className = 'carousel-indicator' + (index === 0 ? ' active' : '');
+                indicator.addEventListener('click', () => {
+                    goToSlide(index);
+                });
+                indicatorsContainer.appendChild(indicator);
+            });
+
+            carousel.appendChild(indicatorsContainer);
+
+            // Auto-rotate carousel
+            let currentIndex = 0;
+            const indicators = indicatorsContainer.querySelectorAll('.carousel-indicator');
+
+            function goToSlide(index) {
+                images[currentIndex].classList.remove('active');
+                indicators[currentIndex].classList.remove('active');
+                currentIndex = index;
+                images[currentIndex].classList.add('active');
+                indicators[currentIndex].classList.add('active');
+            }
+
+            function nextSlide() {
+                const nextIndex = (currentIndex + 1) % images.length;
+                goToSlide(nextIndex);
+            }
+
+            // Start auto-rotation with random offset to prevent all carousels from being in sync
+            const randomDelay = Math.random() * 2000;
+            setTimeout(() => {
+                setInterval(nextSlide, 4000);
+            }, randomDelay);
+        }
+    });
 }
