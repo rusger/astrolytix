@@ -256,18 +256,27 @@ header {
     margin: 0 auto;
 }
 
-.feature-tile {
+.feature-tile,
+.feature-tile:link,
+.feature-tile:visited,
+.feature-tile:hover,
+.feature-tile:active {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(212, 175, 55, 0.2);
     border-radius: 16px;
     padding: 1.5rem;
     text-align: center;
-    text-decoration: none;
+    text-decoration: none !important;
     color: inherit;
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
     cursor: pointer;
     display: block;
+}
+
+.feature-tile h3,
+.feature-tile p {
+    text-decoration: none !important;
 }
 
 .feature-tile:hover {
@@ -730,14 +739,14 @@ html {
     color: var(--primary-color);
 }
 
-/* Scroll animation initial states */
-.feature-detail {
+/* Scroll animation - sections visible by default, animate when scrolled to */
+.feature-detail.animate-ready {
     opacity: 0;
     transform: translateY(30px);
     transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
-.feature-detail.visible {
+.feature-detail.animate-ready.visible {
     opacity: 1;
     transform: translateY(0);
 }

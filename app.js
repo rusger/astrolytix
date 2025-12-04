@@ -428,6 +428,15 @@ function initScrollAnimations() {
 
 // Initialize feature detail section animations
 function initFeatureDetailAnimations() {
+    const sections = document.querySelectorAll('.feature-detail');
+
+    // Add animate-ready class after a small delay so sections are visible by default if JS fails
+    setTimeout(() => {
+        sections.forEach(section => {
+            section.classList.add('animate-ready');
+        });
+    }, 100);
+
     const observerOptions = {
         threshold: 0.15,
         rootMargin: '0px 0px -100px 0px'
@@ -441,7 +450,7 @@ function initFeatureDetailAnimations() {
         });
     }, observerOptions);
 
-    document.querySelectorAll('.feature-detail').forEach(section => {
+    sections.forEach(section => {
         observer.observe(section);
     });
 }
