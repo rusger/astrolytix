@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Background -->
+  <rect width="100" height="100" fill="#1a0a2e"/>
+
+  <!-- Outer border -->
+  <rect x="5" y="5" width="90" height="90" fill="none" stroke="#d4af37" stroke-width="2"/>
+
+  <!-- Inner square (empty center - 2x2) -->
+  <rect x="27.5" y="27.5" width="45" height="45" fill="none" stroke="#d4af37" stroke-width="1.5"/>
+
+  <!-- Top row - 4 boxes -->
+  <line x1="27.5" y1="5" x2="27.5" y2="27.5" stroke="#d4af37" stroke-width="1.5"/>
+  <line x1="50" y1="5" x2="50" y2="27.5" stroke="#d4af37" stroke-width="1.5"/>
+  <line x1="72.5" y1="5" x2="72.5" y2="27.5" stroke="#d4af37" stroke-width="1.5"/>
+
+  <!-- Bottom row - 4 boxes -->
+  <line x1="27.5" y1="72.5" x2="27.5" y2="95" stroke="#d4af37" stroke-width="1.5"/>
+  <line x1="50" y1="72.5" x2="50" y2="95" stroke="#d4af37" stroke-width="1.5"/>
+  <line x1="72.5" y1="72.5" x2="72.5" y2="95" stroke="#d4af37" stroke-width="1.5"/>
+
+  <!-- Left column -->
+  <line x1="5" y1="27.5" x2="27.5" y2="27.5" stroke="#d4af37" stroke-width="1.5"/>
+  <line x1="5" y1="50" x2="27.5" y2="50" stroke="#d4af37" stroke-width="1.5"/>
+  <line x1="5" y1="72.5" x2="27.5" y2="72.5" stroke="#d4af37" stroke-width="1.5"/>
+
+  <!-- Right column -->
+  <line x1="72.5" y1="27.5" x2="95" y2="27.5" stroke="#d4af37" stroke-width="1.5"/>
+  <line x1="72.5" y1="50" x2="95" y2="50" stroke="#d4af37" stroke-width="1.5"/>
+  <line x1="72.5" y1="72.5" x2="95" y2="72.5" stroke="#d4af37" stroke-width="1.5"/>
+
+  <!-- 3D FACETED STAR - Symmetrical -->
+  <!-- Outer points: top(50,31), top-right(68,44), bottom-right(61,65), bottom-left(39,65), top-left(32,44) -->
+  <!-- Inner points: (55,44), (58,53), (50,58), (42,53), (45,44) -->
+  <!-- Center: (50,50) -->
+
+  <!-- Top point -->
+  <polygon points="50,31 45,44 50,50" fill="#a08628"/>
+  <polygon points="50,31 55,44 50,50" fill="#f0d050"/>
+
+  <!-- Top-right point -->
+  <polygon points="68,44 55,44 50,50" fill="#e8c840"/>
+  <polygon points="68,44 58,53 50,50" fill="#907820"/>
+
+  <!-- Bottom-right point -->
+  <polygon points="61,65 58,53 50,50" fill="#c0a030"/>
+  <polygon points="61,65 50,58 50,50" fill="#806818"/>
+
+  <!-- Bottom-left point -->
+  <polygon points="39,65 50,58 50,50" fill="#907820"/>
+  <polygon points="39,65 42,53 50,50" fill="#c0a030"/>
+
+  <!-- Top-left point -->
+  <polygon points="32,44 42,53 50,50" fill="#a08628"/>
+  <polygon points="32,44 45,44 50,50" fill="#d4af37"/>
+</svg>
