@@ -1,4 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" viewBox="0 0 100 100" width="100" height="100">
+  <title>Astrolytix Logo</title>
+  <metadata>
+    <rdf:RDF>
+      <cc:Work rdf:about="">
+        <dc:title>Astrolytix Logo - Vedic Chart with Star</dc:title>
+        <dc:creator>Astrolytix</dc:creator>
+        <dc:rights>Copyright 2025 Astrolytix. All rights reserved.</dc:rights>
+        <dc:date>2025</dc:date>
+        <dc:description>Vedic astrology chart design with 12 houses and 3D faceted golden star. Trademark of Astrolytix.</dc:description>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+
   <!-- Background -->
   <rect width="100" height="100" fill="#1a0a2e"/>
 
@@ -29,10 +42,6 @@
   <line x1="72.5" y1="72.5" x2="95" y2="72.5" stroke="#d4af37" stroke-width="1.5"/>
 
   <!-- 3D FACETED STAR - Symmetrical -->
-  <!-- Outer points: top(50,31), top-right(68,44), bottom-right(61,65), bottom-left(39,65), top-left(32,44) -->
-  <!-- Inner points: (55,44), (58,53), (50,58), (42,53), (45,44) -->
-  <!-- Center: (50,50) -->
-
   <!-- Top point -->
   <polygon points="50,31 45,44 50,50" fill="#a08628"/>
   <polygon points="50,31 55,44 50,50" fill="#f0d050"/>
