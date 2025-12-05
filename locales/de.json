@@ -1,0 +1,275 @@
+{
+  "meta": {
+    "title": "Astrolytix — Ihr astrologischer Schlüssel zu Schicksal und persönlichem Wachstum"
+  },
+  "nav": {
+    "home": "Startseite",
+    "features": "Funktionen",
+    "about": "Über uns",
+    "support": "Support"
+  },
+  "hero": {
+    "title": "Astrolytix",
+    "slogan": "Ihr astrologischer Schlüssel zu Schicksal und persönlichem Wachstum",
+    "subtitle": "Entdecken Sie die Geheimnisse des Kosmos und finden Sie den Weg, der in den Sternen geschrieben steht",
+    "cta": "Entdecken Sie Ihre Sterne"
+  },
+  "features": {
+    "heading": "Entdecken Sie Ihren kosmischen Bauplan",
+    "horoscopes": {
+      "title": "Ihre Horoskope",
+      "desc": "Tägliche, wöchentliche, monatliche und jährliche Prognosen"
+    },
+    "transits": {
+      "title": "Persönliche Transite",
+      "desc": "Verfolgen Sie planetarische Einflüsse auf Ihr Horoskop"
+    },
+    "natal": {
+      "title": "Geburtshoroskop",
+      "desc": "Vollständige Interpretation des Geburtshoroskops"
+    },
+    "divisional": {
+      "title": "Teilungshoroskope",
+      "desc": "Tiefgehende Vargas-Analyse"
+    },
+    "mahadasa": {
+      "title": "Mahadasa-Perioden",
+      "desc": "Planetarische Periodenvorhersagen"
+    },
+    "psychology": {
+      "title": "Astro-Psychologie",
+      "desc": "Psychologische Einblicke aus Ihrem Horoskop"
+    },
+    "ayurveda": {
+      "title": "Ayurveda",
+      "desc": "Analyse der Gesundheitskonstitution"
+    },
+    "chat": {
+      "title": "Chat mit Astrologe",
+      "desc": "KI-gestützte astrologische Beratung"
+    },
+    "questions": {
+      "title": "Schicksalsfragen",
+      "desc": "Erhalten Sie Antworten zu Lebensthemen"
+    },
+    "events": {
+      "title": "Himmelsereignisse",
+      "desc": "Finsternisse, Rückläufigkeiten und himmlische Ereignisse"
+    },
+    "yogas": {
+      "title": "Yogas",
+      "desc": "Besondere planetarische Kombinationen"
+    }
+  },
+  "about": {
+    "heading": "Die Weisheit der Alten, angetrieben von moderner Technologie",
+    "text": "Astrolytix verbindet jahrtausendealte vedische astrologische Weisheit mit modernster KI-Analyse, um präzise, personalisierte himmlische Einblicke zu liefern. Unsere fortschrittlichen Algorithmen verarbeiten komplexe Planetendaten, um Ihnen umsetzbare Anleitungen für Ihre Reise der Selbstentdeckung zu geben."
+  },
+  "featureDetails": {
+    "horoscopes": {
+      "title": "Ihre Horoskope",
+      "desc": "Erhalten Sie personalisierte Prognosen für morgen, die kommende Woche, den Monat und das Jahr. Unsere KI analysiert Ihr einzigartiges Geburtshoroskop, um genaue Vorhersagen speziell für Sie zu liefern.",
+      "list": [
+        "Morgenprognose mit planetarischen Einflüssen",
+        "Wöchentlicher Überblick über Chancen und Herausforderungen",
+        "Monatliche Themen und wichtige Transite",
+        "Jährliche Vorhersagen für langfristige Planung"
+      ]
+    },
+    "transits": {
+      "title": "Persönliche Transite",
+      "desc": "Verfolgen Sie, wie aktuelle Planetenbewegungen mit Ihrem Geburtshoroskop interagieren. Verstehen Sie die kosmischen Einflüsse, die Ihr Leben gerade jetzt beeinflussen.",
+      "list": [
+        "Echtzeit-Transit-Verfolgung",
+        "Detaillierte Interpretation jedes Transits",
+        "Dauer- und Intensitätsindikatoren",
+        "Personalisierte Ratschläge für jeden Einfluss"
+      ]
+    },
+    "natal": {
+      "title": "Geburtshoroskop-Interpretation",
+      "desc": "Entdecken Sie das vollständige Bild Ihres himmlischen Bauplans. Ihr Geburtshoroskop enthüllt Ihre Persönlichkeit, Stärken, Herausforderungen und Lebenszweck durch Planetenpositionen bei der Geburt.",
+      "list": [
+        "Vollständige Planetenpositionsanalyse",
+        "Haus-für-Haus-Interpretation",
+        "Aspektmuster und ihre Bedeutungen",
+        "Detaillierte Persönlichkeitseinblicke"
+      ]
+    },
+    "divisional": {
+      "title": "Teilungshoroskope",
+      "desc": "Erkunden Sie die komplexen Varga-Horoskope der vedischen Astrologie. Jedes Teilungshoroskop enthüllt spezifische Lebensbereiche mit beispiellosem Detail und Genauigkeit.",
+      "list": [
+        "Analyse der Horoskope D1 bis D60",
+        "Karriereeinblicke aus Dasamsa (D10)",
+        "Eheanalyse aus Navamsa (D9)",
+        "Umfassende Varga-Interpretationen"
+      ]
+    },
+    "mahadasa": {
+      "title": "Mahadasa-Perioden",
+      "desc": "Verstehen Sie die wichtigsten planetarischen Perioden, die Ihr Leben regieren. Mahadasa enthüllt die Themen und Energien, die bestimmte Perioden Ihrer Reise dominieren werden.",
+      "list": [
+        "Analyse der aktuellen Mahadasa-Periode",
+        "Aufschlüsselung der Unterperioden (Antardasa)",
+        "Zeitlinie der kommenden Perioden",
+        "Strategische Lebensplanungsberatung"
+      ]
+    },
+    "psychology": {
+      "title": "Astro-Psychologie",
+      "desc": "Entdecken Sie die psychologischen Dimensionen, die in Ihrem Horoskop kodiert sind. Verstehen Sie Ihre emotionalen Muster, Beziehungsdynamiken und innere Funktionsweise.",
+      "list": [
+        "Analyse psychosomatischer Tendenzen",
+        "Erkennung emotionaler Muster",
+        "Einblicke in Beziehungspsychologie",
+        "Empfehlungen für persönliches Wachstum"
+      ]
+    },
+    "ayurveda": {
+      "title": "Ayurveda-Analyse",
+      "desc": "Entdecken Sie Ihre ayurvedische Konstitution durch vedische Astrologie. Erfahren Sie mehr über Ihr Dosha-Gleichgewicht und erhalten Sie personalisierte Gesundheits- und Lebensstilempfehlungen.",
+      "list": [
+        "Vata-, Pitta-, Kapha-Konstitution",
+        "Gesundheitstendenzen aus Ihrem Horoskop",
+        "Ernährungsempfehlungen",
+        "Tipps zur Lebensstiloptimierung"
+      ]
+    },
+    "chat": {
+      "title": "Chat mit Astrologe",
+      "desc": "Erhalten Sie sofortige Antworten auf Ihre astrologischen Fragen von unserem KI-Astrologen. Fragen Sie über Ihr Horoskop, Transite oder Lebenssituationen.",
+      "list": [
+        "KI-Astrologe 24/7 verfügbar",
+        "Kontextbewusste Antworten mit Ihrem Horoskop",
+        "Unterstützung für Folgefragen",
+        "Detaillierte Erklärungen und Beratung"
+      ]
+    },
+    "questions": {
+      "title": "Schicksalsfragen",
+      "desc": "Erhalten Sie Antworten auf die wichtigsten Fragen des Lebens. Von Karriere und Ehe bis zu Gesundheit und Finanzen - erhalten Sie astrologische Einblicke zu jedem Thema.",
+      "list": [
+        "Vordefinierte Fragen zu Lebensthemen",
+        "Einblicke zu Ehe und Beziehungen",
+        "Karriere- und Finanzberatung",
+        "Umfassende Antworten mit Zeitangaben"
+      ]
+    },
+    "events": {
+      "title": "Ereignisse am Himmel",
+      "desc": "Bleiben Sie über bedeutende himmlische Ereignisse informiert. Verfolgen Sie Finsternisse, Rückläufigkeiten, Mondphasen und andere astronomische Phänomene mit personalisierten Interpretationen.",
+      "list": [
+        "Sonnen- und Mondfinsternisalarme",
+        "Verfolgung planetarischer Rückläufigkeiten",
+        "Mondphasenkalender",
+        "Persönliche Auswirkungsanalyse"
+      ]
+    },
+    "yogas": {
+      "title": "Yogas",
+      "desc": "Entdecken Sie die besonderen planetarischen Kombinationen in Ihrem Horoskop. Yogas enthüllen einzigartige Talente, Glücksfälle und Lebensmuster, die spezifisch für Ihr Horoskop sind.",
+      "list": [
+        "Raja Yoga-Identifikation",
+        "Dhana Yoga für Reichtum",
+        "Besondere Talentkombinationen",
+        "Detaillierte Yoga-Interpretationen"
+      ]
+    }
+  },
+  "contact": {
+    "heading": "Beginnen Sie Ihre himmlische Reise",
+    "subheading": "Bereit, die Geheimnisse Ihres kosmischen Schicksals zu entdecken?",
+    "appStore": {
+      "label": "Laden im",
+      "store": "App Store"
+    },
+    "googlePlay": {
+      "label": "Jetzt bei",
+      "store": "Google Play"
+    },
+    "help": "Brauchen Sie Hilfe? Kontaktieren Sie uns unter"
+  },
+  "footer": {
+    "copyright": "2025 Astrolytix. Alle Rechte vorbehalten.",
+    "tagline": "In den Sternen geschrieben, für Sie entschlüsselt.",
+    "privacy": "Datenschutzrichtlinie"
+  },
+  "languageSwitcher": {
+    "label": "Sprache"
+  },
+  "privacy": {
+    "title": "Datenschutzrichtlinie",
+    "metaTitle": "Datenschutzrichtlinie — Astrolytix",
+    "backLink": "Zurück zur Startseite",
+    "lastUpdated": "Zuletzt aktualisiert: 4. Dezember 2025",
+    "intro": "Astrolytix (\"wir\", \"unser\" oder \"uns\") verpflichtet sich zum Schutz Ihrer Privatsphäre. Diese Datenschutzrichtlinie erklärt, wie wir Ihre Informationen sammeln, verwenden und schützen, wenn Sie unsere mobile Anwendung nutzen.",
+    "sections": {
+      "collect": {
+        "title": "Informationen, die wir sammeln",
+        "deviceOnly": "Informationen, die nur auf Ihrem Gerät gespeichert werden (niemals an unsere Server gesendet):",
+        "deviceList": [
+          "Geburtsdatum, -zeit und -ort",
+          "Berechnetes Geburtshoroskop und astrologische Daten",
+          "Chat-Gespräche mit dem KI-Astrologen",
+          "Horoskoplesungen und Interpretationen",
+          "Ergebnisse von Psychologie-, Ayurveda- und anderen Analysen"
+        ],
+        "serverStored": "Informationen, die auf unseren Servern gespeichert werden:",
+        "serverList": [
+          "Gerätekennung (anonyme eindeutige ID)",
+          "Abonnementstatus (kostenlos/bezahlt, Ablaufdatum)",
+          "Kaufhistorie (Produkt-ID, Kaufdatum, Abonnementtyp)"
+        ]
+      },
+      "use": {
+        "title": "Wie wir Ihre Informationen verwenden",
+        "intro": "Wir verwenden die begrenzten Informationen, die wir sammeln, um:",
+        "list": [
+          "Den App-Service bereitzustellen und zu warten",
+          "Den Abonnementstatus zu überprüfen",
+          "Die Kaufhistorie für Ihre Unterlagen zu verfolgen",
+          "Unsere App und das Benutzererlebnis zu verbessern"
+        ]
+      },
+      "storage": {
+        "title": "Datenspeicherung und Sicherheit",
+        "text1": "Ihre persönlichen astrologischen Daten (Geburtsinformationen, Horoskope, Lesungen) werden ausschließlich auf Ihrem Gerät gespeichert und niemals an unsere Server übertragen oder dort gespeichert. Dies gewährleistet maximale Privatsphäre für Ihre sensiblen persönlichen Informationen.",
+        "text2": "Kontobezogene Daten, die auf unseren Servern gespeichert werden, sind durch branchenübliche Sicherheitsmaßnahmen geschützt, einschließlich Verschlüsselung und sicherer Authentifizierungsprotokolle."
+      },
+      "thirdParty": {
+        "title": "Drittanbieterdienste",
+        "intro": "Unsere App kann die folgenden Drittanbieterdienste nutzen:",
+        "openai": "Für KI-gestützte astrologische Interpretationen. Anfragen werden in Echtzeit verarbeitet und von uns nicht gespeichert.",
+        "appStores": "Für die Verarbeitung von In-App-Käufen und Abonnements.",
+        "revenuecat": "Für die Abonnementverwaltung."
+      },
+      "retention": {
+        "title": "Datenspeicherung",
+        "text": "Auf Ihrem Gerät gespeicherte Daten verbleiben dort, bis Sie die App löschen oder die Funktion \"Neu beginnen\" verwenden, um Ihr Profil zu löschen. Serverseitige Kontodaten werden so lange aufbewahrt, wie Sie ein aktives Konto unterhalten."
+      },
+      "rights": {
+        "title": "Ihre Rechte",
+        "intro": "Sie haben das Recht auf:",
+        "access": "Ihre auf unseren Servern gespeicherten Daten",
+        "delete": "Ihr Konto und alle zugehörigen Daten",
+        "clear": "alle lokalen Daten mit der Funktion \"Neu beginnen\" in der App",
+        "contact": "Um diese Rechte auszuüben oder eine Datenlöschung anzufordern, kontaktieren Sie uns unter"
+      },
+      "children": {
+        "title": "Datenschutz für Kinder",
+        "text": "Unsere App ist nicht für Kinder unter 13 Jahren bestimmt. Wir sammeln wissentlich keine persönlichen Informationen von Kindern unter 13 Jahren."
+      },
+      "changes": {
+        "title": "Änderungen dieser Richtlinie",
+        "text": "Wir können diese Datenschutzrichtlinie von Zeit zu Zeit aktualisieren. Wir werden Sie über Änderungen informieren, indem wir die neue Datenschutzrichtlinie auf dieser Seite veröffentlichen und das Datum \"Zuletzt aktualisiert\" aktualisieren."
+      },
+      "contactUs": {
+        "title": "Kontaktieren Sie uns",
+        "intro": "Wenn Sie Fragen zu dieser Datenschutzrichtlinie haben, kontaktieren Sie uns:",
+        "email": "E-Mail:",
+        "website": "Website:"
+      }
+    }
+  }
+}

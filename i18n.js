@@ -18,38 +18,59 @@ const I18n = (function() {
     // Add new languages here: { code: { name, nativeName, flag } }
     const SUPPORTED_LANGUAGES = {
         en: { name: 'English', nativeName: 'English', flag: '🇺🇸' },
-        ru: { name: 'Russian', nativeName: 'Русский', flag: '🇷🇺' }
-        // Future languages - just add entries here:
-        // es: { name: 'Spanish', nativeName: 'Español', flag: '🇪🇸' },
-        // de: { name: 'German', nativeName: 'Deutsch', flag: '🇩🇪' },
-        // fr: { name: 'French', nativeName: 'Français', flag: '🇫🇷' },
-        // zh: { name: 'Chinese', nativeName: '中文', flag: '🇨🇳' },
-        // ja: { name: 'Japanese', nativeName: '日本語', flag: '🇯🇵' },
-        // ko: { name: 'Korean', nativeName: '한국어', flag: '🇰🇷' },
-        // hi: { name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳' },
-        // ar: { name: 'Arabic', nativeName: 'العربية', flag: '🇸🇦' },
-        // pt: { name: 'Portuguese', nativeName: 'Português', flag: '🇵🇹' },
-        // it: { name: 'Italian', nativeName: 'Italiano', flag: '🇮🇹' },
+        es: { name: 'Spanish', nativeName: 'Español', flag: '🇪🇸' },
+        fr: { name: 'French', nativeName: 'Français', flag: '🇫🇷' },
+        de: { name: 'German', nativeName: 'Deutsch', flag: '🇩🇪' },
+        it: { name: 'Italian', nativeName: 'Italiano', flag: '🇮🇹' },
+        pt: { name: 'Portuguese', nativeName: 'Português', flag: '🇧🇷' },
+        ru: { name: 'Russian', nativeName: 'Русский', flag: '🇷🇺' },
+        zh: { name: 'Chinese', nativeName: '中文', flag: '🇨🇳' },
+        ja: { name: 'Japanese', nativeName: '日本語', flag: '🇯🇵' },
+        ko: { name: 'Korean', nativeName: '한국어', flag: '🇰🇷' },
+        hi: { name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳' },
+        ar: { name: 'Arabic', nativeName: 'العربية', flag: '🇸🇦' }
     };
 
     // Map country codes to language codes for GeoIP detection
-    // Add new country mappings as you add languages
     const COUNTRY_TO_LANGUAGE = {
+        // Spanish-speaking countries
+        ES: 'es', MX: 'es', AR: 'es', CO: 'es', PE: 'es', VE: 'es', CL: 'es',
+        EC: 'es', GT: 'es', CU: 'es', BO: 'es', DO: 'es', HN: 'es', PY: 'es',
+        SV: 'es', NI: 'es', CR: 'es', PA: 'es', UY: 'es',
+
+        // French-speaking countries
+        FR: 'fr', BE: 'fr', MC: 'fr', SN: 'fr', CI: 'fr', ML: 'fr', BF: 'fr',
+        NE: 'fr', TG: 'fr', BJ: 'fr', GA: 'fr', CG: 'fr', CD: 'fr', CM: 'fr',
+        MG: 'fr', HT: 'fr',
+
+        // German-speaking countries
+        DE: 'de', AT: 'de', LI: 'de',
+
+        // Italian-speaking countries
+        IT: 'it', SM: 'it', VA: 'it',
+
+        // Portuguese-speaking countries
+        BR: 'pt', PT: 'pt', AO: 'pt', MZ: 'pt', GW: 'pt', TL: 'pt', CV: 'pt',
+
         // Russian-speaking countries
         RU: 'ru', BY: 'ru', KZ: 'ru', KG: 'ru', TJ: 'ru', UZ: 'ru', TM: 'ru',
 
-        // Default to English for all other countries
-        // When you add Spanish:
-        // ES: 'es', MX: 'es', AR: 'es', CO: 'es', PE: 'es', VE: 'es', CL: 'es', EC: 'es', GT: 'es', CU: 'es', BO: 'es', DO: 'es', HN: 'es', PY: 'es', SV: 'es', NI: 'es', CR: 'es', PA: 'es', UY: 'es',
+        // Chinese-speaking countries/regions
+        CN: 'zh', TW: 'zh', HK: 'zh', MO: 'zh', SG: 'zh',
 
-        // When you add German:
-        // DE: 'de', AT: 'de', CH: 'de', LI: 'de', LU: 'de',
+        // Japanese
+        JP: 'ja',
 
-        // When you add French:
-        // FR: 'fr', BE: 'fr', CA: 'fr', CH: 'fr', LU: 'fr', MC: 'fr',
+        // Korean
+        KR: 'ko', KP: 'ko',
 
-        // When you add Chinese:
-        // CN: 'zh', TW: 'zh', HK: 'zh', MO: 'zh', SG: 'zh',
+        // Hindi-speaking countries
+        IN: 'hi', NP: 'hi', FJ: 'hi',
+
+        // Arabic-speaking countries
+        SA: 'ar', EG: 'ar', AE: 'ar', IQ: 'ar', MA: 'ar', DZ: 'ar', SD: 'ar',
+        YE: 'ar', SY: 'ar', TN: 'ar', JO: 'ar', LY: 'ar', LB: 'ar', OM: 'ar',
+        KW: 'ar', QA: 'ar', BH: 'ar', PS: 'ar', MR: 'ar'
     };
 
     const STORAGE_KEY = 'astrolytix_language';

@@ -1,0 +1,275 @@
+{
+  "meta": {
+    "title": "Astrolytix — Votre clé astrologique vers le destin et la croissance personnelle"
+  },
+  "nav": {
+    "home": "Accueil",
+    "features": "Fonctionnalités",
+    "about": "À propos",
+    "support": "Support"
+  },
+  "hero": {
+    "title": "Astrolytix",
+    "slogan": "Votre clé astrologique vers le destin et la croissance personnelle",
+    "subtitle": "Découvrez les secrets du cosmos et trouvez le chemin écrit dans les étoiles",
+    "cta": "Explorez vos étoiles"
+  },
+  "features": {
+    "heading": "Découvrez votre plan cosmique",
+    "horoscopes": {
+      "title": "Vos horoscopes",
+      "desc": "Prévisions quotidiennes, hebdomadaires, mensuelles et annuelles"
+    },
+    "transits": {
+      "title": "Transits personnels",
+      "desc": "Suivez les influences planétaires sur votre thème"
+    },
+    "natal": {
+      "title": "Thème natal",
+      "desc": "Interprétation complète du thème de naissance"
+    },
+    "divisional": {
+      "title": "Thèmes divisionnels",
+      "desc": "Analyse approfondie des Vargas"
+    },
+    "mahadasa": {
+      "title": "Périodes Mahadasa",
+      "desc": "Prédictions des périodes planétaires"
+    },
+    "psychology": {
+      "title": "Astro psychologie",
+      "desc": "Perspectives psychologiques de votre thème"
+    },
+    "ayurveda": {
+      "title": "Ayurveda",
+      "desc": "Analyse de constitution de santé"
+    },
+    "chat": {
+      "title": "Chat avec astrologue",
+      "desc": "Guidance astrologique par IA"
+    },
+    "questions": {
+      "title": "Questions du destin",
+      "desc": "Obtenez des réponses sur les sujets de vie"
+    },
+    "events": {
+      "title": "Événements célestes",
+      "desc": "Éclipses, rétrogrades et événements célestes"
+    },
+    "yogas": {
+      "title": "Yogas",
+      "desc": "Combinaisons planétaires spéciales"
+    }
+  },
+  "about": {
+    "heading": "La sagesse des anciens, propulsée par la technologie moderne",
+    "text": "Astrolytix combine des millénaires de sagesse astrologique védique avec une analyse IA de pointe pour offrir des aperçus célestes précis et personnalisés. Nos algorithmes avancés traitent des données planétaires complexes pour vous fournir des conseils pratiques pour votre voyage de découverte de soi."
+  },
+  "featureDetails": {
+    "horoscopes": {
+      "title": "Vos horoscopes",
+      "desc": "Obtenez des prévisions personnalisées pour demain, la semaine, le mois et l'année à venir. Notre IA analyse votre thème natal unique pour délivrer des prédictions précises adaptées spécifiquement à vous.",
+      "list": [
+        "Prévisions de demain avec influences planétaires",
+        "Aperçu hebdomadaire des opportunités et défis",
+        "Thèmes mensuels et transits majeurs",
+        "Prédictions annuelles pour la planification à long terme"
+      ]
+    },
+    "transits": {
+      "title": "Transits personnels",
+      "desc": "Suivez comment les mouvements planétaires actuels interagissent avec votre thème natal. Comprenez les influences cosmiques affectant votre vie en ce moment.",
+      "list": [
+        "Suivi des transits en temps réel",
+        "Interprétation détaillée de chaque transit",
+        "Indicateurs de durée et d'intensité",
+        "Conseils personnalisés pour chaque influence"
+      ]
+    },
+    "natal": {
+      "title": "Interprétation du thème natal",
+      "desc": "Découvrez l'image complète de votre plan céleste. Votre thème natal révèle votre personnalité, forces, défis et but de vie à travers les positions planétaires à la naissance.",
+      "list": [
+        "Analyse complète des positions planétaires",
+        "Interprétation maison par maison",
+        "Motifs d'aspects et leurs significations",
+        "Aperçus détaillés de la personnalité"
+      ]
+    },
+    "divisional": {
+      "title": "Thèmes divisionnels",
+      "desc": "Explorez les thèmes Varga complexes de l'astrologie védique. Chaque thème divisionnel révèle des domaines de vie spécifiques avec un détail et une précision sans précédent.",
+      "list": [
+        "Analyse des thèmes D1 à D60",
+        "Aperçus de carrière depuis Dasamsa (D10)",
+        "Analyse du mariage depuis Navamsa (D9)",
+        "Interprétations complètes des Varga"
+      ]
+    },
+    "mahadasa": {
+      "title": "Périodes de Mahadasa",
+      "desc": "Comprenez les principales périodes planétaires gouvernant votre vie. Mahadasa révèle les thèmes et énergies qui domineront des périodes spécifiques de votre parcours.",
+      "list": [
+        "Analyse de la période Mahadasa actuelle",
+        "Décomposition des sous-périodes (Antardasa)",
+        "Chronologie des périodes à venir",
+        "Guidance stratégique de planification de vie"
+      ]
+    },
+    "psychology": {
+      "title": "Astro psychologie",
+      "desc": "Découvrez les dimensions psychologiques encodées dans votre thème. Comprenez vos schémas émotionnels, dynamiques relationnelles et fonctionnement intérieur.",
+      "list": [
+        "Analyse des tendances psychosomatiques",
+        "Reconnaissance des schémas émotionnels",
+        "Aperçus de psychologie relationnelle",
+        "Recommandations de croissance personnelle"
+      ]
+    },
+    "ayurveda": {
+      "title": "Analyse Ayurveda",
+      "desc": "Découvrez votre constitution ayurvédique à travers l'astrologie védique. Apprenez sur votre équilibre des doshas et recevez des recommandations personnalisées de santé et style de vie.",
+      "list": [
+        "Constitution Vata, Pitta, Kapha",
+        "Tendances de santé depuis votre thème",
+        "Recommandations diététiques",
+        "Conseils d'optimisation du style de vie"
+      ]
+    },
+    "chat": {
+      "title": "Chat avec astrologue",
+      "desc": "Obtenez des réponses instantanées à vos questions astrologiques de notre astrologue IA. Demandez sur votre thème, transits ou situations de vie.",
+      "list": [
+        "Astrologue IA disponible 24/7",
+        "Réponses contextuelles utilisant votre thème",
+        "Support des questions de suivi",
+        "Explications et guidance détaillées"
+      ]
+    },
+    "questions": {
+      "title": "Questions du destin",
+      "desc": "Obtenez des réponses aux questions les plus importantes de la vie. De la carrière et mariage à la santé et finances, recevez des aperçus astrologiques sur tout sujet.",
+      "list": [
+        "Questions prédéfinies sur les sujets de vie",
+        "Aperçus sur le mariage et les relations",
+        "Guidance de carrière et finances",
+        "Réponses complètes avec timing"
+      ]
+    },
+    "events": {
+      "title": "Événements dans le ciel",
+      "desc": "Restez informé des événements célestes significatifs. Suivez les éclipses, rétrogrades, phases lunaires et autres phénomènes astronomiques avec des interprétations personnalisées.",
+      "list": [
+        "Alertes d'éclipses solaires et lunaires",
+        "Suivi des rétrogrades planétaires",
+        "Calendrier des phases lunaires",
+        "Analyse d'impact personnel"
+      ]
+    },
+    "yogas": {
+      "title": "Yogas",
+      "desc": "Découvrez les combinaisons planétaires spéciales dans votre thème. Les Yogas révèlent des talents uniques, fortunes et schémas de vie spécifiques à votre horoscope.",
+      "list": [
+        "Identification du Raja Yoga",
+        "Dhana Yoga pour la richesse",
+        "Combinaisons de talents spéciaux",
+        "Interprétations détaillées des yogas"
+      ]
+    }
+  },
+  "contact": {
+    "heading": "Commencez votre voyage céleste",
+    "subheading": "Prêt à découvrir les secrets de votre destin cosmique?",
+    "appStore": {
+      "label": "Télécharger sur",
+      "store": "App Store"
+    },
+    "googlePlay": {
+      "label": "Disponible sur",
+      "store": "Google Play"
+    },
+    "help": "Besoin d'aide? Contactez-nous à"
+  },
+  "footer": {
+    "copyright": "2025 Astrolytix. Tous droits réservés.",
+    "tagline": "Écrit dans les étoiles, décodé pour vous.",
+    "privacy": "Politique de confidentialité"
+  },
+  "languageSwitcher": {
+    "label": "Langue"
+  },
+  "privacy": {
+    "title": "Politique de confidentialité",
+    "metaTitle": "Politique de confidentialité — Astrolytix",
+    "backLink": "Retour à l'accueil",
+    "lastUpdated": "Dernière mise à jour: 4 décembre 2025",
+    "intro": "Astrolytix (\"nous\", \"notre\" ou \"nos\") s'engage à protéger votre vie privée. Cette Politique de Confidentialité explique comment nous collectons, utilisons et protégeons vos informations lorsque vous utilisez notre application mobile.",
+    "sections": {
+      "collect": {
+        "title": "Informations que nous collectons",
+        "deviceOnly": "Informations stockées uniquement sur votre appareil (jamais envoyées à nos serveurs):",
+        "deviceList": [
+          "Date, heure et lieu de naissance",
+          "Thème natal calculé et données astrologiques",
+          "Conversations de chat avec l'astrologue IA",
+          "Lectures et interprétations d'horoscopes",
+          "Résultats d'analyses de psychologie, Ayurveda et autres"
+        ],
+        "serverStored": "Informations stockées sur nos serveurs:",
+        "serverList": [
+          "Identifiant d'appareil (ID unique anonyme)",
+          "Statut d'abonnement (gratuit/payant, date d'expiration)",
+          "Historique d'achats (ID produit, date d'achat, type d'abonnement)"
+        ]
+      },
+      "use": {
+        "title": "Comment nous utilisons vos informations",
+        "intro": "Nous utilisons les informations limitées que nous collectons pour:",
+        "list": [
+          "Fournir et maintenir le service de l'application",
+          "Vérifier le statut d'abonnement",
+          "Suivre l'historique d'achats pour vos dossiers",
+          "Améliorer notre application et l'expérience utilisateur"
+        ]
+      },
+      "storage": {
+        "title": "Stockage et sécurité des données",
+        "text1": "Vos données astrologiques personnelles (informations de naissance, thèmes, lectures) sont stockées exclusivement sur votre appareil et ne sont jamais transmises ni stockées sur nos serveurs. Cela assure une confidentialité maximale pour vos informations personnelles sensibles.",
+        "text2": "Les données liées au compte stockées sur nos serveurs sont protégées par des mesures de sécurité standard de l'industrie, incluant le chiffrement et des protocoles d'authentification sécurisés."
+      },
+      "thirdParty": {
+        "title": "Services tiers",
+        "intro": "Notre application peut utiliser les services tiers suivants:",
+        "openai": "Pour les interprétations astrologiques par IA. Les requêtes sont traitées en temps réel et ne sont pas stockées par nous.",
+        "appStores": "Pour le traitement des achats et abonnements in-app.",
+        "revenuecat": "Pour la gestion des abonnements."
+      },
+      "retention": {
+        "title": "Conservation des données",
+        "text": "Les données stockées sur votre appareil y restent jusqu'à ce que vous supprimiez l'application ou utilisiez la fonction \"Recommencer\" pour effacer votre profil. Les données de compte côté serveur sont conservées tant que vous maintenez un compte actif."
+      },
+      "rights": {
+        "title": "Vos droits",
+        "intro": "Vous avez le droit de:",
+        "access": "vos données stockées sur nos serveurs",
+        "delete": "votre compte et toutes les données associées",
+        "clear": "toutes les données locales en utilisant la fonction \"Recommencer\" dans l'application",
+        "contact": "Pour exercer ces droits ou demander la suppression de données, contactez-nous à"
+      },
+      "children": {
+        "title": "Confidentialité des enfants",
+        "text": "Notre application n'est pas destinée aux enfants de moins de 13 ans. Nous ne collectons pas sciemment d'informations personnelles d'enfants de moins de 13 ans."
+      },
+      "changes": {
+        "title": "Modifications de cette politique",
+        "text": "Nous pouvons mettre à jour cette Politique de Confidentialité de temps en temps. Nous vous informerons de tout changement en publiant la nouvelle Politique de Confidentialité sur cette page et en mettant à jour la date de \"Dernière mise à jour\"."
+      },
+      "contactUs": {
+        "title": "Contactez-nous",
+        "intro": "Si vous avez des questions sur cette Politique de Confidentialité, contactez-nous:",
+        "email": "Email:",
+        "website": "Site web:"
+      }
+    }
+  }
+}
