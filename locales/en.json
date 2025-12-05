@@ -1,0 +1,275 @@
+{
+  "meta": {
+    "title": "Astrolytix — Your Astrological Key to Destiny and Personal Growth"
+  },
+  "nav": {
+    "home": "Home",
+    "features": "Features",
+    "about": "About",
+    "support": "Support"
+  },
+  "hero": {
+    "title": "Astrolytix",
+    "slogan": "Your Astrological Key to Destiny and Personal Growth",
+    "subtitle": "Unlock the secrets of the cosmos and discover the path written in the stars",
+    "cta": "Explore Your Stars"
+  },
+  "features": {
+    "heading": "Discover Your Cosmic Blueprint",
+    "horoscopes": {
+      "title": "Your Horoscopes",
+      "desc": "Daily, weekly, monthly & yearly forecasts"
+    },
+    "transits": {
+      "title": "Personal Transits",
+      "desc": "Track planetary influences on your chart"
+    },
+    "natal": {
+      "title": "Natal Chart",
+      "desc": "Complete birth chart interpretation"
+    },
+    "divisional": {
+      "title": "Divisional Charts",
+      "desc": "Deep dive into Vargas analysis"
+    },
+    "mahadasa": {
+      "title": "Mahadasa Periods",
+      "desc": "Planetary period predictions"
+    },
+    "psychology": {
+      "title": "Astro Psychology",
+      "desc": "Psychological insights from your chart"
+    },
+    "ayurveda": {
+      "title": "Ayurveda",
+      "desc": "Health constitution analysis"
+    },
+    "chat": {
+      "title": "Astrologer Chat",
+      "desc": "AI-powered astrological guidance"
+    },
+    "questions": {
+      "title": "Destiny Questions",
+      "desc": "Get answers about life topics"
+    },
+    "events": {
+      "title": "Sky Events",
+      "desc": "Eclipses, retrogrades & celestial events"
+    },
+    "yogas": {
+      "title": "Yogas",
+      "desc": "Special planetary combinations"
+    }
+  },
+  "about": {
+    "heading": "The Wisdom of the Ancients, Powered by Modern Technology",
+    "text": "Astrolytix combines millennia of Vedic astrological wisdom with cutting-edge AI analysis to deliver precise, personalized celestial insights. Our advanced algorithms process complex planetary data to provide you with actionable guidance for your journey of self-discovery."
+  },
+  "featureDetails": {
+    "horoscopes": {
+      "title": "Your Horoscopes",
+      "desc": "Get personalized horoscope forecasts for tomorrow, the coming week, month, and year. Our AI analyzes your unique birth chart to deliver accurate predictions tailored specifically to you.",
+      "list": [
+        "Tomorrow's forecast with planetary influences",
+        "Weekly overview of opportunities and challenges",
+        "Monthly themes and major transits",
+        "Yearly predictions for long-term planning"
+      ]
+    },
+    "transits": {
+      "title": "Personal Transits",
+      "desc": "Track how current planetary movements interact with your natal chart. Understand the cosmic influences affecting your life right now with detailed transit interpretations.",
+      "list": [
+        "Real-time transit tracking",
+        "Detailed interpretation of each transit",
+        "Duration and intensity indicators",
+        "Personalized advice for each influence"
+      ]
+    },
+    "natal": {
+      "title": "Natal Chart Interpretation",
+      "desc": "Discover the complete picture of your celestial blueprint. Your natal chart reveals your personality, strengths, challenges, and life purpose through planetary positions at birth.",
+      "list": [
+        "Full planetary position analysis",
+        "House-by-house interpretation",
+        "Aspect patterns and their meanings",
+        "Detailed personality insights"
+      ]
+    },
+    "divisional": {
+      "title": "Divisional Charts",
+      "desc": "Explore the intricate Varga charts of Vedic astrology. Each divisional chart reveals specific life areas with unprecedented detail and accuracy.",
+      "list": [
+        "D1 to D60 chart analysis",
+        "Career insights from Dasamsa (D10)",
+        "Marriage analysis from Navamsa (D9)",
+        "Comprehensive Varga interpretations"
+      ]
+    },
+    "mahadasa": {
+      "title": "Periods of Mahadasa",
+      "desc": "Understand the major planetary periods governing your life. Mahadasa reveals the themes and energies that will dominate specific periods of your journey.",
+      "list": [
+        "Current Mahadasa period analysis",
+        "Sub-period (Antardasa) breakdown",
+        "Timeline of upcoming periods",
+        "Strategic life planning guidance"
+      ]
+    },
+    "psychology": {
+      "title": "Astro Psychology",
+      "desc": "Discover the psychological dimensions encoded in your chart. Understand your emotional patterns, relationship dynamics, and inner workings through astrological psychology.",
+      "list": [
+        "Psychosomatic tendencies analysis",
+        "Emotional pattern recognition",
+        "Relationship psychology insights",
+        "Personal growth recommendations"
+      ]
+    },
+    "ayurveda": {
+      "title": "Ayurveda Analysis",
+      "desc": "Discover your Ayurvedic constitution through Vedic astrology. Learn about your dosha balance and receive personalized health and lifestyle recommendations.",
+      "list": [
+        "Vata, Pitta, Kapha constitution",
+        "Health tendencies from your chart",
+        "Dietary recommendations",
+        "Lifestyle optimization tips"
+      ]
+    },
+    "chat": {
+      "title": "Chat with Astrologer",
+      "desc": "Get instant answers to your astrological questions from our AI-powered astrologer. Ask anything about your chart, transits, or life situations.",
+      "list": [
+        "24/7 AI astrologer availability",
+        "Context-aware responses using your chart",
+        "Follow-up questions supported",
+        "Detailed explanations and guidance"
+      ]
+    },
+    "questions": {
+      "title": "Destiny Questions",
+      "desc": "Get answers to life's most important questions. From career and marriage to health and finances, receive astrological insights on any topic.",
+      "list": [
+        "Pre-defined life topic questions",
+        "Marriage and relationship insights",
+        "Career and financial guidance",
+        "Comprehensive answers with timing"
+      ]
+    },
+    "events": {
+      "title": "Events in the Sky",
+      "desc": "Stay informed about significant celestial events. Track eclipses, retrogrades, moon phases, and other astronomical phenomena with personalized interpretations.",
+      "list": [
+        "Solar and lunar eclipse alerts",
+        "Planetary retrograde tracking",
+        "Moon phase calendar",
+        "Personal impact analysis"
+      ]
+    },
+    "yogas": {
+      "title": "Yogas",
+      "desc": "Discover the special planetary combinations in your chart. Yogas reveal unique talents, fortunes, and life patterns specific to your horoscope.",
+      "list": [
+        "Raja Yoga identification",
+        "Dhana Yoga for wealth",
+        "Special talent combinations",
+        "Detailed yoga interpretations"
+      ]
+    }
+  },
+  "contact": {
+    "heading": "Begin Your Celestial Journey",
+    "subheading": "Ready to unlock the secrets of your cosmic destiny?",
+    "appStore": {
+      "label": "Download on the",
+      "store": "App Store"
+    },
+    "googlePlay": {
+      "label": "Get it on",
+      "store": "Google Play"
+    },
+    "help": "Need help? Contact us at"
+  },
+  "footer": {
+    "copyright": "2025 Astrolytix. All rights reserved.",
+    "tagline": "Written in the stars, decoded for you.",
+    "privacy": "Privacy Policy"
+  },
+  "languageSwitcher": {
+    "label": "Language"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "metaTitle": "Privacy Policy — Astrolytix",
+    "backLink": "Back to Home",
+    "lastUpdated": "Last updated: December 4, 2025",
+    "intro": "Astrolytix (\"we\", \"our\", or \"us\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our mobile application.",
+    "sections": {
+      "collect": {
+        "title": "Information We Collect",
+        "deviceOnly": "Information stored on your device only (never sent to our servers):",
+        "deviceList": [
+          "Birth date, time, and location",
+          "Calculated natal chart and astrological data",
+          "Chat conversations with the AI astrologer",
+          "Horoscope readings and interpretations",
+          "Psychology, Ayurveda, and other analysis results"
+        ],
+        "serverStored": "Information stored on our servers:",
+        "serverList": [
+          "Device identifier (anonymous unique ID)",
+          "Subscription status (free/paid, expiry date)",
+          "Purchase history (product ID, purchase date, subscription type)"
+        ]
+      },
+      "use": {
+        "title": "How We Use Your Information",
+        "intro": "We use the limited information we collect to:",
+        "list": [
+          "Provide and maintain the app service",
+          "Verify subscription status",
+          "Track purchase history for your records",
+          "Improve our app and user experience"
+        ]
+      },
+      "storage": {
+        "title": "Data Storage and Security",
+        "text1": "Your personal astrological data (birth information, charts, readings) is stored exclusively on your device and is never transmitted to or stored on our servers. This ensures maximum privacy for your sensitive personal information.",
+        "text2": "Account-related data stored on our servers is protected using industry-standard security measures including encryption and secure authentication protocols."
+      },
+      "thirdParty": {
+        "title": "Third-Party Services",
+        "intro": "Our app may use the following third-party services:",
+        "openai": "For AI-powered astrological interpretations. Queries are processed in real-time and not stored by us.",
+        "appStores": "For processing in-app purchases and subscriptions.",
+        "revenuecat": "For subscription management."
+      },
+      "retention": {
+        "title": "Data Retention",
+        "text": "Data stored on your device remains there until you delete the app or use the \"Start Over\" feature to clear your profile. Server-side account data is retained as long as you maintain an active account."
+      },
+      "rights": {
+        "title": "Your Rights",
+        "intro": "You have the right to:",
+        "access": "your data stored on our servers",
+        "delete": "your account and all associated data",
+        "clear": "all local data using the \"Start Over\" feature in the app",
+        "contact": "To exercise these rights or request data deletion, contact us at"
+      },
+      "children": {
+        "title": "Children's Privacy",
+        "text": "Our app is not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13."
+      },
+      "changes": {
+        "title": "Changes to This Policy",
+        "text": "We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the \"Last updated\" date."
+      },
+      "contactUs": {
+        "title": "Contact Us",
+        "intro": "If you have questions about this Privacy Policy, please contact us:",
+        "email": "Email:",
+        "website": "Website:"
+      }
+    }
+  }
+}

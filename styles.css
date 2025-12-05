@@ -765,3 +765,121 @@ html {
     opacity: 1;
     transform: translateY(0);
 }
+
+/* ============================================
+   Language Switcher Styles
+   ============================================ */
+
+.language-switcher {
+    position: relative;
+}
+
+.language-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 8px;
+    color: var(--text-light);
+    cursor: pointer;
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.language-toggle:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--accent-gold);
+}
+
+.language-current {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.language-arrow {
+    transition: transform 0.3s ease;
+    color: var(--accent-gold);
+}
+
+.language-toggle[aria-expanded="true"] .language-arrow {
+    transform: rotate(180deg);
+}
+
+.language-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 150px;
+    background: rgba(15, 12, 41, 0.98);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 8px;
+    padding: 0.5rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1001;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+}
+
+.language-dropdown.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.language-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: var(--text-light);
+    cursor: pointer;
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.9rem;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+
+.language-option:hover {
+    background: rgba(212, 175, 55, 0.15);
+}
+
+.language-option.active {
+    background: rgba(212, 175, 55, 0.2);
+    color: var(--accent-gold);
+}
+
+.lang-flag {
+    font-size: 1.1rem;
+}
+
+.lang-name {
+    flex: 1;
+}
+
+/* Mobile adjustments for language switcher */
+@media (max-width: 768px) {
+    .language-switcher {
+        margin-top: 0.5rem;
+    }
+
+    .language-dropdown {
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%) translateY(-10px);
+    }
+
+    .language-dropdown.open {
+        transform: translateX(-50%) translateY(0);
+    }
+}
