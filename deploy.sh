@@ -16,6 +16,8 @@ sudo cp "$SOURCE_DIR/app.js" "$DEST_DIR/"
 sudo cp "$SOURCE_DIR/robots.txt" "$DEST_DIR/"
 sudo cp "$SOURCE_DIR/privacy.html" "$DEST_DIR/"
 sudo cp "$SOURCE_DIR/stellar-vault-9k7m2x.html" "$DEST_DIR/"
+sudo cp "$SOURCE_DIR/logo.svg" "$DEST_DIR/"
+sudo cp "$SOURCE_DIR/logo-star.svg" "$DEST_DIR/"
 
 # Copy pics4site folder with app screenshots
 sudo mkdir -p "$DEST_DIR/pics4site"
@@ -28,6 +30,8 @@ sudo chmod 644 "$DEST_DIR/app.js"
 sudo chmod 644 "$DEST_DIR/robots.txt"
 sudo chmod 644 "$DEST_DIR/privacy.html"
 sudo chmod 644 "$DEST_DIR/stellar-vault-9k7m2x.html"
+sudo chmod 644 "$DEST_DIR/logo.svg"
+sudo chmod 644 "$DEST_DIR/logo-star.svg"
 sudo chmod 755 "$DEST_DIR/pics4site"
 sudo chmod 644 "$DEST_DIR/pics4site/"*
 
