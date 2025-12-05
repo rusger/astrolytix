@@ -19,6 +19,11 @@ sudo cp "$SOURCE_DIR/stellar-vault-9k7m2x.html" "$DEST_DIR/"
 sudo cp "$SOURCE_DIR/logo.svg" "$DEST_DIR/"
 sudo cp "$SOURCE_DIR/logo-star.svg" "$DEST_DIR/"
 sudo cp "$SOURCE_DIR/logo-star-tm.svg" "$DEST_DIR/"
+sudo cp "$SOURCE_DIR/i18n.js" "$DEST_DIR/"
+
+# Copy locales folder for i18n translations
+sudo mkdir -p "$DEST_DIR/locales"
+sudo cp -r "$SOURCE_DIR/locales/"* "$DEST_DIR/locales/"
 
 # Copy pics4site folder with app screenshots
 sudo mkdir -p "$DEST_DIR/pics4site"
@@ -34,11 +39,17 @@ sudo chmod 644 "$DEST_DIR/stellar-vault-9k7m2x.html"
 sudo chmod 644 "$DEST_DIR/logo.svg"
 sudo chmod 644 "$DEST_DIR/logo-star.svg"
 sudo chmod 644 "$DEST_DIR/logo-star-tm.svg"
+sudo chmod 644 "$DEST_DIR/i18n.js"
+sudo chmod 755 "$DEST_DIR/locales"
+sudo chmod 644 "$DEST_DIR/locales/"*
 sudo chmod 755 "$DEST_DIR/pics4site"
 sudo chmod 644 "$DEST_DIR/pics4site/"*
 
 echo "✅ Deployed files:"
 ls -la "$DEST_DIR"/*.html "$DEST_DIR"/*.css "$DEST_DIR"/*.js "$DEST_DIR"/robots.txt 2>/dev/null
+echo ""
+echo "🌍 Deployed locales:"
+ls -la "$DEST_DIR/locales/" 2>/dev/null
 echo ""
 echo "📷 Deployed images:"
 ls -la "$DEST_DIR/pics4site/" 2>/dev/null | head -5
