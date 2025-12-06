@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
@@ -238,14 +239,184 @@
         .back-link:hover {
             color: #d4af37;
         }
+
+        /* Analytics Styles */
+        .analytics-container {
+            max-width: 900px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            padding-bottom: 15px;
+        }
+
+        .nav-tab {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Cinzel', serif;
+        }
+
+        .nav-tab:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: #d4af37;
+        }
+
+        .nav-tab.active {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: #d4af37;
+            color: #d4af37;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+            font-weight: 400;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-card .value {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: #d4af37;
+            font-weight: 600;
+        }
+
+        .stat-card .subtext {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 5px;
+        }
+
+        .chart-container {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-container h3 {
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 250px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .highlight-box h4 {
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            margin-bottom: 15px;
+        }
+
+        .highlight-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .highlight-item:last-child {
+            border-bottom: none;
+        }
+
+        .highlight-label {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .highlight-value {
+            color: #d4af37;
+            font-weight: 600;
+        }
+
+        .period-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .period-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 6px;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .period-btn.active {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: #d4af37;
+            color: #d4af37;
+        }
+
+        .loading-analytics {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .loading-analytics .spinner {
+            width: 40px;
+            height: 40px;
+            border-width: 3px;
+            margin: 0 auto 15px;
+            border-color: rgba(212, 175, 55, 0.3);
+            border-top-color: #d4af37;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="mainContainer">
         <h1>Stellar Vault</h1>
-        <p class="subtitle">Subscription Management Portal</p>
+        <p class="subtitle">Admin Portal</p>
 
-        <div class="step-indicator">
+        <!-- Navigation Tabs (shown after auth) -->
+        <div class="nav-tabs hidden" id="navTabs">
+            <button class="nav-tab active" onclick="showSection('subscriptions')">Subscriptions</button>
+            <button class="nav-tab" onclick="showSection('analytics')">Analytics</button>
+        </div>
+
+        <div class="step-indicator" id="stepIndicator">
             <div class="step active" id="step1-indicator">1</div>
             <div class="step inactive" id="step2-indicator">2</div>
         </div>
@@ -324,6 +495,79 @@
             <button class="btn btn-secondary" onclick="resetToStep1()">
                 Back to Step 1
             </button>
+        </div>
+
+        <!-- Analytics Section -->
+        <div id="analyticsSection" class="hidden">
+            <div id="analyticsLoading" class="loading-analytics">
+                <div class="spinner"></div>
+                <p>Loading analytics data...</p>
+            </div>
+
+            <div id="analyticsContent" class="hidden">
+                <!-- Period Selector -->
+                <div class="period-selector">
+                    <button class="period-btn active" onclick="setPeriod('monthly')">This Month</button>
+                    <button class="period-btn" onclick="setPeriod('yearly')">This Year</button>
+                    <button class="period-btn" onclick="setPeriod('all_time')">All Time</button>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card">
+                        <h3>Astrolog Calls</h3>
+                        <div class="value" id="astrologCalls">-</div>
+                        <div class="subtext" id="astrologAvg">Avg per user: -</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>ChatGPT Calls</h3>
+                        <div class="value" id="chatgptCalls">-</div>
+                        <div class="subtext" id="chatgptAvg">Avg per user: -</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Active Users</h3>
+                        <div class="value" id="activeUsers">-</div>
+                        <div class="subtext" id="periodLabel">This month</div>
+                    </div>
+                </div>
+
+                <!-- Monthly Trend Chart -->
+                <div class="chart-container">
+                    <h3>API Usage Trend (Last 12 Months)</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Model Usage Chart -->
+                <div class="chart-container">
+                    <h3>ChatGPT Model Distribution</h3>
+                    <div class="chart-wrapper" style="height: 200px;">
+                        <canvas id="modelChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Highlights -->
+                <div class="highlight-box">
+                    <h4>📊 Key Insights</h4>
+                    <div class="highlight-item">
+                        <span class="highlight-label">Top Astrolog User</span>
+                        <span class="highlight-value" id="topAstrologUser">-</span>
+                    </div>
+                    <div class="highlight-item">
+                        <span class="highlight-label">Top ChatGPT User</span>
+                        <span class="highlight-value" id="topChatgptUser">-</span>
+                    </div>
+                    <div class="highlight-item">
+                        <span class="highlight-label">Total API Calls (All Time)</span>
+                        <span class="highlight-value" id="totalCalls">-</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-secondary" onclick="loadAnalytics()">
+                    Refresh Data
+                </button>
+            </div>
         </div>
 
         <div id="message" class="message hidden"></div>
@@ -585,6 +829,225 @@
         document.getElementById('targetEmail').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') grantSubscription();
         });
+
+        // ============================================
+        // ANALYTICS FUNCTIONALITY
+        // ============================================
+
+        let analyticsData = null;
+        let currentPeriod = 'monthly';
+        let trendChart = null;
+        let modelChart = null;
+
+        function showSection(section) {
+            // Update nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (section === 'subscriptions') {
+                document.getElementById('step2').classList.remove('hidden');
+                document.getElementById('analyticsSection').classList.add('hidden');
+                document.getElementById('mainContainer').classList.remove('analytics-container');
+            } else if (section === 'analytics') {
+                document.getElementById('step2').classList.add('hidden');
+                document.getElementById('analyticsSection').classList.remove('hidden');
+                document.getElementById('mainContainer').classList.add('analytics-container');
+                if (!analyticsData) {
+                    loadAnalytics();
+                }
+            }
+        }
+
+        async function loadAnalytics() {
+            if (!storedAdminEmail || !storedAdminSecret) {
+                showMessage('Please authenticate first (Step 1)', 'error');
+                return;
+            }
+
+            document.getElementById('analyticsLoading').classList.remove('hidden');
+            document.getElementById('analyticsContent').classList.add('hidden');
+
+            try {
+                const response = await fetch(
+                    `${API_BASE}/api/admin/analytics?admin_email=${encodeURIComponent(storedAdminEmail)}&admin_secret=${encodeURIComponent(storedAdminSecret)}`
+                );
+
+                const data = await response.json();
+
+                if (data.success) {
+                    analyticsData = data;
+                    updateAnalyticsUI();
+                    document.getElementById('analyticsLoading').classList.add('hidden');
+                    document.getElementById('analyticsContent').classList.remove('hidden');
+                } else {
+                    showMessage(data.error || 'Failed to load analytics', 'error');
+                    document.getElementById('analyticsLoading').innerHTML = '<p style="color: #ef4444;">Failed to load analytics</p>';
+                }
+            } catch (error) {
+                console.error('Analytics error:', error);
+                showMessage('Network error loading analytics', 'error');
+                document.getElementById('analyticsLoading').innerHTML = '<p style="color: #ef4444;">Network error</p>';
+            }
+        }
+
+        function setPeriod(period) {
+            currentPeriod = period;
+            document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            updateAnalyticsUI();
+        }
+
+        function updateAnalyticsUI() {
+            if (!analyticsData) return;
+
+            const periodData = analyticsData[currentPeriod];
+            const periodLabels = {
+                'monthly': 'This month',
+                'yearly': 'This year',
+                'all_time': 'All time'
+            };
+
+            // Update stats
+            if (currentPeriod === 'all_time') {
+                document.getElementById('astrologCalls').textContent = analyticsData.all_time.total_astrolog_calls.toLocaleString();
+                document.getElementById('chatgptCalls').textContent = analyticsData.all_time.total_chatgpt_calls.toLocaleString();
+                document.getElementById('activeUsers').textContent = analyticsData.all_time.total_unique_users.toLocaleString();
+                document.getElementById('astrologAvg').textContent = 'Total all time';
+                document.getElementById('chatgptAvg').textContent = 'Total all time';
+            } else {
+                document.getElementById('astrologCalls').textContent = periodData.astrolog_calls.toLocaleString();
+                document.getElementById('chatgptCalls').textContent = periodData.chatgpt_calls.toLocaleString();
+                document.getElementById('activeUsers').textContent = periodData.unique_users.toLocaleString();
+                document.getElementById('astrologAvg').textContent = `Avg per user: ${periodData.avg_astrolog_per_user}`;
+                document.getElementById('chatgptAvg').textContent = `Avg per user: ${periodData.avg_chatgpt_per_user}`;
+            }
+            document.getElementById('periodLabel').textContent = periodLabels[currentPeriod];
+
+            // Update highlights
+            const maxAstrolog = analyticsData.max_usage.astrolog;
+            const maxChatgpt = analyticsData.max_usage.chatgpt;
+            document.getElementById('topAstrologUser').textContent =
+                maxAstrolog.device_id ? `${maxAstrolog.calls} calls` : 'No data';
+            document.getElementById('topChatgptUser').textContent =
+                maxChatgpt.device_id ? `${maxChatgpt.calls} calls` : 'No data';
+            document.getElementById('totalCalls').textContent =
+                (analyticsData.all_time.total_astrolog_calls + analyticsData.all_time.total_chatgpt_calls).toLocaleString();
+
+            // Update charts
+            renderTrendChart();
+            renderModelChart();
+        }
+
+        function renderTrendChart() {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+
+            if (trendChart) {
+                trendChart.destroy();
+            }
+
+            const monthlyData = analyticsData.monthly_breakdown || [];
+            const labels = monthlyData.map(d => d.month).reverse();
+            const astrologData = monthlyData.map(d => d.astrolog_calls).reverse();
+            const chatgptData = monthlyData.map(d => d.chatgpt_calls).reverse();
+
+            trendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Astrolog Calls',
+                            data: astrologData,
+                            borderColor: '#d4af37',
+                            backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'ChatGPT Calls',
+                            data: chatgptData,
+                            borderColor: '#a855f7',
+                            backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: 'rgba(255, 255, 255, 0.7)' }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: 'rgba(255, 255, 255, 0.5)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        },
+                        y: {
+                            ticks: { color: 'rgba(255, 255, 255, 0.5)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderModelChart() {
+            const ctx = document.getElementById('modelChart').getContext('2d');
+
+            if (modelChart) {
+                modelChart.destroy();
+            }
+
+            const modelData = analyticsData.model_usage || [];
+            const labels = modelData.map(d => d.model || 'Unknown');
+            const data = modelData.map(d => d.count);
+            const colors = ['#d4af37', '#a855f7', '#22c55e', '#3b82f6', '#ef4444'];
+
+            modelChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors.slice(0, labels.length),
+                        borderColor: 'rgba(0, 0, 0, 0.5)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { color: 'rgba(255, 255, 255, 0.7)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Modify goToStep2 to show nav tabs
+        const originalGoToStep2 = goToStep2;
+        goToStep2 = function() {
+            originalGoToStep2();
+            document.getElementById('navTabs').classList.remove('hidden');
+            document.getElementById('stepIndicator').classList.add('hidden');
+        };
+
+        // Modify resetToStep1 to hide nav tabs
+        const originalResetToStep1 = resetToStep1;
+        resetToStep1 = function() {
+            originalResetToStep1();
+            document.getElementById('navTabs').classList.add('hidden');
+            document.getElementById('stepIndicator').classList.remove('hidden');
+            document.getElementById('analyticsSection').classList.add('hidden');
+            analyticsData = null;
+        };
     </script>
 </body>
 </html>
