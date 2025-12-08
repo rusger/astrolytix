@@ -22,3 +22,11 @@ build/
 # Logs
 *.log
 npm-debug.log*
+
+# Original unoptimized images (keep only .jpg)
+pics4site/*.PNG
+pics4site/*.jpeg
+
+# Temporary scripts
+update_nginx_site.sh
+convert_images.sh

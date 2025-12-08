@@ -26,9 +26,9 @@ sudo cp "$SOURCE_DIR/i18n.js" "$DEST_DIR/"
 sudo mkdir -p "$DEST_DIR/locales"
 sudo cp -r "$SOURCE_DIR/locales/"* "$DEST_DIR/locales/"
 
-# Copy pics4site folder with app screenshots
+# Copy pics4site folder with app screenshots (only optimized .jpg files)
 sudo mkdir -p "$DEST_DIR/pics4site"
-sudo cp -r "$SOURCE_DIR/pics4site/"* "$DEST_DIR/pics4site/"
+sudo cp "$SOURCE_DIR/pics4site/"*.jpg "$DEST_DIR/pics4site/"
 
 # Set correct permissions (readable by web server)
 sudo chmod 644 "$DEST_DIR/index.html"
