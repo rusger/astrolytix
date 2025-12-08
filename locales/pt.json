@@ -193,10 +193,94 @@
   "footer": {
     "copyright": "2025 Astrolytix. Todos os direitos reservados.",
     "tagline": "Escrito nas estrelas, decodificado para você.",
-    "privacy": "Política de Privacidade"
+    "privacy": "Política de Privacidade",
+    "terms": "Termos de Serviço"
   },
   "languageSwitcher": {
     "label": "Idioma"
+  },
+  "terms": {
+    "backLink": "Voltar ao início",
+    "title": "Termos de Serviço",
+    "lastUpdated": "Última atualização: 8 de dezembro de 2025",
+    "intro": "Bem-vindo ao Astrolytix. Ao usar nosso aplicativo móvel e serviços, você concorda com estes Termos de Serviço. Por favor, leia-os cuidadosamente.",
+    "sections": {
+      "about": {
+        "title": "Sobre o Astrolytix",
+        "text": "Astrolytix é um aplicativo de astrologia védica alimentado por IA que fornece insights astrológicos personalizados, horóscopos, análise psicológica e recomendações de bem-estar baseadas no seu mapa natal. Nosso serviço combina a sabedoria védica ancestral com inteligência artificial moderna para oferecer interpretações significativas."
+      },
+      "plans": {
+        "title": "Planos de assinatura",
+        "free": {
+          "name": "Plano gratuito",
+          "desc": "Acesse recursos principais com limites diários para explorar as capacidades do aplicativo."
+        },
+        "pro": {
+          "name": "Plano Pro",
+          "desc": "Desbloqueie todo o potencial com limites estendidos, sem anúncios e acesso a todos os períodos de horóscopos."
+        }
+      },
+      "limits": {
+        "title": "Limites do serviço",
+        "intro": "Para garantir um serviço de qualidade para todos os usuários e gerenciar os custos de processamento de IA, os seguintes limites se aplicam:",
+        "table": {
+          "feature": "Recurso",
+          "free": "Grátis",
+          "pro": "Pro",
+          "questions": "Perguntas por dia",
+          "extended": "Estendido*",
+          "chats": "Novos chats por dia",
+          "messagesPerChat": "Mensagens por chat",
+          "psychology": "Análises psicológicas por dia",
+          "transits": "Leituras de trânsitos por dia",
+          "transitsWeek": "Leituras de trânsitos por semana",
+          "divisional": "Mapas divisionais por dia",
+          "ayurveda": "Análises de Ayurveda por dia",
+          "profileEdits": "Edições de perfil por dia",
+          "profileEditsWeek": "Edições de perfil por semana",
+          "horoscopes": "Períodos de horóscopos",
+          "horoscopesFree": "Hoje, Semana, Mês, Geral",
+          "horoscopesPro": "Todos os períodos incluindo anual",
+          "ads": "Publicidade",
+          "adsYes": "Sim (a cada 5 solicitações)",
+          "adsNo": "Sem anúncios"
+        },
+        "footnote": "* Limites estendidos: Os limites diários por seção são significativamente aumentados para usuários Pro. Embora esses limites sejam generosos para uso normal, os limites gerais do serviço permanecem para prevenir abusos e garantir acesso justo para todos. Os limites são redefinidos diariamente à meia-noite (horário local) e semanalmente às segundas-feiras."
+      },
+      "acceptable": {
+        "title": "Uso aceitável",
+        "intro": "Você concorda em usar o Astrolytix de forma responsável e não:",
+        "list": [
+          "Tentar contornar ou burlar os limites do serviço",
+          "Usar scripts automatizados ou bots para acessar o serviço",
+          "Compartilhar suas credenciais de conta com outros",
+          "Usar o serviço para fins ilegais ou prejudiciais",
+          "Fazer engenharia reversa ou tentar extrair os modelos de IA"
+        ]
+      },
+      "disclaimer": {
+        "title": "Aviso legal",
+        "text": "Astrolytix fornece interpretações astrológicas para fins de entretenimento e auto-reflexão. Nossas leituras não devem ser consideradas como aconselhamento profissional para questões médicas, legais, financeiras ou psicológicas. Sempre consulte profissionais qualificados para decisões importantes da vida."
+      },
+      "intellectual": {
+        "title": "Propriedade intelectual",
+        "text": "Todo o conteúdo, recursos e funcionalidades do Astrolytix, incluindo, mas não se limitando a texto, gráficos, logotipos e software, são propriedade exclusiva do Astrolytix e são protegidos por leis internacionais de direitos autorais, marcas registradas e outras leis de propriedade intelectual."
+      },
+      "termination": {
+        "title": "Rescisão",
+        "text": "Reservamo-nos o direito de suspender ou encerrar seu acesso ao Astrolytix a nosso exclusivo critério, sem aviso prévio, por conduta que acreditamos violar estes Termos de Serviço ou ser prejudicial a outros usuários, a nós ou a terceiros, ou por qualquer outro motivo."
+      },
+      "changes": {
+        "title": "Alterações nos termos",
+        "text": "Podemos atualizar estes Termos de Serviço de tempos em tempos. Notificaremos você sobre quaisquer alterações materiais publicando os novos Termos nesta página e atualizando a data de \"Última atualização\". Seu uso continuado do serviço após as alterações constitui aceitação dos novos termos."
+      },
+      "contact": {
+        "title": "Entre em contato",
+        "intro": "Se você tiver dúvidas sobre estes Termos de Serviço, entre em contato conosco:",
+        "email": "Email:",
+        "website": "Site:"
+      }
+    }
   },
   "privacy": {
     "title": "Política de Privacidade",
