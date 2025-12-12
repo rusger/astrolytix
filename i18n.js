@@ -217,7 +217,7 @@ const I18n = (function() {
         const currentLangSpan = document.querySelector('.language-current');
         if (currentLangSpan && SUPPORTED_LANGUAGES[currentLanguage]) {
             const lang = SUPPORTED_LANGUAGES[currentLanguage];
-            currentLangSpan.innerHTML = `${lang.flag} ${lang.nativeName}`;
+            currentLangSpan.innerHTML = `<span class="current-flag">${lang.flag}</span><span class="current-name">${lang.nativeName}</span>`;
         }
 
         // Update dropdown items active state
@@ -238,7 +238,7 @@ const I18n = (function() {
         const currentLang = SUPPORTED_LANGUAGES[currentLanguage];
         container.innerHTML = `
             <button class="language-toggle" aria-label="Select language" aria-expanded="false">
-                <span class="language-current">${currentLang.flag} ${currentLang.nativeName}</span>
+                <span class="language-current"><span class="current-flag">${currentLang.flag}</span><span class="current-name">${currentLang.nativeName}</span></span>
                 <svg class="language-arrow" width="12" height="12" viewBox="0 0 12 12">
                     <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
                 </svg>

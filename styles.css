@@ -867,10 +867,19 @@ html {
     flex: 1;
 }
 
+/* Language current display - flag and name */
+.current-flag {
+    margin-right: 0.4rem;
+}
+
+.current-name {
+    /* Shown on desktop, hidden on mobile via media query */
+}
+
 /* Mobile adjustments for language switcher */
 @media (max-width: 768px) {
     .language-switcher {
-        margin-top: 0.5rem;
+        margin-top: 0;
     }
 
     .language-dropdown {
@@ -881,5 +890,121 @@ html {
 
     .language-dropdown.open {
         transform: translateX(-50%) translateY(0);
+    }
+}
+
+/* ============================================
+   Enhanced Mobile Responsive Styles
+   ============================================ */
+
+@media (max-width: 600px) {
+    /* Compact header for mobile */
+    .navbar {
+        padding: 0.75rem 1rem;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 0.5rem;
+    }
+
+    .logo {
+        flex: 0 0 auto;
+    }
+
+    .logo-icon img {
+        width: 24px !important;
+        height: 24px !important;
+    }
+
+    .logo-text {
+        font-size: 1.1rem;
+    }
+
+    /* Nav links in a row, smaller */
+    .nav-links {
+        order: 1;
+        width: 100%;
+        justify-content: center;
+        gap: 0.5rem;
+        flex-wrap: nowrap;
+        font-size: 0.8rem;
+    }
+
+    .nav-links a {
+        white-space: nowrap;
+        font-size: 0.8rem;
+        padding: 0.25rem 0;
+    }
+
+    /* Language switcher - compact, flag only on mobile */
+    .language-toggle {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    /* Hide language name on mobile, show only flag */
+    .language-current .current-name {
+        display: none;
+    }
+
+    .language-current .current-flag {
+        font-size: 1.2rem;
+        margin-right: 0;
+    }
+
+    .lang-flag {
+        font-size: 1.2rem;
+    }
+
+    .language-arrow {
+        width: 10px;
+        height: 10px;
+    }
+
+    /* Hero section adjustments */
+    .hero {
+        padding: 5rem 1rem 2rem;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .slogan {
+        font-size: 0.95rem;
+        line-height: 1.4;
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
+    }
+
+    .cta-button {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 380px) {
+    .navbar {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .nav-links {
+        gap: 0.35rem;
+        font-size: 0.75rem;
+    }
+
+    .nav-links a {
+        font-size: 0.75rem;
+    }
+
+    .title {
+        font-size: 1.75rem;
+    }
+
+    .slogan {
+        font-size: 0.85rem;
     }
 }
