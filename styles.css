@@ -697,6 +697,7 @@ footer {
     .features-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
+        padding: 0 1rem;
     }
 
     .feature-tile {
