@@ -670,8 +670,24 @@ footer {
     /* Pull language switcher out of nav flow to top row */
     .nav-links li:last-child {
         position: absolute;
-        right: 2rem;
-        top: 1rem;
+        right: 1rem;
+        top: 0.75rem;
+    }
+
+    /* Compact language toggle on mobile */
+    .language-toggle {
+        padding: 0.25rem 0.4rem;
+        font-size: 0.85rem;
+        gap: 0.2rem;
+    }
+
+    .language-current .current-name {
+        display: none;
+    }
+
+    .language-arrow {
+        width: 10px;
+        height: 10px;
     }
 
     .title {
@@ -707,33 +723,38 @@ footer {
         font-size: 1.8rem;
     }
 
-    .features-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-        width: auto;
-        max-width: 100%;
-        margin: 0 auto;
-        padding: 0;
-    }
-
     .features {
         padding: 4rem 1rem;
+        overflow: hidden;
+    }
+
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        box-sizing: border-box;
     }
 
     .feature-tile {
-        padding: 1rem;
+        padding: 0.75rem;
+        min-width: 0;
     }
 
     .feature-tile .feature-icon {
-        font-size: 2rem;
+        font-size: 1.75rem;
+        margin-bottom: 0.5rem;
     }
 
     .feature-tile h3 {
-        font-size: 0.95rem;
+        font-size: 0.85rem;
+        margin-bottom: 0.25rem;
     }
 
     .feature-tile p {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
+        line-height: 1.3;
     }
 
     .feature-text h2 {
@@ -803,11 +824,11 @@ html {
 .language-toggle {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0.75rem;
+    gap: 0.3rem;
+    padding: 0.35rem 0.5rem;
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(212, 175, 55, 0.3);
-    border-radius: 8px;
+    border-radius: 6px;
     color: var(--text-light);
     cursor: pointer;
     font-family: 'Raleway', sans-serif;
