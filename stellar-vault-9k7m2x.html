@@ -626,6 +626,220 @@
             font-size: 0.75rem;
             color: rgba(255, 255, 255, 0.5);
         }
+
+        /* User Detail Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 100%);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            border-radius: 16px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .modal-header h2 {
+            font-family: 'Cinzel', serif;
+            color: #d4af37;
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #d4af37;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .user-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .detail-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .detail-item.full-width {
+            grid-column: span 2;
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: #fff;
+            font-size: 0.95rem;
+            word-break: break-all;
+        }
+
+        .detail-value.highlight {
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+        }
+
+        .api-calls-section h3 {
+            font-family: 'Cinzel', serif;
+            color: #d4af37;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        .api-calls-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .api-call-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .api-call-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: rgba(212, 175, 55, 0.2);
+        }
+
+        .api-call-type {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .api-call-type .icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .api-call-type .icon.astrolog {
+            background: rgba(212, 175, 55, 0.2);
+            color: #d4af37;
+        }
+
+        .api-call-type .icon.chatgpt {
+            background: rgba(168, 85, 247, 0.2);
+            color: #a855f7;
+        }
+
+        .api-call-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .api-call-name {
+            color: #fff;
+            font-size: 0.85rem;
+        }
+
+        .api-call-model {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+        }
+
+        .api-call-time {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+            text-align: right;
+        }
+
+        .no-calls-message {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            padding: 30px;
+            font-style: italic;
+        }
+
+        .loading-calls {
+            text-align: center;
+            padding: 30px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .loading-calls .spinner {
+            width: 30px;
+            height: 30px;
+            border-color: rgba(212, 175, 55, 0.3);
+            border-top-color: #d4af37;
+            margin: 0 auto 10px;
+        }
+
+        /* Make grid rows clickable */
+        .gridjs-tr {
+            cursor: pointer;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .user-actions .btn {
+            flex: 1;
+            padding: 12px;
+            font-size: 0.85rem;
+        }
     </style>
 </head>
 <body>
@@ -850,6 +1064,37 @@
         </div>
 
         <div id="message" class="message hidden"></div>
+
+        <!-- User Detail Modal -->
+        <div class="modal-overlay" id="userDetailModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modalUserEmail">User Details</h2>
+                    <button class="modal-close" onclick="closeUserModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="user-detail-grid" id="userDetailGrid">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <div class="api-calls-section">
+                        <h3>📊 API Call History</h3>
+                        <div id="apiCallsContainer">
+                            <div class="loading-calls">
+                                <div class="spinner"></div>
+                                <p>Loading API calls...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="user-actions">
+                        <button class="btn btn-secondary" onclick="prefillUserEmail()">
+                            Manage Subscription
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <p class="rate-limit-warning">Rate limited: 15 requests per minute</p>
 
@@ -1476,6 +1721,8 @@
             document.getElementById('lifetimeUsersCount').textContent = lifetime.toLocaleString();
         }
 
+        let selectedUser = null;
+
         function renderUsersGrid() {
             if (usersGrid) {
                 usersGrid.destroy();
@@ -1599,6 +1846,179 @@
                     }
                 }
             }).render(document.getElementById('usersGrid'));
+
+            // Add click handlers to rows after grid renders
+            usersGrid.on('rowClick', (...args) => {
+                const row = args[1];
+                const email = row.cells[0].data;
+                openUserModal(email);
+            });
+        }
+
+        // ============================================
+        // USER DETAIL MODAL FUNCTIONALITY
+        // ============================================
+
+        function openUserModal(email) {
+            // Find user data
+            selectedUser = usersData.find(u => u.email === email);
+            if (!selectedUser) return;
+
+            document.getElementById('modalUserEmail').textContent = email;
+
+            // Populate user details
+            const detailGrid = document.getElementById('userDetailGrid');
+            const expiry = selectedUser.subscription_expiry
+                ? new Date(selectedUser.subscription_expiry).toLocaleString()
+                : 'N/A';
+            const created = selectedUser.created_at
+                ? new Date(selectedUser.created_at).toLocaleString()
+                : 'N/A';
+            const isExpired = selectedUser.subscription_expiry
+                ? new Date(selectedUser.subscription_expiry) < new Date()
+                : false;
+
+            detailGrid.innerHTML = `
+                <div class="detail-item">
+                    <div class="detail-label">Subscription Type</div>
+                    <div class="detail-value highlight">${selectedUser.subscription_type || 'free'}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Duration</div>
+                    <div class="detail-value">${selectedUser.subscription_length || 'N/A'}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Super Tier</div>
+                    <div class="detail-value" style="color: ${selectedUser.is_super ? '#a855f7' : 'inherit'}">
+                        ${selectedUser.is_super ? '✓ Enabled' : '✗ Disabled'}
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Expires</div>
+                    <div class="detail-value" style="color: ${isExpired ? '#ef4444' : 'inherit'}">
+                        ${expiry}${isExpired ? ' (EXPIRED)' : ''}
+                    </div>
+                </div>
+                <div class="detail-item full-width">
+                    <div class="detail-label">Device ID</div>
+                    <div class="detail-value" style="font-size: 0.8rem;">
+                        ${selectedUser.current_device_id || 'No device registered'}
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Created</div>
+                    <div class="detail-value">${created}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">User ID</div>
+                    <div class="detail-value">${selectedUser.id || 'N/A'}</div>
+                </div>
+            `;
+
+            // Show modal
+            document.getElementById('userDetailModal').classList.add('active');
+
+            // Load API calls for this user
+            loadUserApiCalls(selectedUser.current_device_id, email);
+        }
+
+        function closeUserModal() {
+            document.getElementById('userDetailModal').classList.remove('active');
+            selectedUser = null;
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('userDetailModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeUserModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeUserModal();
+            }
+        });
+
+        async function loadUserApiCalls(deviceId, email) {
+            const container = document.getElementById('apiCallsContainer');
+            container.innerHTML = `
+                <div class="loading-calls">
+                    <div class="spinner"></div>
+                    <p>Loading API calls...</p>
+                </div>
+            `;
+
+            if (!deviceId) {
+                container.innerHTML = '<p class="no-calls-message">No device registered - cannot fetch API calls</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    `${API_BASE}/api/admin/user-calls?admin_email=${encodeURIComponent(storedAdminEmail)}&admin_secret=${encodeURIComponent(storedAdminSecret)}&device_id=${encodeURIComponent(deviceId)}`
+                );
+
+                const data = await response.json();
+
+                if (data.success && data.calls && data.calls.length > 0) {
+                    renderApiCalls(data.calls);
+                } else if (data.success) {
+                    container.innerHTML = '<p class="no-calls-message">No API calls recorded for this user</p>';
+                } else {
+                    container.innerHTML = `<p class="no-calls-message" style="color: #ef4444;">Error: ${data.error || 'Failed to load calls'}</p>`;
+                }
+            } catch (error) {
+                console.error('Error loading user calls:', error);
+                container.innerHTML = '<p class="no-calls-message" style="color: #ef4444;">Network error loading API calls</p>';
+            }
+        }
+
+        function renderApiCalls(calls) {
+            const container = document.getElementById('apiCallsContainer');
+            const html = calls.map(call => {
+                const isAstrolog = call.call_type === 'astrolog';
+                const icon = isAstrolog ? '⭐' : '🤖';
+                const iconClass = isAstrolog ? 'astrolog' : 'chatgpt';
+                const callName = isAstrolog ? 'Astrolog API' : 'ChatGPT API';
+                const model = call.model || '-';
+                const time = new Date(call.timestamp).toLocaleString();
+
+                return `
+                    <div class="api-call-item">
+                        <div class="api-call-type">
+                            <div class="icon ${iconClass}">${icon}</div>
+                            <div class="api-call-info">
+                                <span class="api-call-name">${callName}</span>
+                                <span class="api-call-model">Model: ${model}</span>
+                            </div>
+                        </div>
+                        <div class="api-call-time">${time}</div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = `
+                <div class="api-calls-list">
+                    ${html}
+                </div>
+                <p style="text-align: center; color: rgba(255,255,255,0.4); font-size: 0.75rem; margin-top: 10px;">
+                    Showing last ${calls.length} calls
+                </p>
+            `;
+        }
+
+        function prefillUserEmail() {
+            if (!selectedUser) return;
+            closeUserModal();
+            // Switch to subscriptions tab and prefill email
+            showSection('subscriptions');
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelector('.nav-tab').classList.add('active');
+            document.getElementById('targetEmail').value = selectedUser.email;
+            // Set super toggle based on user's current status
+            document.getElementById('superToggle').checked = selectedUser.is_super;
         }
     </script>
 </body>
