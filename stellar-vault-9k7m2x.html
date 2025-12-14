@@ -1439,7 +1439,14 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    usersData = data.users || [];
+                    // Filter out device-based emails (anonymous users)
+                    const allUsers = data.users || [];
+                    usersData = allUsers.filter(u => !u.email.includes('@device.astrolytix.app'));
+
+                    // Store counts for stats (show all vs filtered)
+                    usersData._totalWithDevice = allUsers.length;
+                    usersData._deviceOnly = allUsers.length - usersData.length;
+
                     updateUsersStats();
                     renderUsersGrid();
                     document.getElementById('usersLoading').classList.add('hidden');
