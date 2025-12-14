@@ -436,15 +436,23 @@
         }
 
         .gridjs-td {
-            background: transparent !important;
-            color: rgba(255, 255, 255, 0.85) !important;
-            border-color: rgba(255, 255, 255, 0.05) !important;
+            background: rgba(10, 10, 26, 0.95) !important;
+            color: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
             padding: 12px 15px !important;
             font-size: 0.85rem !important;
         }
 
         .gridjs-tr:hover .gridjs-td {
-            background: rgba(212, 175, 55, 0.1) !important;
+            background: rgba(212, 175, 55, 0.15) !important;
+        }
+
+        .gridjs-tr:nth-child(even) .gridjs-td {
+            background: rgba(20, 20, 40, 0.95) !important;
+        }
+
+        .gridjs-tr:nth-child(even):hover .gridjs-td {
+            background: rgba(212, 175, 55, 0.15) !important;
         }
 
         .gridjs-footer {
