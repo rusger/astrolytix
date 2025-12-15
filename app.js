@@ -394,73 +394,126 @@ function initConstellation() {
         lineColor: { ...constellationThemes[0].lineColor }
     };
 
-    // Configuration - matching Flutter app style
+    // Configuration
     const config = {
-        nodeCount: 25,
-        maxConnectionDistance: 180,
-        pulseSpeed: 3000,  // ms for full pulse cycle
-        lifecycleSpeed: 8000  // ms for node fade in/out cycle
+        constellationCount: 8,  // Number of constellation groups
+        minNodesPerConstellation: 3,
+        maxNodesPerConstellation: 6,
+        constellationSpread: 120,  // How spread out nodes are within a constellation
+        pulseSpeed: 3000,
+        lifecycleSpeed: 8000
     };
 
-    // Node class
-    class NetworkNode {
-        constructor(x, y) {
-            this.x = x;
-            this.y = y;
-            this.opacity = Math.random();
-            this.targetOpacity = 0.3 + Math.random() * 0.7;
-            this.pulsePhase = Math.random() * Math.PI * 2;
+    // Constellation group class
+    class Constellation {
+        constructor(centerX, centerY, nodeCount) {
+            this.nodes = [];
             this.connections = [];
+            this.opacity = Math.random() * 0.5 + 0.3;
+            this.targetOpacity = Math.random() * 0.5 + 0.5;
+            this.pulsePhase = Math.random() * Math.PI * 2;
+
+            // Create nodes in a constellation pattern
+            this.generateNodes(centerX, centerY, nodeCount);
+            this.generateConnections();
+        }
+
+        generateNodes(centerX, centerY, count) {
+            // First node at center (slightly offset)
+            const offsetX = (Math.random() - 0.5) * 40;
+            const offsetY = (Math.random() - 0.5) * 40;
+
+            for (let i = 0; i < count; i++) {
+                // Distribute nodes in a rough pattern around center
+                const angle = (i / count) * Math.PI * 2 + Math.random() * 0.8;
+                const distance = config.constellationSpread * (0.3 + Math.random() * 0.7);
+
+                this.nodes.push({
+                    x: centerX + offsetX + Math.cos(angle) * distance,
+                    y: centerY + offsetY + Math.sin(angle) * distance,
+                    pulseOffset: Math.random() * Math.PI * 2
+                });
+            }
+        }
+
+        generateConnections() {
+            // Create a connected path through all nodes (ensures connectivity)
+            const nodeCount = this.nodes.length;
+
+            // Connect in a chain first
+            for (let i = 0; i < nodeCount - 1; i++) {
+                this.connections.push([i, i + 1]);
+            }
+
+            // Add 1-2 extra connections for more interesting shapes
+            const extraConnections = Math.floor(Math.random() * 2) + 1;
+            for (let e = 0; e < extraConnections; e++) {
+                const a = Math.floor(Math.random() * nodeCount);
+                let b = Math.floor(Math.random() * nodeCount);
+                // Ensure different nodes and not already connected adjacently
+                while (b === a || Math.abs(b - a) === 1) {
+                    b = Math.floor(Math.random() * nodeCount);
+                }
+                // Check if connection already exists
+                const exists = this.connections.some(c =>
+                    (c[0] === a && c[1] === b) || (c[0] === b && c[1] === a)
+                );
+                if (!exists) {
+                    this.connections.push([a, b]);
+                }
+            }
         }
     }
+
+    let constellations = [];
 
     // Resize canvas
     function resize() {
         width = canvas.width = window.innerWidth;
         height = canvas.height = window.innerHeight;
-        initNodes();
+        initConstellations();
     }
 
-    // Initialize nodes
-    function initNodes() {
-        nodes = [];
-        for (let i = 0; i < config.nodeCount; i++) {
-            nodes.push(new NetworkNode(
-                Math.random() * width,
-                Math.random() * height
-            ));
+    // Initialize constellation groups
+    function initConstellations() {
+        constellations = [];
+
+        // Create grid-like distribution to avoid overlap
+        const cols = 3;
+        const rows = Math.ceil(config.constellationCount / cols);
+        const cellWidth = width / cols;
+        const cellHeight = height / rows;
+
+        for (let i = 0; i < config.constellationCount; i++) {
+            const col = i % cols;
+            const row = Math.floor(i / cols);
+
+            // Random position within cell (with padding)
+            const padding = 60;
+            const centerX = cellWidth * col + padding + Math.random() * (cellWidth - padding * 2);
+            const centerY = cellHeight * row + padding + Math.random() * (cellHeight - padding * 2);
+
+            // Random node count between 3-6
+            const nodeCount = config.minNodesPerConstellation +
+                Math.floor(Math.random() * (config.maxNodesPerConstellation - config.minNodesPerConstellation + 1));
+
+            constellations.push(new Constellation(centerX, centerY, nodeCount));
         }
-        updateConnections();
     }
 
-    // Update connections between nodes
-    function updateConnections() {
-        for (let i = 0; i < nodes.length; i++) {
-            nodes[i].connections = [];
-            for (let j = i + 1; j < nodes.length; j++) {
-                const dx = nodes[i].x - nodes[j].x;
-                const dy = nodes[i].y - nodes[j].y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < config.maxConnectionDistance) {
-                    nodes[i].connections.push(j);
-                }
-            }
-        }
-    }
-
-    // Update node lifecycle (fading in/out)
-    function updateNodeLifecycle() {
-        nodes.forEach(node => {
+    // Update constellation lifecycle (fading in/out)
+    function updateConstellationLifecycle() {
+        constellations.forEach(constellation => {
             // Randomly toggle target opacity
-            if (Math.random() < 0.002) {
-                if (node.targetOpacity > 0.5) {
-                    node.targetOpacity = 0.1 + Math.random() * 0.2;
+            if (Math.random() < 0.003) {
+                if (constellation.targetOpacity > 0.5) {
+                    constellation.targetOpacity = 0.2 + Math.random() * 0.2;
                 } else {
-                    node.targetOpacity = 0.5 + Math.random() * 0.5;
+                    constellation.targetOpacity = 0.6 + Math.random() * 0.4;
                 }
             }
             // Smoothly interpolate opacity
-            node.opacity += (node.targetOpacity - node.opacity) * 0.02;
+            constellation.opacity += (constellation.targetOpacity - constellation.opacity) * 0.015;
         });
     }
 
@@ -504,7 +557,7 @@ function initConstellation() {
         currentColors.lineColor.b += (targetColors.lineColor.b - currentColors.lineColor.b) * lerpSpeed;
     }
 
-    // Draw the constellation
+    // Draw the constellations
     function draw(time) {
         ctx.clearRect(0, 0, width, height);
 
@@ -514,78 +567,72 @@ function initConstellation() {
         const animationValue = (time % config.pulseSpeed) / config.pulseSpeed;
         const { nodeColor, lineColor } = currentColors;
 
-        // Draw connections first (behind nodes)
-        for (let i = 0; i < nodes.length; i++) {
-            const node = nodes[i];
-            for (const connectedIndex of node.connections) {
-                const connectedNode = nodes[connectedIndex];
-                const dx = node.x - connectedNode.x;
-                const dy = node.y - connectedNode.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
+        // Draw each constellation group
+        for (const constellation of constellations) {
+            if (constellation.opacity < 0.05) continue;
 
-                // Line opacity based on distance and node opacities
-                const lineOpacity = (1 - distance / config.maxConnectionDistance) *
-                    node.opacity * connectedNode.opacity * 0.6;
+            const basePulse = Math.sin(animationValue * Math.PI * 2 + constellation.pulsePhase) * 0.3 + 0.7;
+            const baseOpacity = constellation.opacity * basePulse;
 
-                if (lineOpacity > 0.05) {
-                    // Pulsing effect
-                    const pulse = Math.sin(animationValue * Math.PI * 2 + node.pulsePhase) * 0.3 + 0.7;
+            // Draw connections first (behind nodes)
+            for (const [aIdx, bIdx] of constellation.connections) {
+                const nodeA = constellation.nodes[aIdx];
+                const nodeB = constellation.nodes[bIdx];
 
-                    // Draw glow line
-                    ctx.beginPath();
-                    ctx.strokeStyle = `rgba(${Math.round(lineColor.r)}, ${Math.round(lineColor.g)}, ${Math.round(lineColor.b)}, ${lineOpacity * pulse * 0.3})`;
-                    ctx.lineWidth = 3;
-                    ctx.shadowColor = `rgba(${Math.round(lineColor.r)}, ${Math.round(lineColor.g)}, ${Math.round(lineColor.b)}, 0.5)`;
-                    ctx.shadowBlur = 4;
-                    ctx.moveTo(node.x, node.y);
-                    ctx.lineTo(connectedNode.x, connectedNode.y);
-                    ctx.stroke();
+                const lineOpacity = baseOpacity * 0.7;
 
-                    // Draw main line
-                    ctx.beginPath();
-                    ctx.strokeStyle = `rgba(${Math.round(lineColor.r)}, ${Math.round(lineColor.g)}, ${Math.round(lineColor.b)}, ${lineOpacity * pulse})`;
-                    ctx.lineWidth = 1;
-                    ctx.shadowBlur = 0;
-                    ctx.moveTo(node.x, node.y);
-                    ctx.lineTo(connectedNode.x, connectedNode.y);
-                    ctx.stroke();
-                }
+                // Draw glow line
+                ctx.beginPath();
+                ctx.strokeStyle = `rgba(${Math.round(lineColor.r)}, ${Math.round(lineColor.g)}, ${Math.round(lineColor.b)}, ${lineOpacity * 0.35})`;
+                ctx.lineWidth = 3;
+                ctx.shadowColor = `rgba(${Math.round(lineColor.r)}, ${Math.round(lineColor.g)}, ${Math.round(lineColor.b)}, 0.5)`;
+                ctx.shadowBlur = 6;
+                ctx.moveTo(nodeA.x, nodeA.y);
+                ctx.lineTo(nodeB.x, nodeB.y);
+                ctx.stroke();
+
+                // Draw main line
+                ctx.beginPath();
+                ctx.strokeStyle = `rgba(${Math.round(lineColor.r)}, ${Math.round(lineColor.g)}, ${Math.round(lineColor.b)}, ${lineOpacity})`;
+                ctx.lineWidth = 1.2;
+                ctx.shadowBlur = 0;
+                ctx.moveTo(nodeA.x, nodeA.y);
+                ctx.lineTo(nodeB.x, nodeB.y);
+                ctx.stroke();
             }
-        }
 
-        // Draw nodes
-        for (const node of nodes) {
-            if (node.opacity < 0.05) continue;
+            // Draw nodes
+            for (const node of constellation.nodes) {
+                const nodePulse = Math.sin(animationValue * Math.PI * 2 + node.pulseOffset) * 0.2 + 0.8;
+                const nodeOpacity = baseOpacity * nodePulse;
 
-            const pulse = Math.sin(animationValue * Math.PI * 2 + node.pulsePhase) * 0.3 + 0.7;
-            const nodeOpacity = node.opacity * pulse;
+                // Node glow
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 7, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${Math.round(nodeColor.r)}, ${Math.round(nodeColor.g)}, ${Math.round(nodeColor.b)}, ${nodeOpacity * 0.4})`;
+                ctx.shadowColor = `rgba(${Math.round(nodeColor.r)}, ${Math.round(nodeColor.g)}, ${Math.round(nodeColor.b)}, 0.6)`;
+                ctx.shadowBlur = 10;
+                ctx.fill();
 
-            // Node glow
-            ctx.beginPath();
-            ctx.arc(node.x, node.y, 6, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(${Math.round(nodeColor.r)}, ${Math.round(nodeColor.g)}, ${Math.round(nodeColor.b)}, ${nodeOpacity * 0.4})`;
-            ctx.shadowColor = `rgba(${Math.round(nodeColor.r)}, ${Math.round(nodeColor.g)}, ${Math.round(nodeColor.b)}, 0.6)`;
-            ctx.shadowBlur = 8;
-            ctx.fill();
+                // Node core
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 3.5, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${Math.round(nodeColor.r)}, ${Math.round(nodeColor.g)}, ${Math.round(nodeColor.b)}, ${nodeOpacity})`;
+                ctx.shadowBlur = 0;
+                ctx.fill();
 
-            // Node core
-            ctx.beginPath();
-            ctx.arc(node.x, node.y, 3, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(${Math.round(nodeColor.r)}, ${Math.round(nodeColor.g)}, ${Math.round(nodeColor.b)}, ${nodeOpacity})`;
-            ctx.shadowBlur = 0;
-            ctx.fill();
-
-            // Bright center
-            ctx.beginPath();
-            ctx.arc(node.x, node.y, 1.5, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255, 255, 255, ${nodeOpacity * 0.8})`;
-            ctx.fill();
+                // Bright center
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 1.8, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${nodeOpacity * 0.85})`;
+                ctx.fill();
+            }
         }
     }
 
     // Animation loop
     function animate(time) {
-        updateNodeLifecycle();
+        updateConstellationLifecycle();
         draw(time);
         animationId = requestAnimationFrame(animate);
     }
