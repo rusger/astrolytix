@@ -109,13 +109,15 @@ body::before {
 
 .parallax-far {
     background-image: url('space_far.png');
-    opacity: 0.6;
+    opacity: 0.7;
+    mix-blend-mode: screen; /* Black becomes transparent, stars show through */
     animation: parallax-scroll 240s linear infinite;
 }
 
 .parallax-near {
     background-image: url('space_near.png');
-    opacity: 0.8;
+    opacity: 0.9;
+    mix-blend-mode: screen;
     animation: parallax-scroll 120s linear infinite;
 }
 
