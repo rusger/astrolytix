@@ -645,8 +645,8 @@ function initConstellation() {
                     // Atmospheric shimmer
                     const shimmer = 0.9 + Math.sin(time * 0.015 + pos * 0.12 + conn.order * 4) * 0.1;
 
-                    // Combine: base 0.45 + waves up to 0.55 = range 0.45-1.0
-                    const energy = 0.45 + (flowWave * 0.3 + wave2 * 0.15 + breathe * 0.1) * shimmer;
+                    // Combine: base 0.35 + waves up to 0.65 = range 0.35-1.0 (15% stronger)
+                    const energy = 0.35 + (flowWave * 0.35 + wave2 * 0.18 + breathe * 0.12) * shimmer;
 
                     const segmentAlpha = baseAlpha * energy;
 
