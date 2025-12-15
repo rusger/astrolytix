@@ -801,6 +801,49 @@
             text-align: right;
         }
 
+        /* Login History Styles */
+        .login-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .login-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 6px;
+        }
+
+        .login-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: rgba(212, 175, 55, 0.2);
+        }
+
+        .login-device {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .login-icon {
+            font-size: 1rem;
+        }
+
+        .login-device-id {
+            color: #fff;
+            font-size: 0.8rem;
+            font-family: monospace;
+        }
+
+        .login-time {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+        }
+
         .no-calls-message {
             text-align: center;
             color: rgba(255, 255, 255, 0.5);
@@ -1075,6 +1118,13 @@
                 <div class="modal-body">
                     <div class="user-detail-grid" id="userDetailGrid">
                         <!-- Populated by JS -->
+                    </div>
+
+                    <div class="api-calls-section">
+                        <h3>📱 Login History (Devices)</h3>
+                        <div id="loginHistoryContainer">
+                            <p class="no-calls-message">Loading...</p>
+                        </div>
                     </div>
 
                     <div class="api-calls-section">
@@ -1943,25 +1993,39 @@
 
         async function loadUserApiCalls(deviceId, email) {
             const container = document.getElementById('apiCallsContainer');
+            const loginContainer = document.getElementById('loginHistoryContainer');
+
             container.innerHTML = `
                 <div class="loading-calls">
                     <div class="spinner"></div>
-                    <p>Loading API calls...</p>
+                    <p>Loading data...</p>
                 </div>
             `;
-
-            if (!deviceId) {
-                container.innerHTML = '<p class="no-calls-message">No device registered - cannot fetch API calls</p>';
-                return;
+            if (loginContainer) {
+                loginContainer.innerHTML = '';
             }
 
             try {
-                const response = await fetch(
-                    `${API_BASE}/api/admin/user-calls?admin_email=${encodeURIComponent(storedAdminEmail)}&admin_secret=${encodeURIComponent(storedAdminSecret)}&device_id=${encodeURIComponent(deviceId)}`
-                );
+                // Build URL with both device_id and user_email
+                let url = `${API_BASE}/api/admin/user-calls?admin_email=${encodeURIComponent(storedAdminEmail)}&admin_secret=${encodeURIComponent(storedAdminSecret)}`;
+                if (deviceId) {
+                    url += `&device_id=${encodeURIComponent(deviceId)}`;
+                }
+                if (email) {
+                    url += `&user_email=${encodeURIComponent(email)}`;
+                }
 
+                const response = await fetch(url);
                 const data = await response.json();
 
+                // Render login history
+                if (data.login_history && data.login_history.length > 0) {
+                    renderLoginHistory(data.login_history);
+                } else if (loginContainer) {
+                    loginContainer.innerHTML = '<p class="no-calls-message">No login history found</p>';
+                }
+
+                // Render API calls
                 if (data.success && data.calls && data.calls.length > 0) {
                     renderApiCalls(data.calls);
                 } else if (data.success) {
@@ -1971,7 +2035,7 @@
                 }
             } catch (error) {
                 console.error('Error loading user calls:', error);
-                container.innerHTML = '<p class="no-calls-message" style="color: #ef4444;">Network error loading API calls</p>';
+                container.innerHTML = '<p class="no-calls-message" style="color: #ef4444;">Network error loading data</p>';
             }
         }
 
@@ -2005,6 +2069,37 @@
                 </div>
                 <p style="text-align: center; color: rgba(255,255,255,0.4); font-size: 0.75rem; margin-top: 10px;">
                     Showing last ${calls.length} calls
+                </p>
+            `;
+        }
+
+        function renderLoginHistory(logins) {
+            const container = document.getElementById('loginHistoryContainer');
+            if (!container) return;
+
+            const html = logins.map(login => {
+                const time = new Date(login.logged_in_at).toLocaleString();
+                const deviceId = login.device_id || 'Unknown';
+                // Truncate device ID for display
+                const shortDeviceId = deviceId.length > 30 ? deviceId.substring(0, 30) + '...' : deviceId;
+
+                return `
+                    <div class="login-item">
+                        <div class="login-device">
+                            <span class="login-icon">📱</span>
+                            <span class="login-device-id" title="${deviceId}">${shortDeviceId}</span>
+                        </div>
+                        <div class="login-time">${time}</div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = `
+                <div class="login-list">
+                    ${html}
+                </div>
+                <p style="text-align: center; color: rgba(255,255,255,0.4); font-size: 0.75rem; margin-top: 10px;">
+                    ${logins.length} login${logins.length !== 1 ? 's' : ''} recorded
                 </p>
             `;
         }
