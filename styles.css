@@ -31,50 +31,7 @@ body {
 }
 
 
-@keyframes sky-cycle {
-    0%, 100% {
-        /* Deep night */
-        background: linear-gradient(to bottom, rgb(5, 5, 15), rgb(15, 15, 35));
-    }
-    10% {
-        /* Night */
-        background: linear-gradient(to bottom, rgb(15, 10, 35), rgb(30, 25, 55));
-    }
-    20% {
-        /* Violet */
-        background: linear-gradient(to bottom, rgb(40, 20, 70), rgb(70, 40, 100));
-    }
-    30% {
-        /* Purple */
-        background: linear-gradient(to bottom, rgb(60, 30, 90), rgb(90, 50, 120));
-    }
-    40% {
-        /* Pre-dawn */
-        background: linear-gradient(to bottom, rgb(40, 50, 100), rgb(70, 80, 130));
-    }
-    50% {
-        /* Dawn - lightest point */
-        background: linear-gradient(to bottom, rgb(50, 70, 120), rgb(100, 120, 160));
-    }
-    60% {
-        /* Pre-dawn (dusk) */
-        background: linear-gradient(to bottom, rgb(40, 50, 100), rgb(70, 80, 130));
-    }
-    70% {
-        /* Purple (dusk) */
-        background: linear-gradient(to bottom, rgb(60, 30, 90), rgb(90, 50, 120));
-    }
-    80% {
-        /* Violet (dusk) */
-        background: linear-gradient(to bottom, rgb(40, 20, 70), rgb(70, 40, 100));
-    }
-    90% {
-        /* Night */
-        background: linear-gradient(to bottom, rgb(15, 10, 35), rgb(30, 25, 55));
-    }
-}
-
-/* Parallax Star Background */
+/* Parallax Star Background with smooth sky cycle */
 .parallax-container {
     position: fixed;
     top: 0;
@@ -84,7 +41,48 @@ body {
     overflow: hidden;
     pointer-events: none;
     z-index: 0;
-    animation: sky-cycle 90s ease-in-out infinite;
+    background: linear-gradient(to bottom, var(--sky-top), var(--sky-bottom));
+    --sky-top: rgb(5, 5, 15);
+    --sky-bottom: rgb(15, 15, 35);
+    animation: sky-top 90s ease-in-out infinite, sky-bottom 90s ease-in-out infinite;
+}
+
+@property --sky-top {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: rgb(5, 5, 15);
+}
+
+@property --sky-bottom {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: rgb(15, 15, 35);
+}
+
+@keyframes sky-top {
+    0%, 100% { --sky-top: rgb(5, 5, 15); }      /* Deep night */
+    10% { --sky-top: rgb(15, 10, 35); }          /* Night */
+    20% { --sky-top: rgb(40, 20, 70); }          /* Violet */
+    30% { --sky-top: rgb(60, 30, 90); }          /* Purple */
+    40% { --sky-top: rgb(40, 50, 100); }         /* Pre-dawn */
+    50% { --sky-top: rgb(50, 70, 120); }         /* Dawn */
+    60% { --sky-top: rgb(40, 50, 100); }         /* Pre-dawn */
+    70% { --sky-top: rgb(60, 30, 90); }          /* Purple */
+    80% { --sky-top: rgb(40, 20, 70); }          /* Violet */
+    90% { --sky-top: rgb(15, 10, 35); }          /* Night */
+}
+
+@keyframes sky-bottom {
+    0%, 100% { --sky-bottom: rgb(15, 15, 35); }  /* Deep night */
+    10% { --sky-bottom: rgb(30, 25, 55); }       /* Night */
+    20% { --sky-bottom: rgb(70, 40, 100); }      /* Violet */
+    30% { --sky-bottom: rgb(90, 50, 120); }      /* Purple */
+    40% { --sky-bottom: rgb(70, 80, 130); }      /* Pre-dawn */
+    50% { --sky-bottom: rgb(100, 120, 160); }    /* Dawn */
+    60% { --sky-bottom: rgb(70, 80, 130); }      /* Pre-dawn */
+    70% { --sky-bottom: rgb(90, 50, 120); }      /* Purple */
+    80% { --sky-bottom: rgb(70, 40, 100); }      /* Violet */
+    90% { --sky-bottom: rgb(30, 25, 55); }       /* Night */
 }
 
 .parallax-layer {
