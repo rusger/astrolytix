@@ -259,8 +259,18 @@
         ]
       },
       "disclaimer": {
-        "title": "Aviso legal",
-        "text": "Astrolytix fornece interpretações astrológicas para fins de entretenimento e auto-reflexão. Nossas leituras não devem ser consideradas como aconselhamento profissional para questões médicas, legais, financeiras ou psicológicas. Sempre consulte profissionais qualificados para decisões importantes da vida."
+        "title": "Aviso legal e limitação de responsabilidade",
+        "text1": "Astrolytix fornece interpretações astrológicas, insights psicológicos, recomendações de bem-estar e conteúdo relacionado gerado através de inteligência artificial exclusivamente para fins de entretenimento, educação e auto-reflexão. Todo o conteúdo, seja predefinido ou gerado dinamicamente e personalizado por IA, é fornecido \"como está\" sem quaisquer garantias, expressas ou implícitas.",
+        "text2_title": "Sem aconselhamento profissional:",
+        "text2": "Nada nesta aplicação constitui aconselhamento médico, psicológico, legal, financeiro ou qualquer outra forma de aconselhamento profissional licenciado. Você deve sempre consultar profissionais qualificados antes de tomar decisões importantes na vida.",
+        "text3_title": "Conteúdo gerado por IA:",
+        "text3": "Você reconhece que o conteúdo produzido por inteligência artificial pode conter imprecisões, inconsistências ou interpretações que não se alinham com suas expectativas ou circunstâncias. Os resultados de IA são inerentemente variáveis e não devem ser considerados como factuais, preditivos ou autoritativos.",
+        "text4_title": "Limitação de responsabilidade:",
+        "text4": "Na extensão máxima permitida pela lei aplicável, Astrolytix, seus desenvolvedores, proprietários, afiliados e licenciantes não serão responsáveis por quaisquer danos diretos, indiretos, incidentais, especiais, consequenciais ou punitivos, incluindo, mas não se limitando a, perda de lucros, dados, goodwill ou outras perdas intangíveis, decorrentes de ou relacionados a: (a) seu uso ou incapacidade de usar o serviço; (b) qualquer conteúdo, interpretações ou recomendações fornecidas através do serviço; (c) quaisquer ações tomadas ou decisões feitas com base em informações obtidas do serviço; (d) qualquer insatisfação, decepção ou expectativas não atendidas em relação ao serviço ou seu conteúdo; ou (e) quaisquer erros, imprecisões ou omissões em conteúdo gerado por IA.",
+        "text5_title": "Assunção de risco:",
+        "text5": "Ao usar Astrolytix, você reconhece e concorda expressamente que usa o serviço por sua própria conta e risco e discrição. Você assume total responsabilidade por quaisquer resultados, consequências ou decisões resultantes de seu envolvimento com a aplicação e seu conteúdo.",
+        "text6_title": "Sem garantias:",
+        "text6": "Não fazemos representações ou garantias quanto à precisão, integridade, confiabilidade, adequação ou disponibilidade de quaisquer interpretações astrológicas, psicológicas ou de bem-estar. Qualquer confiança que você deposite em tais informações é estritamente por sua própria conta e risco."
       },
       "intellectual": {
         "title": "Propriedade intelectual",

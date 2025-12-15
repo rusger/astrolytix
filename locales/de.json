@@ -259,8 +259,18 @@
         ]
       },
       "disclaimer": {
-        "title": "Haftungsausschluss",
-        "text": "Astrolytix bietet astrologische Interpretationen zu Unterhaltungs- und Selbstreflexionszwecken. Unsere Lesungen sollten nicht als professionelle Beratung für medizinische, rechtliche, finanzielle oder psychologische Angelegenheiten betrachtet werden. Konsultieren Sie immer qualifizierte Fachleute für wichtige Lebensentscheidungen."
+        "title": "Haftungsausschluss und Haftungsbeschränkung",
+        "text1": "Astrolytix bietet astrologische Interpretationen, psychologische Einblicke, Wellness-Empfehlungen und verwandte Inhalte, die durch künstliche Intelligenz generiert werden, ausschließlich zu Unterhaltungs-, Bildungs- und Selbstreflexionszwecken. Alle Inhalte – ob vordefiniert oder dynamisch generiert und von KI personalisiert – werden \"wie besehen\" ohne jegliche Garantien, weder ausdrücklich noch stillschweigend, bereitgestellt.",
+        "text2_title": "Keine professionelle Beratung:",
+        "text2": "Nichts in dieser Anwendung stellt eine professionelle medizinische, psychologische, rechtliche, finanzielle oder andere Form von lizenzierter professioneller Beratung dar. Sie sollten immer qualifizierte Fachleute konsultieren, bevor Sie wichtige Lebensentscheidungen treffen.",
+        "text3_title": "KI-generierte Inhalte:",
+        "text3": "Sie erkennen an, dass durch künstliche Intelligenz erstellte Inhalte Ungenauigkeiten, Inkonsistenzen oder Interpretationen enthalten können, die nicht mit Ihren Erwartungen oder Umständen übereinstimmen. KI-Ausgaben sind von Natur aus variabel und sollten nicht als faktisch, vorhersagend oder maßgeblich angesehen werden.",
+        "text4_title": "Haftungsbeschränkung:",
+        "text4": "Im größtmöglichen gesetzlich zulässigen Umfang haften Astrolytix, seine Entwickler, Eigentümer, verbundenen Unternehmen und Lizenzgeber nicht für direkte, indirekte, zufällige, besondere, Folge- oder Strafschäden – einschließlich, aber nicht beschränkt auf entgangenen Gewinn, Datenverlust, Geschäftswert oder andere immaterielle Verluste – die sich ergeben aus oder im Zusammenhang stehen mit: (a) Ihrer Nutzung oder Unfähigkeit zur Nutzung des Dienstes; (b) jeglichen Inhalten, Interpretationen oder Empfehlungen, die durch den Dienst bereitgestellt werden; (c) jeglichen Handlungen oder Entscheidungen, die auf der Grundlage von Informationen aus dem Dienst getroffen werden; (d) jeglicher Unzufriedenheit, Enttäuschung oder unerfüllten Erwartungen bezüglich des Dienstes oder seiner Inhalte; oder (e) jeglichen Fehlern, Ungenauigkeiten oder Auslassungen in KI-generierten Inhalten.",
+        "text5_title": "Risikoübernahme:",
+        "text5": "Durch die Nutzung von Astrolytix erkennen Sie ausdrücklich an und stimmen zu, dass Sie den Dienst auf eigenes Risiko und nach eigenem Ermessen nutzen. Sie übernehmen die volle Verantwortung für alle Ergebnisse, Konsequenzen oder Entscheidungen, die aus Ihrer Interaktion mit der Anwendung und ihren Inhalten resultieren.",
+        "text6_title": "Keine Garantien:",
+        "text6": "Wir geben keine Zusicherungen oder Garantien hinsichtlich der Genauigkeit, Vollständigkeit, Zuverlässigkeit, Eignung oder Verfügbarkeit von astrologischen, psychologischen oder Wellness-Interpretationen. Jedes Vertrauen, das Sie in solche Informationen setzen, erfolgt ausschließlich auf Ihr eigenes Risiko."
       },
       "intellectual": {
         "title": "Geistiges Eigentum",

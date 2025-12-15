@@ -259,8 +259,18 @@
         ]
       },
       "disclaimer": {
-        "title": "Disclaimer",
-        "text": "Astrolytix provides astrological interpretations for entertainment and self-reflection purposes. Our readings should not be considered as professional advice for medical, legal, financial, or psychological matters. Always consult qualified professionals for important life decisions."
+        "title": "Disclaimer and Limitation of Liability",
+        "text1": "Astrolytix provides astrological interpretations, psychological insights, wellness recommendations, and related content generated through artificial intelligence for entertainment, educational, and self-reflection purposes only. All content—whether pre-defined or dynamically generated and personalized by AI—is provided \"as is\" without any warranties, express or implied.",
+        "text2_title": "No Professional Advice:",
+        "text2": "Nothing in this application constitutes professional medical, psychological, legal, financial, or any other form of licensed professional advice. You should always consult qualified professionals before making important life decisions.",
+        "text3_title": "AI-Generated Content:",
+        "text3": "You acknowledge that content produced by artificial intelligence may contain inaccuracies, inconsistencies, or interpretations that do not align with your expectations or circumstances. AI outputs are inherently variable and should not be relied upon as factual, predictive, or authoritative.",
+        "text4_title": "Limitation of Liability:",
+        "text4": "To the maximum extent permitted by applicable law, Astrolytix, its developers, owners, affiliates, and licensors shall not be liable for any direct, indirect, incidental, special, consequential, or punitive damages—including but not limited to loss of profits, data, goodwill, or other intangible losses—arising from or related to: (a) your use of or inability to use the service; (b) any content, interpretations, or recommendations provided through the service; (c) any actions taken or decisions made based on information obtained from the service; (d) any dissatisfaction, disappointment, or unmet expectations regarding the service or its content; or (e) any errors, inaccuracies, or omissions in AI-generated content.",
+        "text5_title": "Assumption of Risk:",
+        "text5": "By using Astrolytix, you expressly acknowledge and agree that you use the service at your own risk and discretion. You assume full responsibility for any outcomes, consequences, or decisions resulting from your engagement with the application and its content.",
+        "text6_title": "No Guarantees:",
+        "text6": "We make no representations or warranties regarding the accuracy, completeness, reliability, suitability, or availability of any astrological, psychological, or wellness interpretations. Any reliance you place on such information is strictly at your own risk."
       },
       "intellectual": {
         "title": "Intellectual Property",
