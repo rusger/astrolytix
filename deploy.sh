@@ -21,6 +21,8 @@ sudo cp "$SOURCE_DIR/logo.svg" "$DEST_DIR/"
 sudo cp "$SOURCE_DIR/logo-star.svg" "$DEST_DIR/"
 sudo cp "$SOURCE_DIR/logo-star-tm.svg" "$DEST_DIR/"
 sudo cp "$SOURCE_DIR/i18n.js" "$DEST_DIR/"
+sudo cp "$SOURCE_DIR/space_far.png" "$DEST_DIR/"
+sudo cp "$SOURCE_DIR/space_near.png" "$DEST_DIR/"
 
 # Copy locales folder for i18n translations
 sudo mkdir -p "$DEST_DIR/locales"
@@ -42,6 +44,8 @@ sudo chmod 644 "$DEST_DIR/logo.svg"
 sudo chmod 644 "$DEST_DIR/logo-star.svg"
 sudo chmod 644 "$DEST_DIR/logo-star-tm.svg"
 sudo chmod 644 "$DEST_DIR/i18n.js"
+sudo chmod 644 "$DEST_DIR/space_far.png"
+sudo chmod 644 "$DEST_DIR/space_near.png"
 sudo chmod 755 "$DEST_DIR/locales"
 sudo chmod 644 "$DEST_DIR/locales/"*
 sudo chmod 755 "$DEST_DIR/pics4site"
