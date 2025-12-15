@@ -30,17 +30,6 @@ body {
     position: relative;
 }
 
-/* Sky cycle background - dawn/dusk animation */
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    animation: sky-cycle 90s ease-in-out infinite;
-}
 
 @keyframes sky-cycle {
     0%, 100% {
@@ -95,6 +84,7 @@ body::before {
     overflow: hidden;
     pointer-events: none;
     z-index: 0;
+    animation: sky-cycle 90s ease-in-out infinite;
 }
 
 .parallax-layer {
