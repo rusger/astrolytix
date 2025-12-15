@@ -354,7 +354,7 @@ function initStarfield() {
     });
 }
 
-// Constellation Network Overlay - Organic star patterns appearing/fading
+// Constellation Network Overlay - Organic star patterns with flowing lines
 function initConstellation() {
     const canvas = document.getElementById('constellation');
     if (!canvas) return;
@@ -368,44 +368,41 @@ function initConstellation() {
 
     // Configuration
     const config = {
-        maxGroups: 3,              // Max groups visible at once
-        minNodes: 3,               // Minimum 3 nodes (no 2-node lines)
+        maxGroups: 3,
+        minNodes: 3,
         maxNodes: 5,
-        nodeSpread: 100,           // How spread out nodes are
-        groupLifetime: 10000,      // How long a group stays visible (ms)
-        fadeInTime: 2000,
-        fadeOutTime: 3000,
-        spawnInterval: 4000,       // New group every 4 seconds
-        lineAnimateDelay: 400      // Delay between each line appearing
+        nodeSpread: 100,
+        spawnInterval: 5000,
+        lineFadeInTime: 3000,      // How long a line takes to fade in
+        lineFadeOutTime: 4000,     // How long a line takes to fade out
+        lineStagger: 2000,         // Delay between each line starting
+        maxBrightLines: 3,         // When this many lines are bright, oldest starts fading
+        lineVisibleTime: 4000      // How long a line stays bright before fading
     };
 
-    // A single star group (like Ursa Major style - organic spread)
+    // A single star group with independent line lifecycles
     class StarGroup {
         constructor(x, y, nodeCount) {
             this.nodes = [];
             this.connections = [];
-            this.opacity = 0;
-            this.targetOpacity = 0;
             this.birthTime = performance.now();
-            this.state = 'fadingIn';  // fadingIn, visible, fadingOut, dead
-            this.lineRevealProgress = 0;  // 0 to 1, reveals lines one by one
+            this.dead = false;
 
             this.generateNodes(x, y, nodeCount);
             this.generateConnections();
         }
 
         generateNodes(cx, cy, count) {
-            // Organic spread - like real constellations
             // First node
             this.nodes.push({
                 x: cx + (Math.random() - 0.5) * 30,
                 y: cy + (Math.random() - 0.5) * 30,
-                phase: Math.random() * Math.PI * 2
+                phase: Math.random() * Math.PI * 2,
+                opacity: 0
             });
 
-            // Remaining nodes spread out organically
+            // Remaining nodes spread organically
             for (let i = 1; i < count; i++) {
-                // Pick a random existing node to branch from
                 const parent = this.nodes[Math.floor(Math.random() * this.nodes.length)];
                 const angle = Math.random() * Math.PI * 2;
                 const dist = config.nodeSpread * (0.5 + Math.random() * 0.8);
@@ -413,43 +410,51 @@ function initConstellation() {
                 this.nodes.push({
                     x: parent.x + Math.cos(angle) * dist,
                     y: parent.y + Math.sin(angle) * dist,
-                    phase: Math.random() * Math.PI * 2
+                    phase: Math.random() * Math.PI * 2,
+                    opacity: 0
                 });
             }
         }
 
         generateConnections() {
-            // Connect nodes organically - not all at once
-            // Create a spanning tree first (ensures all connected)
+            // Spanning tree for organic connections
             const connected = [0];
             const unconnected = [];
             for (let i = 1; i < this.nodes.length; i++) unconnected.push(i);
 
+            let order = 0;
             while (unconnected.length > 0) {
-                // Pick random connected and unconnected node
                 const fromIdx = connected[Math.floor(Math.random() * connected.length)];
                 const toIdx = unconnected.splice(Math.floor(Math.random() * unconnected.length), 1)[0];
 
                 this.connections.push({
                     a: fromIdx,
                     b: toIdx,
-                    revealOrder: this.connections.length
+                    order: order++,
+                    opacity: 0,
+                    state: 'waiting',  // waiting, fadingIn, bright, fadingOut, dead
+                    stateStartTime: 0
                 });
                 connected.push(toIdx);
             }
 
-            // Maybe add 1 extra connection for triangles (30% chance)
+            // Maybe add 1 extra connection
             if (this.nodes.length >= 4 && Math.random() < 0.3) {
                 const a = Math.floor(Math.random() * this.nodes.length);
                 let b = Math.floor(Math.random() * this.nodes.length);
                 while (b === a) b = Math.floor(Math.random() * this.nodes.length);
 
-                // Check not already connected
                 const exists = this.connections.some(c =>
                     (c.a === a && c.b === b) || (c.a === b && c.b === a)
                 );
                 if (!exists) {
-                    this.connections.push({ a, b, revealOrder: this.connections.length });
+                    this.connections.push({
+                        a, b,
+                        order: order++,
+                        opacity: 0,
+                        state: 'waiting',
+                        stateStartTime: 0
+                    });
                 }
             }
         }
@@ -457,50 +462,100 @@ function initConstellation() {
         update(time) {
             const age = time - this.birthTime;
 
-            if (this.state === 'fadingIn') {
-                this.targetOpacity = 0.8;
-                this.lineRevealProgress = Math.min(1, age / (config.fadeInTime * 1.5));
-                if (age > config.fadeInTime) {
-                    this.state = 'visible';
-                }
-            } else if (this.state === 'visible') {
-                this.targetOpacity = 0.7 + Math.sin(time * 0.001) * 0.1;
-                this.lineRevealProgress = 1;
-                if (age > config.groupLifetime - config.fadeOutTime) {
-                    this.state = 'fadingOut';
-                }
-            } else if (this.state === 'fadingOut') {
-                this.targetOpacity = 0;
-                if (this.opacity < 0.02) {
-                    this.state = 'dead';
+            // Count lines in each state
+            let brightCount = 0;
+            let oldestBrightIdx = -1;
+            let oldestBrightTime = Infinity;
+
+            for (let i = 0; i < this.connections.length; i++) {
+                const conn = this.connections[i];
+                if (conn.state === 'bright') {
+                    brightCount++;
+                    if (conn.stateStartTime < oldestBrightTime) {
+                        oldestBrightTime = conn.stateStartTime;
+                        oldestBrightIdx = i;
+                    }
                 }
             }
 
-            // Smooth opacity
-            this.opacity += (this.targetOpacity - this.opacity) * 0.05;
+            // Update each connection's lifecycle
+            for (let i = 0; i < this.connections.length; i++) {
+                const conn = this.connections[i];
+                const lineStartTime = conn.order * config.lineStagger;
+
+                if (conn.state === 'waiting') {
+                    // Start fading in when it's time
+                    if (age >= lineStartTime) {
+                        conn.state = 'fadingIn';
+                        conn.stateStartTime = time;
+                    }
+                }
+                else if (conn.state === 'fadingIn') {
+                    // Gradually fade in
+                    const fadeProgress = (time - conn.stateStartTime) / config.lineFadeInTime;
+                    conn.opacity = Math.min(1, fadeProgress);
+
+                    if (fadeProgress >= 1) {
+                        conn.state = 'bright';
+                        conn.stateStartTime = time;
+                    }
+                }
+                else if (conn.state === 'bright') {
+                    conn.opacity = 1;
+
+                    // Check if this line should start fading
+                    const brightDuration = time - conn.stateStartTime;
+                    const shouldFade = brightDuration > config.lineVisibleTime ||
+                        (brightCount > config.maxBrightLines && i === oldestBrightIdx);
+
+                    if (shouldFade) {
+                        conn.state = 'fadingOut';
+                        conn.stateStartTime = time;
+                    }
+                }
+                else if (conn.state === 'fadingOut') {
+                    // Gradually fade out
+                    const fadeProgress = (time - conn.stateStartTime) / config.lineFadeOutTime;
+                    conn.opacity = Math.max(0, 1 - fadeProgress);
+
+                    if (fadeProgress >= 1) {
+                        conn.state = 'dead';
+                        conn.opacity = 0;
+                    }
+                }
+            }
+
+            // Update node opacities based on connected lines
+            for (let i = 0; i < this.nodes.length; i++) {
+                let maxConnectedOpacity = 0;
+                for (const conn of this.connections) {
+                    if (conn.a === i || conn.b === i) {
+                        maxConnectedOpacity = Math.max(maxConnectedOpacity, conn.opacity);
+                    }
+                }
+                // Smooth transition
+                this.nodes[i].opacity += (maxConnectedOpacity - this.nodes[i].opacity) * 0.08;
+            }
+
+            // Group is dead when all connections are dead
+            const allDead = this.connections.every(c => c.state === 'dead');
+            if (allDead) {
+                this.dead = true;
+            }
         }
 
         draw(ctx, time) {
-            if (this.opacity < 0.01) return;
-
-            const numLinesToShow = Math.floor(this.lineRevealProgress * this.connections.length);
-
             // Draw connections
-            for (let i = 0; i < this.connections.length; i++) {
-                const conn = this.connections[i];
-                if (conn.revealOrder >= numLinesToShow) continue;
+            for (const conn of this.connections) {
+                if (conn.opacity < 0.01) continue;
 
                 const nodeA = this.nodes[conn.a];
                 const nodeB = this.nodes[conn.b];
-
-                // Line opacity based on reveal progress
-                const lineAge = this.lineRevealProgress * this.connections.length - conn.revealOrder;
-                const lineFade = Math.min(1, lineAge);
-                const lineAlpha = this.opacity * lineFade * 0.5;
+                const alpha = conn.opacity * 0.6;
 
                 // Glow line
                 ctx.beginPath();
-                ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${lineAlpha * 0.4})`;
+                ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha * 0.4})`;
                 ctx.lineWidth = 2.5;
                 ctx.shadowColor = `rgba(${color.r}, ${color.g}, ${color.b}, 0.5)`;
                 ctx.shadowBlur = 4;
@@ -510,7 +565,7 @@ function initConstellation() {
 
                 // Main line
                 ctx.beginPath();
-                ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${lineAlpha})`;
+                ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`;
                 ctx.lineWidth = 1;
                 ctx.shadowBlur = 0;
                 ctx.moveTo(nodeA.x, nodeA.y);
@@ -520,8 +575,10 @@ function initConstellation() {
 
             // Draw nodes
             for (const node of this.nodes) {
-                const pulse = Math.sin(time * 0.003 + node.phase) * 0.25 + 0.75;
-                const nodeAlpha = this.opacity * pulse;
+                if (node.opacity < 0.01) continue;
+
+                const pulse = Math.sin(time * 0.003 + node.phase) * 0.2 + 0.8;
+                const nodeAlpha = node.opacity * pulse;
 
                 // Glow
                 ctx.beginPath();
@@ -558,12 +615,9 @@ function initConstellation() {
     }
 
     function spawnGroup(time) {
-        // Random position with padding
         const padding = 150;
         const x = padding + Math.random() * (width - padding * 2);
         const y = padding + Math.random() * (height - padding * 2);
-
-        // Random node count 3-5
         const nodeCount = config.minNodes + Math.floor(Math.random() * (config.maxNodes - config.minNodes + 1));
 
         groups.push(new StarGroup(x, y, nodeCount));
@@ -574,7 +628,7 @@ function initConstellation() {
         ctx.clearRect(0, 0, width, height);
 
         // Spawn new groups periodically
-        const aliveGroups = groups.filter(g => g.state !== 'dead').length;
+        const aliveGroups = groups.filter(g => !g.dead).length;
         if (aliveGroups < config.maxGroups && time - lastSpawnTime > config.spawnInterval) {
             spawnGroup(time);
         }
@@ -591,7 +645,7 @@ function initConstellation() {
         });
 
         // Remove dead groups
-        groups = groups.filter(g => g.state !== 'dead');
+        groups = groups.filter(g => !g.dead);
 
         animationId = requestAnimationFrame(animate);
     }
