@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize starfield
     initStarfield();
 
+    // Initialize constellation network overlay
+    initConstellation();
+
     // Smooth scroll for navigation links
     initSmoothScroll();
 
@@ -346,6 +349,255 @@ function initStarfield() {
     animate(0);
 
     // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+        cancelAnimationFrame(animationId);
+    });
+}
+
+// Constellation Network Overlay - Connected nodes with glowing lines
+function initConstellation() {
+    const canvas = document.getElementById('constellation');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let nodes = [];
+    let animationId;
+
+    // Section-specific constellation themes (different "constellations" per section)
+    const constellationThemes = [
+        { // Hero section - Cosmic blue/cyan
+            nodeColor: { r: 79, g: 195, b: 247 },
+            lineColor: { r: 41, g: 182, b: 246 }
+        },
+        { // Features section - Purple/violet
+            nodeColor: { r: 167, g: 139, b: 250 },
+            lineColor: { r: 139, g: 92, b: 246 }
+        },
+        { // About section - Gold/amber
+            nodeColor: { r: 251, g: 191, b: 36 },
+            lineColor: { r: 245, g: 158, b: 11 }
+        },
+        { // Feature details - Teal/emerald
+            nodeColor: { r: 52, g: 211, b: 153 },
+            lineColor: { r: 16, g: 185, b: 129 }
+        },
+        { // Contact/Footer - Rose/pink
+            nodeColor: { r: 244, g: 114, b: 182 },
+            lineColor: { r: 236, g: 72, b: 153 }
+        }
+    ];
+
+    // Current interpolated colors (smooth transition between themes)
+    let currentColors = {
+        nodeColor: { ...constellationThemes[0].nodeColor },
+        lineColor: { ...constellationThemes[0].lineColor }
+    };
+
+    // Configuration - matching Flutter app style
+    const config = {
+        nodeCount: 25,
+        maxConnectionDistance: 180,
+        pulseSpeed: 3000,  // ms for full pulse cycle
+        lifecycleSpeed: 8000  // ms for node fade in/out cycle
+    };
+
+    // Node class
+    class NetworkNode {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+            this.opacity = Math.random();
+            this.targetOpacity = 0.3 + Math.random() * 0.7;
+            this.pulsePhase = Math.random() * Math.PI * 2;
+            this.connections = [];
+        }
+    }
+
+    // Resize canvas
+    function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+        initNodes();
+    }
+
+    // Initialize nodes
+    function initNodes() {
+        nodes = [];
+        for (let i = 0; i < config.nodeCount; i++) {
+            nodes.push(new NetworkNode(
+                Math.random() * width,
+                Math.random() * height
+            ));
+        }
+        updateConnections();
+    }
+
+    // Update connections between nodes
+    function updateConnections() {
+        for (let i = 0; i < nodes.length; i++) {
+            nodes[i].connections = [];
+            for (let j = i + 1; j < nodes.length; j++) {
+                const dx = nodes[i].x - nodes[j].x;
+                const dy = nodes[i].y - nodes[j].y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < config.maxConnectionDistance) {
+                    nodes[i].connections.push(j);
+                }
+            }
+        }
+    }
+
+    // Update node lifecycle (fading in/out)
+    function updateNodeLifecycle() {
+        nodes.forEach(node => {
+            // Randomly toggle target opacity
+            if (Math.random() < 0.002) {
+                if (node.targetOpacity > 0.5) {
+                    node.targetOpacity = 0.1 + Math.random() * 0.2;
+                } else {
+                    node.targetOpacity = 0.5 + Math.random() * 0.5;
+                }
+            }
+            // Smoothly interpolate opacity
+            node.opacity += (node.targetOpacity - node.opacity) * 0.02;
+        });
+    }
+
+    // Get current theme based on scroll position
+    function updateThemeFromScroll() {
+        const scrollY = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollProgress = Math.min(scrollY / docHeight, 1);
+
+        // Map scroll progress to theme index with smooth transitions
+        const themeCount = constellationThemes.length;
+        const themeFloat = scrollProgress * (themeCount - 1);
+        const themeIndex = Math.floor(themeFloat);
+        const themeFraction = themeFloat - themeIndex;
+
+        // Get current and next themes
+        const current = constellationThemes[Math.min(themeIndex, themeCount - 1)];
+        const next = constellationThemes[Math.min(themeIndex + 1, themeCount - 1)];
+
+        // Interpolate colors smoothly
+        const targetColors = {
+            nodeColor: {
+                r: current.nodeColor.r + (next.nodeColor.r - current.nodeColor.r) * themeFraction,
+                g: current.nodeColor.g + (next.nodeColor.g - current.nodeColor.g) * themeFraction,
+                b: current.nodeColor.b + (next.nodeColor.b - current.nodeColor.b) * themeFraction
+            },
+            lineColor: {
+                r: current.lineColor.r + (next.lineColor.r - current.lineColor.r) * themeFraction,
+                g: current.lineColor.g + (next.lineColor.g - current.lineColor.g) * themeFraction,
+                b: current.lineColor.b + (next.lineColor.b - current.lineColor.b) * themeFraction
+            }
+        };
+
+        // Smooth lerp towards target (for extra smoothness)
+        const lerpSpeed = 0.1;
+        currentColors.nodeColor.r += (targetColors.nodeColor.r - currentColors.nodeColor.r) * lerpSpeed;
+        currentColors.nodeColor.g += (targetColors.nodeColor.g - currentColors.nodeColor.g) * lerpSpeed;
+        currentColors.nodeColor.b += (targetColors.nodeColor.b - currentColors.nodeColor.b) * lerpSpeed;
+        currentColors.lineColor.r += (targetColors.lineColor.r - currentColors.lineColor.r) * lerpSpeed;
+        currentColors.lineColor.g += (targetColors.lineColor.g - currentColors.lineColor.g) * lerpSpeed;
+        currentColors.lineColor.b += (targetColors.lineColor.b - currentColors.lineColor.b) * lerpSpeed;
+    }
+
+    // Draw the constellation
+    function draw(time) {
+        ctx.clearRect(0, 0, width, height);
+
+        // Update colors based on scroll
+        updateThemeFromScroll();
+
+        const animationValue = (time % config.pulseSpeed) / config.pulseSpeed;
+        const { nodeColor, lineColor } = currentColors;
+
+        // Draw connections first (behind nodes)
+        for (let i = 0; i < nodes.length; i++) {
+            const node = nodes[i];
+            for (const connectedIndex of node.connections) {
+                const connectedNode = nodes[connectedIndex];
+                const dx = node.x - connectedNode.x;
+                const dy = node.y - connectedNode.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                // Line opacity based on distance and node opacities
+                const lineOpacity = (1 - distance / config.maxConnectionDistance) *
+                    node.opacity * connectedNode.opacity * 0.6;
+
+                if (lineOpacity > 0.05) {
+                    // Pulsing effect
+                    const pulse = Math.sin(animationValue * Math.PI * 2 + node.pulsePhase) * 0.3 + 0.7;
+
+                    // Draw glow line
+                    ctx.beginPath();
+                    ctx.strokeStyle = `rgba(${Math.round(lineColor.r)}, ${Math.round(lineColor.g)}, ${Math.round(lineColor.b)}, ${lineOpacity * pulse * 0.3})`;
+                    ctx.lineWidth = 3;
+                    ctx.shadowColor = `rgba(${Math.round(lineColor.r)}, ${Math.round(lineColor.g)}, ${Math.round(lineColor.b)}, 0.5)`;
+                    ctx.shadowBlur = 4;
+                    ctx.moveTo(node.x, node.y);
+                    ctx.lineTo(connectedNode.x, connectedNode.y);
+                    ctx.stroke();
+
+                    // Draw main line
+                    ctx.beginPath();
+                    ctx.strokeStyle = `rgba(${Math.round(lineColor.r)}, ${Math.round(lineColor.g)}, ${Math.round(lineColor.b)}, ${lineOpacity * pulse})`;
+                    ctx.lineWidth = 1;
+                    ctx.shadowBlur = 0;
+                    ctx.moveTo(node.x, node.y);
+                    ctx.lineTo(connectedNode.x, connectedNode.y);
+                    ctx.stroke();
+                }
+            }
+        }
+
+        // Draw nodes
+        for (const node of nodes) {
+            if (node.opacity < 0.05) continue;
+
+            const pulse = Math.sin(animationValue * Math.PI * 2 + node.pulsePhase) * 0.3 + 0.7;
+            const nodeOpacity = node.opacity * pulse;
+
+            // Node glow
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, 6, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${Math.round(nodeColor.r)}, ${Math.round(nodeColor.g)}, ${Math.round(nodeColor.b)}, ${nodeOpacity * 0.4})`;
+            ctx.shadowColor = `rgba(${Math.round(nodeColor.r)}, ${Math.round(nodeColor.g)}, ${Math.round(nodeColor.b)}, 0.6)`;
+            ctx.shadowBlur = 8;
+            ctx.fill();
+
+            // Node core
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, 3, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${Math.round(nodeColor.r)}, ${Math.round(nodeColor.g)}, ${Math.round(nodeColor.b)}, ${nodeOpacity})`;
+            ctx.shadowBlur = 0;
+            ctx.fill();
+
+            // Bright center
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, 1.5, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 255, 255, ${nodeOpacity * 0.8})`;
+            ctx.fill();
+        }
+    }
+
+    // Animation loop
+    function animate(time) {
+        updateNodeLifecycle();
+        draw(time);
+        animationId = requestAnimationFrame(animate);
+    }
+
+    // Handle resize
+    window.addEventListener('resize', resize);
+
+    // Initialize
+    resize();
+    animate(0);
+
+    // Cleanup
     window.addEventListener('beforeunload', () => {
         cancelAnimationFrame(animationId);
     });
