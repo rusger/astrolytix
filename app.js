@@ -630,19 +630,25 @@ function initConstellation() {
                     const x1 = nodeA.x + dx * t1;
                     const y1 = nodeA.y + dy * t1;
 
-                    // Multiple energy waves at different speeds
+                    // Position along the line
                     const pos = t0 * length;
-                    const wave1 = Math.sin((pos * 0.05) - (time * 0.002) + conn.order) * 0.5 + 0.5;
-                    const wave2 = Math.sin((pos * 0.08) - (time * 0.0035) + conn.order * 2.3) * 0.5 + 0.5;
-                    const wave3 = Math.sin((pos * 0.03) + (time * 0.0015) + conn.order * 1.7) * 0.5 + 0.5;
 
-                    // Atmospheric flicker
-                    const flicker = 0.95 + Math.sin(time * 0.01 + pos * 0.1 + conn.order * 5) * 0.05;
+                    // Main flowing energy wave (moves along the line)
+                    const flowWave = Math.sin((pos * 0.04) - (time * 0.003) + conn.order * 1.5) * 0.5 + 0.5;
 
-                    // Combine waves for organic energy distribution (subtle variation 0.7-1.0)
-                    const energy = 0.7 + (wave1 * 0.12 + wave2 * 0.1 + wave3 * 0.08) * flicker;
+                    // Secondary wave (slightly different speed, creates interference)
+                    const wave2 = Math.sin((pos * 0.07) - (time * 0.005) + conn.order * 2.7) * 0.5 + 0.5;
 
-                    const segmentAlpha = baseAlpha * energy * 0.85;
+                    // Slow breathing wave (whole line pulses gently)
+                    const breathe = Math.sin(time * 0.001 + conn.order * 0.8) * 0.5 + 0.5;
+
+                    // Atmospheric shimmer
+                    const shimmer = 0.9 + Math.sin(time * 0.015 + pos * 0.12 + conn.order * 4) * 0.1;
+
+                    // Combine: base 0.45 + waves up to 0.55 = range 0.45-1.0
+                    const energy = 0.45 + (flowWave * 0.3 + wave2 * 0.15 + breathe * 0.1) * shimmer;
+
+                    const segmentAlpha = baseAlpha * energy;
 
                     ctx.beginPath();
                     ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${segmentAlpha})`;
