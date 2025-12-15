@@ -369,18 +369,55 @@ function initConstellation() {
     // Configuration
     const config = {
         maxGroups: 3,
-        minNodes: 3,
+        minNodes: 4,
         maxNodes: 5,
-        nodeSpread: 100,
+        nodeSpread: 110,
         spawnInterval: 5000,
-        lineFadeInTime: 3000,      // How long a line takes to fade in
-        lineFadeOutTime: 4000,     // How long a line takes to fade out
-        lineStagger: 2000,         // Delay between each line starting
-        maxBrightLines: 3,         // When this many lines are bright, oldest starts fading
-        lineVisibleTime: 4000      // How long a line stays bright before fading
+        lineFadeInTime: 3000,
+        lineFadeOutTime: 4000,
+        lineStagger: 2000,
+        maxBrightLines: 3,
+        lineVisibleTime: 4000
     };
 
-    // A single star group with independent line lifecycles
+    // Helper: calculate angle in degrees between two vectors at a point
+    function getAngleAtNode(prevPrev, prev, next) {
+        // Vector from prev back to prevPrev
+        const v1x = prevPrev.x - prev.x;
+        const v1y = prevPrev.y - prev.y;
+        // Vector from prev to next
+        const v2x = next.x - prev.x;
+        const v2y = next.y - prev.y;
+
+        // Dot product and magnitudes
+        const dot = v1x * v2x + v1y * v2y;
+        const mag1 = Math.sqrt(v1x * v1x + v1y * v1y);
+        const mag2 = Math.sqrt(v2x * v2x + v2y * v2y);
+
+        if (mag1 === 0 || mag2 === 0) return 180;
+
+        const cosAngle = Math.max(-1, Math.min(1, dot / (mag1 * mag2)));
+        return Math.acos(cosAngle) * 180 / Math.PI;
+    }
+
+    // Check if angle is valid per rules
+    function isAngleValid(angleDeg, sharpUsed) {
+        // <45: too sharp, not allowed
+        if (angleDeg < 45) return { valid: false };
+        // 45-85: only 1 allowed per formation
+        if (angleDeg >= 45 && angleDeg < 85) {
+            if (sharpUsed) return { valid: false };
+            return { valid: true, usesSharp: true };
+        }
+        // 85-95: prohibited (near right angle)
+        if (angleDeg >= 85 && angleDeg <= 95) return { valid: false };
+        // 95-175: allowed (obtuse)
+        if (angleDeg > 95 && angleDeg <= 175) return { valid: true };
+        // >175: too straight, not allowed
+        return { valid: false };
+    }
+
+    // A single star group - CHAIN structure with angle constraints
     class StarGroup {
         constructor(x, y, nodeCount) {
             this.nodes = [];
@@ -388,74 +425,85 @@ function initConstellation() {
             this.birthTime = performance.now();
             this.dead = false;
 
-            this.generateNodes(x, y, nodeCount);
+            this.generateChain(x, y, nodeCount);
             this.generateConnections();
         }
 
-        generateNodes(cx, cy, count) {
+        generateChain(cx, cy, count) {
             // First node
             this.nodes.push({
-                x: cx + (Math.random() - 0.5) * 30,
-                y: cy + (Math.random() - 0.5) * 30,
+                x: cx,
+                y: cy,
                 phase: Math.random() * Math.PI * 2,
                 opacity: 0
             });
 
-            // Remaining nodes spread organically
-            for (let i = 1; i < count; i++) {
-                const parent = this.nodes[Math.floor(Math.random() * this.nodes.length)];
-                const angle = Math.random() * Math.PI * 2;
-                const dist = config.nodeSpread * (0.5 + Math.random() * 0.8);
+            if (count < 2) return;
 
-                this.nodes.push({
-                    x: parent.x + Math.cos(angle) * dist,
-                    y: parent.y + Math.sin(angle) * dist,
-                    phase: Math.random() * Math.PI * 2,
-                    opacity: 0
-                });
+            // Second node - any direction
+            const firstAngle = Math.random() * Math.PI * 2;
+            const firstDist = config.nodeSpread * (0.7 + Math.random() * 0.5);
+            this.nodes.push({
+                x: cx + Math.cos(firstAngle) * firstDist,
+                y: cy + Math.sin(firstAngle) * firstDist,
+                phase: Math.random() * Math.PI * 2,
+                opacity: 0
+            });
+
+            let sharpAngleUsed = false;
+
+            // Build chain: each node connects only to previous
+            for (let i = 2; i < count; i++) {
+                const prevNode = this.nodes[i - 1];
+                const prevPrevNode = this.nodes[i - 2];
+
+                let bestPosition = null;
+                let attempts = 0;
+
+                while (!bestPosition && attempts < 100) {
+                    attempts++;
+
+                    // Random direction and distance for next node
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = config.nodeSpread * (0.7 + Math.random() * 0.5);
+
+                    const candidate = {
+                        x: prevNode.x + Math.cos(angle) * dist,
+                        y: prevNode.y + Math.sin(angle) * dist
+                    };
+
+                    // Calculate angle at prevNode
+                    const jointAngle = getAngleAtNode(prevPrevNode, prevNode, candidate);
+                    const check = isAngleValid(jointAngle, sharpAngleUsed);
+
+                    if (check.valid) {
+                        bestPosition = candidate;
+                        if (check.usesSharp) sharpAngleUsed = true;
+                    }
+                }
+
+                if (bestPosition) {
+                    this.nodes.push({
+                        x: bestPosition.x,
+                        y: bestPosition.y,
+                        phase: Math.random() * Math.PI * 2,
+                        opacity: 0
+                    });
+                }
             }
         }
 
         generateConnections() {
-            // Spanning tree for organic connections
-            const connected = [0];
-            const unconnected = [];
-            for (let i = 1; i < this.nodes.length; i++) unconnected.push(i);
-
-            let order = 0;
-            while (unconnected.length > 0) {
-                const fromIdx = connected[Math.floor(Math.random() * connected.length)];
-                const toIdx = unconnected.splice(Math.floor(Math.random() * unconnected.length), 1)[0];
-
+            // Simple chain - connect each node to the next in sequence
+            for (let i = 0; i < this.nodes.length - 1; i++) {
                 this.connections.push({
-                    a: fromIdx,
-                    b: toIdx,
-                    order: order++,
+                    a: i,
+                    b: i + 1,
+                    order: i,
                     opacity: 0,
-                    state: 'waiting',  // waiting, fadingIn, bright, fadingOut, dead
+                    state: 'waiting',
                     stateStartTime: 0
                 });
-                connected.push(toIdx);
-            }
-
-            // Maybe add 1 extra connection
-            if (this.nodes.length >= 4 && Math.random() < 0.3) {
-                const a = Math.floor(Math.random() * this.nodes.length);
-                let b = Math.floor(Math.random() * this.nodes.length);
-                while (b === a) b = Math.floor(Math.random() * this.nodes.length);
-
-                const exists = this.connections.some(c =>
-                    (c.a === a && c.b === b) || (c.a === b && c.b === a)
-                );
-                if (!exists) {
-                    this.connections.push({
-                        a, b,
-                        order: order++,
-                        opacity: 0,
-                        state: 'waiting',
-                        stateStartTime: 0
-                    });
-                }
             }
         }
 
@@ -553,27 +601,27 @@ function initConstellation() {
                 const nodeB = this.nodes[conn.b];
                 const alpha = conn.opacity * 0.6;
 
-                // Glow line
+                // Glow line (thinner)
                 ctx.beginPath();
-                ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha * 0.4})`;
-                ctx.lineWidth = 2.5;
-                ctx.shadowColor = `rgba(${color.r}, ${color.g}, ${color.b}, 0.5)`;
-                ctx.shadowBlur = 4;
+                ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha * 0.3})`;
+                ctx.lineWidth = 1.5;
+                ctx.shadowColor = `rgba(${color.r}, ${color.g}, ${color.b}, 0.4)`;
+                ctx.shadowBlur = 3;
                 ctx.moveTo(nodeA.x, nodeA.y);
                 ctx.lineTo(nodeB.x, nodeB.y);
                 ctx.stroke();
 
-                // Main line
+                // Main line (thinner)
                 ctx.beginPath();
-                ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`;
-                ctx.lineWidth = 1;
+                ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha * 0.8})`;
+                ctx.lineWidth = 0.6;
                 ctx.shadowBlur = 0;
                 ctx.moveTo(nodeA.x, nodeA.y);
                 ctx.lineTo(nodeB.x, nodeB.y);
                 ctx.stroke();
             }
 
-            // Draw nodes
+            // Draw nodes (smaller to match thinner lines)
             for (const node of this.nodes) {
                 if (node.opacity < 0.01) continue;
 
@@ -582,23 +630,23 @@ function initConstellation() {
 
                 // Glow
                 ctx.beginPath();
-                ctx.arc(node.x, node.y, 6, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${nodeAlpha * 0.3})`;
-                ctx.shadowColor = `rgba(${color.r}, ${color.g}, ${color.b}, 0.6)`;
-                ctx.shadowBlur = 8;
+                ctx.arc(node.x, node.y, 4, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${nodeAlpha * 0.25})`;
+                ctx.shadowColor = `rgba(${color.r}, ${color.g}, ${color.b}, 0.5)`;
+                ctx.shadowBlur = 6;
                 ctx.fill();
 
                 // Core
                 ctx.beginPath();
-                ctx.arc(node.x, node.y, 2.5, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${nodeAlpha})`;
+                ctx.arc(node.x, node.y, 1.8, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${nodeAlpha * 0.9})`;
                 ctx.shadowBlur = 0;
                 ctx.fill();
 
                 // Bright center
                 ctx.beginPath();
-                ctx.arc(node.x, node.y, 1.2, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 255, 255, ${nodeAlpha * 0.9})`;
+                ctx.arc(node.x, node.y, 0.8, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${nodeAlpha * 0.85})`;
                 ctx.fill();
             }
         }
