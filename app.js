@@ -354,286 +354,304 @@ function initStarfield() {
     });
 }
 
-// Constellation Network Overlay - Connected nodes with glowing lines
+// Constellation Network Overlay - Flowing energy between star patterns
 function initConstellation() {
     const canvas = document.getElementById('constellation');
     if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
     let width, height;
-    let nodes = [];
     let animationId;
 
-    // Section-specific constellation themes (different "constellations" per section)
-    const constellationThemes = [
-        { // Hero section - Cosmic blue/cyan
-            nodeColor: { r: 79, g: 195, b: 247 },
-            lineColor: { r: 41, g: 182, b: 246 }
-        },
-        { // Features section - Purple/violet
-            nodeColor: { r: 167, g: 139, b: 250 },
-            lineColor: { r: 139, g: 92, b: 246 }
-        },
-        { // About section - Gold/amber
-            nodeColor: { r: 251, g: 191, b: 36 },
-            lineColor: { r: 245, g: 158, b: 11 }
-        },
-        { // Feature details - Teal/emerald
-            nodeColor: { r: 52, g: 211, b: 153 },
-            lineColor: { r: 16, g: 185, b: 129 }
-        },
-        { // Contact/Footer - Rose/pink
-            nodeColor: { r: 244, g: 114, b: 182 },
-            lineColor: { r: 236, g: 72, b: 153 }
-        }
-    ];
-
-    // Current interpolated colors (smooth transition between themes)
-    let currentColors = {
-        nodeColor: { ...constellationThemes[0].nodeColor },
-        lineColor: { ...constellationThemes[0].lineColor }
+    // Color theme - cyan/blue energy
+    const colors = {
+        node: { r: 79, g: 195, b: 247 },
+        line: { r: 41, g: 182, b: 246 },
+        energy: { r: 120, g: 220, b: 255 }
     };
 
     // Configuration
     const config = {
-        constellationCount: 8,  // Number of constellation groups
-        minNodesPerConstellation: 3,
-        maxNodesPerConstellation: 6,
-        constellationSpread: 120,  // How spread out nodes are within a constellation
-        pulseSpeed: 3000,
-        lifecycleSpeed: 8000
+        constellationCount: 5,          // Total constellation patterns on screen
+        activeDuration: 12000,          // How long each constellation stays active (ms)
+        transitionDuration: 2000,       // Energy flow transition time (ms)
+        minNodes: 4,
+        maxNodes: 6,
+        spread: 140                     // Node spread within constellation
     };
 
-    // Constellation group class
+    // Constellation class
     class Constellation {
         constructor(centerX, centerY, nodeCount) {
+            this.centerX = centerX;
+            this.centerY = centerY;
             this.nodes = [];
             this.connections = [];
-            this.opacity = Math.random() * 0.5 + 0.3;
-            this.targetOpacity = Math.random() * 0.5 + 0.5;
-            this.pulsePhase = Math.random() * Math.PI * 2;
+            this.activity = 0;          // 0 = dormant, 1 = fully active
+            this.targetActivity = 0;
+            this.energyPhase = 0;       // For flowing energy animation along lines
 
-            // Create nodes in a constellation pattern
-            this.generateNodes(centerX, centerY, nodeCount);
+            this.generateNodes(nodeCount);
             this.generateConnections();
         }
 
-        generateNodes(centerX, centerY, count) {
-            // First node at center (slightly offset)
-            const offsetX = (Math.random() - 0.5) * 40;
-            const offsetY = (Math.random() - 0.5) * 40;
-
+        generateNodes(count) {
             for (let i = 0; i < count; i++) {
-                // Distribute nodes in a rough pattern around center
-                const angle = (i / count) * Math.PI * 2 + Math.random() * 0.8;
-                const distance = config.constellationSpread * (0.3 + Math.random() * 0.7);
-
+                const angle = (i / count) * Math.PI * 2 + (Math.random() - 0.5) * 0.8;
+                const distance = config.spread * (0.4 + Math.random() * 0.6);
                 this.nodes.push({
-                    x: centerX + offsetX + Math.cos(angle) * distance,
-                    y: centerY + offsetY + Math.sin(angle) * distance,
-                    pulseOffset: Math.random() * Math.PI * 2
+                    x: this.centerX + Math.cos(angle) * distance,
+                    y: this.centerY + Math.sin(angle) * distance,
+                    phase: Math.random() * Math.PI * 2
                 });
             }
         }
 
         generateConnections() {
-            // Create a connected path through all nodes (ensures connectivity)
-            const nodeCount = this.nodes.length;
+            const n = this.nodes.length;
+            // Create chain
+            for (let i = 0; i < n - 1; i++) {
+                this.connections.push({ a: i, b: i + 1, energyPos: 0 });
+            }
+            // Add cross connections for interesting shapes
+            if (n >= 4) {
+                this.connections.push({ a: 0, b: Math.floor(n / 2), energyPos: 0 });
+            }
+            if (n >= 5) {
+                this.connections.push({ a: 1, b: n - 1, energyPos: 0 });
+            }
+        }
 
-            // Connect in a chain first
-            for (let i = 0; i < nodeCount - 1; i++) {
-                this.connections.push([i, i + 1]);
+        update(deltaTime, isActive) {
+            // Update activity level
+            this.targetActivity = isActive ? 1 : 0;
+            const lerpSpeed = isActive ? 0.03 : 0.015;
+            this.activity += (this.targetActivity - this.activity) * lerpSpeed;
+
+            // Update energy flow along connections when active
+            if (this.activity > 0.1) {
+                this.energyPhase += deltaTime * 0.002;
+                this.connections.forEach((conn, idx) => {
+                    conn.energyPos = (this.energyPhase + idx * 0.3) % 1;
+                });
+            }
+        }
+
+        draw(ctx, time) {
+            if (this.activity < 0.02) return;
+
+            const pulse = Math.sin(time * 0.003) * 0.2 + 0.8;
+            const alpha = this.activity * pulse;
+
+            // Draw connections with flowing energy
+            for (const conn of this.connections) {
+                const nodeA = this.nodes[conn.a];
+                const nodeB = this.nodes[conn.b];
+
+                // Base line (dim)
+                ctx.beginPath();
+                ctx.strokeStyle = `rgba(${colors.line.r}, ${colors.line.g}, ${colors.line.b}, ${alpha * 0.3})`;
+                ctx.lineWidth = 1;
+                ctx.moveTo(nodeA.x, nodeA.y);
+                ctx.lineTo(nodeB.x, nodeB.y);
+                ctx.stroke();
+
+                // Flowing energy pulse along the line
+                if (this.activity > 0.3) {
+                    const energyAlpha = alpha * 0.8;
+                    const ex = nodeA.x + (nodeB.x - nodeA.x) * conn.energyPos;
+                    const ey = nodeA.y + (nodeB.y - nodeA.y) * conn.energyPos;
+
+                    // Energy glow traveling along line
+                    const gradient = ctx.createRadialGradient(ex, ey, 0, ex, ey, 25);
+                    gradient.addColorStop(0, `rgba(${colors.energy.r}, ${colors.energy.g}, ${colors.energy.b}, ${energyAlpha})`);
+                    gradient.addColorStop(0.5, `rgba(${colors.line.r}, ${colors.line.g}, ${colors.line.b}, ${energyAlpha * 0.4})`);
+                    gradient.addColorStop(1, 'transparent');
+
+                    ctx.beginPath();
+                    ctx.fillStyle = gradient;
+                    ctx.arc(ex, ey, 25, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Bright line segment near energy point
+                    const segStart = Math.max(0, conn.energyPos - 0.15);
+                    const segEnd = Math.min(1, conn.energyPos + 0.15);
+                    const sx = nodeA.x + (nodeB.x - nodeA.x) * segStart;
+                    const sy = nodeA.y + (nodeB.y - nodeA.y) * segStart;
+                    const endX = nodeA.x + (nodeB.x - nodeA.x) * segEnd;
+                    const endY = nodeA.y + (nodeB.y - nodeA.y) * segEnd;
+
+                    ctx.beginPath();
+                    ctx.strokeStyle = `rgba(${colors.energy.r}, ${colors.energy.g}, ${colors.energy.b}, ${energyAlpha})`;
+                    ctx.lineWidth = 2;
+                    ctx.shadowColor = `rgba(${colors.energy.r}, ${colors.energy.g}, ${colors.energy.b}, 0.8)`;
+                    ctx.shadowBlur = 8;
+                    ctx.moveTo(sx, sy);
+                    ctx.lineTo(endX, endY);
+                    ctx.stroke();
+                    ctx.shadowBlur = 0;
+                }
             }
 
-            // Add 1-2 extra connections for more interesting shapes
-            const extraConnections = Math.floor(Math.random() * 2) + 1;
-            for (let e = 0; e < extraConnections; e++) {
-                const a = Math.floor(Math.random() * nodeCount);
-                let b = Math.floor(Math.random() * nodeCount);
-                // Ensure different nodes and not already connected adjacently
-                while (b === a || Math.abs(b - a) === 1) {
-                    b = Math.floor(Math.random() * nodeCount);
-                }
-                // Check if connection already exists
-                const exists = this.connections.some(c =>
-                    (c[0] === a && c[1] === b) || (c[0] === b && c[1] === a)
-                );
-                if (!exists) {
-                    this.connections.push([a, b]);
-                }
+            // Draw nodes
+            for (const node of this.nodes) {
+                const nodePulse = Math.sin(time * 0.004 + node.phase) * 0.3 + 0.7;
+                const nodeAlpha = alpha * nodePulse;
+
+                // Outer glow
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 8, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${colors.node.r}, ${colors.node.g}, ${colors.node.b}, ${nodeAlpha * 0.25})`;
+                ctx.shadowColor = `rgba(${colors.node.r}, ${colors.node.g}, ${colors.node.b}, 0.5)`;
+                ctx.shadowBlur = 12;
+                ctx.fill();
+
+                // Core
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 3, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${colors.node.r}, ${colors.node.g}, ${colors.node.b}, ${nodeAlpha})`;
+                ctx.shadowBlur = 0;
+                ctx.fill();
+
+                // Bright center
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 1.5, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${nodeAlpha * 0.9})`;
+                ctx.fill();
             }
         }
     }
 
     let constellations = [];
+    let activeIndex = 0;
+    let lastSwitchTime = 0;
+    let energyTrail = null;  // For drawing energy flow between constellations
 
-    // Resize canvas
+    // Resize and initialize
     function resize() {
         width = canvas.width = window.innerWidth;
         height = canvas.height = window.innerHeight;
         initConstellations();
     }
 
-    // Initialize constellation groups
     function initConstellations() {
         constellations = [];
 
-        // Create grid-like distribution to avoid overlap
-        const cols = 3;
-        const rows = Math.ceil(config.constellationCount / cols);
-        const cellWidth = width / cols;
-        const cellHeight = height / rows;
+        // Distribute constellations across screen
+        const positions = [
+            { x: width * 0.2, y: height * 0.25 },
+            { x: width * 0.75, y: height * 0.2 },
+            { x: width * 0.5, y: height * 0.5 },
+            { x: width * 0.15, y: height * 0.7 },
+            { x: width * 0.8, y: height * 0.75 }
+        ];
 
         for (let i = 0; i < config.constellationCount; i++) {
-            const col = i % cols;
-            const row = Math.floor(i / cols);
-
-            // Random position within cell (with padding)
-            const padding = 60;
-            const centerX = cellWidth * col + padding + Math.random() * (cellWidth - padding * 2);
-            const centerY = cellHeight * row + padding + Math.random() * (cellHeight - padding * 2);
-
-            // Random node count between 3-6
-            const nodeCount = config.minNodesPerConstellation +
-                Math.floor(Math.random() * (config.maxNodesPerConstellation - config.minNodesPerConstellation + 1));
-
-            constellations.push(new Constellation(centerX, centerY, nodeCount));
+            const pos = positions[i];
+            // Add some randomness
+            const cx = pos.x + (Math.random() - 0.5) * 100;
+            const cy = pos.y + (Math.random() - 0.5) * 80;
+            const nodeCount = config.minNodes + Math.floor(Math.random() * (config.maxNodes - config.minNodes + 1));
+            constellations.push(new Constellation(cx, cy, nodeCount));
         }
+
+        // Start first constellation as active
+        activeIndex = 0;
+        lastSwitchTime = performance.now();
     }
 
-    // Update constellation lifecycle (fading in/out)
-    function updateConstellationLifecycle() {
-        constellations.forEach(constellation => {
-            // Randomly toggle target opacity
-            if (Math.random() < 0.003) {
-                if (constellation.targetOpacity > 0.5) {
-                    constellation.targetOpacity = 0.2 + Math.random() * 0.2;
-                } else {
-                    constellation.targetOpacity = 0.6 + Math.random() * 0.4;
-                }
-            }
-            // Smoothly interpolate opacity
-            constellation.opacity += (constellation.targetOpacity - constellation.opacity) * 0.015;
-        });
+    // Draw energy trail between constellations during transition
+    function drawEnergyTrail(ctx, fromConst, toConst, progress) {
+        if (!fromConst || !toConst || progress <= 0 || progress >= 1) return;
+
+        const fromX = fromConst.centerX;
+        const fromY = fromConst.centerY;
+        const toX = toConst.centerX;
+        const toY = toConst.centerY;
+
+        // Energy position along the path
+        const ex = fromX + (toX - fromX) * progress;
+        const ey = fromY + (toY - fromY) * progress;
+
+        // Draw fading trail
+        const trailGradient = ctx.createLinearGradient(fromX, fromY, ex, ey);
+        trailGradient.addColorStop(0, 'transparent');
+        trailGradient.addColorStop(0.7, `rgba(${colors.energy.r}, ${colors.energy.g}, ${colors.energy.b}, 0.15)`);
+        trailGradient.addColorStop(1, `rgba(${colors.energy.r}, ${colors.energy.g}, ${colors.energy.b}, 0.4)`);
+
+        ctx.beginPath();
+        ctx.strokeStyle = trailGradient;
+        ctx.lineWidth = 2;
+        ctx.moveTo(fromX, fromY);
+        ctx.lineTo(ex, ey);
+        ctx.stroke();
+
+        // Energy ball
+        const gradient = ctx.createRadialGradient(ex, ey, 0, ex, ey, 30);
+        gradient.addColorStop(0, `rgba(255, 255, 255, 0.9)`);
+        gradient.addColorStop(0.2, `rgba(${colors.energy.r}, ${colors.energy.g}, ${colors.energy.b}, 0.8)`);
+        gradient.addColorStop(0.6, `rgba(${colors.line.r}, ${colors.line.g}, ${colors.line.b}, 0.3)`);
+        gradient.addColorStop(1, 'transparent');
+
+        ctx.beginPath();
+        ctx.fillStyle = gradient;
+        ctx.arc(ex, ey, 30, 0, Math.PI * 2);
+        ctx.fill();
     }
 
-    // Get current theme based on scroll position
-    function updateThemeFromScroll() {
-        const scrollY = window.scrollY;
-        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const scrollProgress = Math.min(scrollY / docHeight, 1);
+    let lastTime = 0;
+    let transitionProgress = 0;
+    let isTransitioning = false;
+    let prevActiveIndex = -1;
 
-        // Map scroll progress to theme index with smooth transitions
-        const themeCount = constellationThemes.length;
-        const themeFloat = scrollProgress * (themeCount - 1);
-        const themeIndex = Math.floor(themeFloat);
-        const themeFraction = themeFloat - themeIndex;
+    function animate(time) {
+        const deltaTime = lastTime ? time - lastTime : 16;
+        lastTime = time;
 
-        // Get current and next themes
-        const current = constellationThemes[Math.min(themeIndex, themeCount - 1)];
-        const next = constellationThemes[Math.min(themeIndex + 1, themeCount - 1)];
-
-        // Interpolate colors smoothly
-        const targetColors = {
-            nodeColor: {
-                r: current.nodeColor.r + (next.nodeColor.r - current.nodeColor.r) * themeFraction,
-                g: current.nodeColor.g + (next.nodeColor.g - current.nodeColor.g) * themeFraction,
-                b: current.nodeColor.b + (next.nodeColor.b - current.nodeColor.b) * themeFraction
-            },
-            lineColor: {
-                r: current.lineColor.r + (next.lineColor.r - current.lineColor.r) * themeFraction,
-                g: current.lineColor.g + (next.lineColor.g - current.lineColor.g) * themeFraction,
-                b: current.lineColor.b + (next.lineColor.b - current.lineColor.b) * themeFraction
-            }
-        };
-
-        // Smooth lerp towards target (for extra smoothness)
-        const lerpSpeed = 0.1;
-        currentColors.nodeColor.r += (targetColors.nodeColor.r - currentColors.nodeColor.r) * lerpSpeed;
-        currentColors.nodeColor.g += (targetColors.nodeColor.g - currentColors.nodeColor.g) * lerpSpeed;
-        currentColors.nodeColor.b += (targetColors.nodeColor.b - currentColors.nodeColor.b) * lerpSpeed;
-        currentColors.lineColor.r += (targetColors.lineColor.r - currentColors.lineColor.r) * lerpSpeed;
-        currentColors.lineColor.g += (targetColors.lineColor.g - currentColors.lineColor.g) * lerpSpeed;
-        currentColors.lineColor.b += (targetColors.lineColor.b - currentColors.lineColor.b) * lerpSpeed;
-    }
-
-    // Draw the constellations
-    function draw(time) {
         ctx.clearRect(0, 0, width, height);
 
-        // Update colors based on scroll
-        updateThemeFromScroll();
+        // Check if it's time to switch active constellation
+        const timeSinceSwitch = time - lastSwitchTime;
 
-        const animationValue = (time % config.pulseSpeed) / config.pulseSpeed;
-        const { nodeColor, lineColor } = currentColors;
+        if (timeSinceSwitch > config.activeDuration && !isTransitioning) {
+            // Start transition to next constellation
+            isTransitioning = true;
+            transitionProgress = 0;
+            prevActiveIndex = activeIndex;
+            activeIndex = (activeIndex + 1) % constellations.length;
+        }
 
-        // Draw each constellation group
-        for (const constellation of constellations) {
-            if (constellation.opacity < 0.05) continue;
-
-            const basePulse = Math.sin(animationValue * Math.PI * 2 + constellation.pulsePhase) * 0.3 + 0.7;
-            const baseOpacity = constellation.opacity * basePulse;
-
-            // Draw connections first (behind nodes)
-            for (const [aIdx, bIdx] of constellation.connections) {
-                const nodeA = constellation.nodes[aIdx];
-                const nodeB = constellation.nodes[bIdx];
-
-                const lineOpacity = baseOpacity * 0.7;
-
-                // Draw glow line
-                ctx.beginPath();
-                ctx.strokeStyle = `rgba(${Math.round(lineColor.r)}, ${Math.round(lineColor.g)}, ${Math.round(lineColor.b)}, ${lineOpacity * 0.35})`;
-                ctx.lineWidth = 3;
-                ctx.shadowColor = `rgba(${Math.round(lineColor.r)}, ${Math.round(lineColor.g)}, ${Math.round(lineColor.b)}, 0.5)`;
-                ctx.shadowBlur = 6;
-                ctx.moveTo(nodeA.x, nodeA.y);
-                ctx.lineTo(nodeB.x, nodeB.y);
-                ctx.stroke();
-
-                // Draw main line
-                ctx.beginPath();
-                ctx.strokeStyle = `rgba(${Math.round(lineColor.r)}, ${Math.round(lineColor.g)}, ${Math.round(lineColor.b)}, ${lineOpacity})`;
-                ctx.lineWidth = 1.2;
-                ctx.shadowBlur = 0;
-                ctx.moveTo(nodeA.x, nodeA.y);
-                ctx.lineTo(nodeB.x, nodeB.y);
-                ctx.stroke();
-            }
-
-            // Draw nodes
-            for (const node of constellation.nodes) {
-                const nodePulse = Math.sin(animationValue * Math.PI * 2 + node.pulseOffset) * 0.2 + 0.8;
-                const nodeOpacity = baseOpacity * nodePulse;
-
-                // Node glow
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, 7, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(${Math.round(nodeColor.r)}, ${Math.round(nodeColor.g)}, ${Math.round(nodeColor.b)}, ${nodeOpacity * 0.4})`;
-                ctx.shadowColor = `rgba(${Math.round(nodeColor.r)}, ${Math.round(nodeColor.g)}, ${Math.round(nodeColor.b)}, 0.6)`;
-                ctx.shadowBlur = 10;
-                ctx.fill();
-
-                // Node core
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, 3.5, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(${Math.round(nodeColor.r)}, ${Math.round(nodeColor.g)}, ${Math.round(nodeColor.b)}, ${nodeOpacity})`;
-                ctx.shadowBlur = 0;
-                ctx.fill();
-
-                // Bright center
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, 1.8, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 255, 255, ${nodeOpacity * 0.85})`;
-                ctx.fill();
+        // Handle transition
+        if (isTransitioning) {
+            transitionProgress += deltaTime / config.transitionDuration;
+            if (transitionProgress >= 1) {
+                transitionProgress = 0;
+                isTransitioning = false;
+                lastSwitchTime = time;
+                prevActiveIndex = -1;
             }
         }
-    }
 
-    // Animation loop
-    function animate(time) {
-        updateConstellationLifecycle();
-        draw(time);
+        // Update all constellations
+        constellations.forEach((c, i) => {
+            const isActive = (i === activeIndex && !isTransitioning) ||
+                           (i === activeIndex && isTransitioning && transitionProgress > 0.5);
+            c.update(deltaTime, isActive);
+        });
+
+        // Draw all constellations
+        constellations.forEach(c => c.draw(ctx, time));
+
+        // Draw energy trail during transition
+        if (isTransitioning && prevActiveIndex >= 0) {
+            drawEnergyTrail(
+                ctx,
+                constellations[prevActiveIndex],
+                constellations[activeIndex],
+                transitionProgress
+            );
+        }
+
         animationId = requestAnimationFrame(animate);
     }
 
