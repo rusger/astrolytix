@@ -593,32 +593,64 @@ function initConstellation() {
         }
 
         draw(ctx, time) {
-            // Draw connections
+            // Draw connections with subtle energy flow
             for (const conn of this.connections) {
                 if (conn.opacity < 0.01) continue;
 
                 const nodeA = this.nodes[conn.a];
                 const nodeB = this.nodes[conn.b];
-                const alpha = conn.opacity * 0.6;
+                const baseAlpha = conn.opacity * 0.6;
 
-                // Glow line (thinner)
+                // Calculate line length and direction
+                const dx = nodeB.x - nodeA.x;
+                const dy = nodeB.y - nodeA.y;
+                const length = Math.sqrt(dx * dx + dy * dy);
+
+                // Draw line in segments for energy flow effect
+                const segments = Math.max(8, Math.floor(length / 12));
+
+                // Subtle glow base (static)
                 ctx.beginPath();
-                ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha * 0.3})`;
+                ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${baseAlpha * 0.2})`;
                 ctx.lineWidth = 1.5;
-                ctx.shadowColor = `rgba(${color.r}, ${color.g}, ${color.b}, 0.4)`;
+                ctx.shadowColor = `rgba(${color.r}, ${color.g}, ${color.b}, 0.3)`;
                 ctx.shadowBlur = 3;
                 ctx.moveTo(nodeA.x, nodeA.y);
                 ctx.lineTo(nodeB.x, nodeB.y);
                 ctx.stroke();
-
-                // Main line (thinner)
-                ctx.beginPath();
-                ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha * 0.8})`;
-                ctx.lineWidth = 0.6;
                 ctx.shadowBlur = 0;
-                ctx.moveTo(nodeA.x, nodeA.y);
-                ctx.lineTo(nodeB.x, nodeB.y);
-                ctx.stroke();
+
+                // Energy flow - draw segments with varying brightness
+                for (let i = 0; i < segments; i++) {
+                    const t0 = i / segments;
+                    const t1 = (i + 1) / segments;
+
+                    const x0 = nodeA.x + dx * t0;
+                    const y0 = nodeA.y + dy * t0;
+                    const x1 = nodeA.x + dx * t1;
+                    const y1 = nodeA.y + dy * t1;
+
+                    // Multiple energy waves at different speeds
+                    const pos = t0 * length;
+                    const wave1 = Math.sin((pos * 0.05) - (time * 0.002) + conn.order) * 0.5 + 0.5;
+                    const wave2 = Math.sin((pos * 0.08) - (time * 0.0035) + conn.order * 2.3) * 0.5 + 0.5;
+                    const wave3 = Math.sin((pos * 0.03) + (time * 0.0015) + conn.order * 1.7) * 0.5 + 0.5;
+
+                    // Atmospheric flicker
+                    const flicker = 0.95 + Math.sin(time * 0.01 + pos * 0.1 + conn.order * 5) * 0.05;
+
+                    // Combine waves for organic energy distribution (subtle variation 0.7-1.0)
+                    const energy = 0.7 + (wave1 * 0.12 + wave2 * 0.1 + wave3 * 0.08) * flicker;
+
+                    const segmentAlpha = baseAlpha * energy * 0.85;
+
+                    ctx.beginPath();
+                    ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${segmentAlpha})`;
+                    ctx.lineWidth = 0.6;
+                    ctx.moveTo(x0, y0);
+                    ctx.lineTo(x1, y1);
+                    ctx.stroke();
+                }
             }
 
             // Draw nodes (smaller to match thinner lines)
