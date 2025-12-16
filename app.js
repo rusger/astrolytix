@@ -1,6 +1,9 @@
 // Astrolytix - Realistic Starfield & Main JavaScript
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize procedural flickering stars layer
+    initProceduralStars();
+
     // Initialize constellation network overlay (parallax stars handled by CSS)
     initConstellation();
 
@@ -19,6 +22,100 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize feature detail visibility
     initFeatureDetailAnimations();
 });
+
+// Procedural flickering stars - third parallax layer
+function initProceduralStars() {
+    const canvas = document.getElementById('procedural-stars');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let stars = [];
+    let animationId;
+
+    // Movement speed (different from image layers: 120s and 240s)
+    const scrollSpeed = 0.15; // pixels per frame (~180s for full screen width)
+
+    function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+        createStars();
+    }
+
+    function createStars() {
+        stars = [];
+        // Low to low-moderate density: ~1 star per 8000px²
+        const area = width * height;
+        const starCount = Math.floor(area / 8000);
+
+        for (let i = 0; i < starCount; i++) {
+            stars.push({
+                x: Math.random() * width * 2, // Spread across 2x width for seamless scroll
+                y: Math.random() * height,
+                size: Math.random() * 1.5 + 0.5, // 0.5 to 2
+                baseAlpha: Math.random() * 0.4 + 0.3, // 0.3 to 0.7
+                flickerSpeed: Math.random() * 0.02 + 0.01, // Flicker rate
+                flickerOffset: Math.random() * Math.PI * 2,
+                // Color: mostly white with slight variations
+                color: {
+                    r: 220 + Math.floor(Math.random() * 35),
+                    g: 220 + Math.floor(Math.random() * 35),
+                    b: 230 + Math.floor(Math.random() * 25)
+                }
+            });
+        }
+    }
+
+    function animate(time) {
+        ctx.clearRect(0, 0, width, height);
+
+        // Move and draw stars
+        for (const star of stars) {
+            // Move star left
+            star.x -= scrollSpeed;
+
+            // Wrap around when off screen
+            if (star.x < -10) {
+                star.x = width + Math.random() * width;
+                star.y = Math.random() * height;
+            }
+
+            // Only draw if on screen
+            if (star.x > width + 10) continue;
+
+            // Flickering effect
+            const flicker = Math.sin(time * star.flickerSpeed + star.flickerOffset);
+            const alpha = star.baseAlpha * (0.5 + flicker * 0.5);
+
+            // Skip very dim moments
+            if (alpha < 0.1) continue;
+
+            // Draw star
+            ctx.beginPath();
+            ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${star.color.r}, ${star.color.g}, ${star.color.b}, ${alpha})`;
+            ctx.fill();
+
+            // Add subtle glow for larger stars
+            if (star.size > 1.2) {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size * 2.5, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${star.color.r}, ${star.color.g}, ${star.color.b}, ${alpha * 0.2})`;
+                ctx.fill();
+            }
+        }
+
+        animationId = requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+    animate(0);
+
+    window.addEventListener('beforeunload', () => {
+        cancelAnimationFrame(animationId);
+    });
+}
 
 // Constellation Network Overlay - Organic star patterns with flowing lines
 function initConstellation() {
