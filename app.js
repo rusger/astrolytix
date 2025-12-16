@@ -41,9 +41,9 @@ function initProceduralStars() {
         width = canvas.width = window.innerWidth;
         height = canvas.height = window.innerHeight;
 
-        // Moderate density: ~1 star per 4000px² (2x more)
+        // Low to low-moderate density: ~1 star per 8000px²
         const area = width * height;
-        targetStarCount = Math.floor(area / 4000);
+        targetStarCount = Math.floor(area / 8000);
 
         // Initialize stars if empty
         if (stars.length === 0) {
@@ -57,7 +57,7 @@ function initProceduralStars() {
         return {
             x: initialSpawn ? Math.random() * width : width + Math.random() * 100,
             y: Math.random() * height,
-            size: Math.random() * 6.1 + 0.5, // Range 0.5 to 6.6 (up to 3.3x bigger)
+            size: Math.random() * 1.5 + 0.5, // Range 0.5 to 2
             maxAlpha: Math.random() * 0.4 + 0.3,
             flickerSpeed: Math.random() * 0.002 + 0.001, // 10x slower flicker
             flickerOffset: Math.random() * Math.PI * 2,
