@@ -41,9 +41,9 @@ function initProceduralStars() {
         width = canvas.width = window.innerWidth;
         height = canvas.height = window.innerHeight;
 
-        // Low to low-moderate density: ~1 star per 8000px²
+        // Low to low-moderate density: ~1 star per 6150px² (30% more)
         const area = width * height;
-        targetStarCount = Math.floor(area / 8000);
+        targetStarCount = Math.floor(area / 6150);
 
         // Initialize stars if empty
         if (stars.length === 0) {
