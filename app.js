@@ -32,63 +32,99 @@ function initProceduralStars() {
     let width, height;
     let stars = [];
     let animationId;
+    let targetStarCount = 0;
 
-    // Movement speed (different from image layers: 120s and 240s)
-    const scrollSpeed = 0.15; // pixels per frame (~180s for full screen width)
+    // Movement speed: middle between far (120s) and near (240s) = ~180s per 2 screens = 90s per screen
+    const scrollSpeed = 0.35; // pixels per frame
 
     function resize() {
         width = canvas.width = window.innerWidth;
         height = canvas.height = window.innerHeight;
-        createStars();
-    }
 
-    function createStars() {
-        stars = [];
         // Low to low-moderate density: ~1 star per 8000px²
         const area = width * height;
-        const starCount = Math.floor(area / 8000);
+        targetStarCount = Math.floor(area / 8000);
 
-        for (let i = 0; i < starCount; i++) {
-            stars.push({
-                x: Math.random() * width * 2, // Spread across 2x width for seamless scroll
-                y: Math.random() * height,
-                size: Math.random() * 1.5 + 0.5, // 0.5 to 2
-                baseAlpha: Math.random() * 0.4 + 0.3, // 0.3 to 0.7
-                flickerSpeed: Math.random() * 0.02 + 0.01, // Flicker rate
-                flickerOffset: Math.random() * Math.PI * 2,
-                // Color: mostly white with slight variations
-                color: {
-                    r: 220 + Math.floor(Math.random() * 35),
-                    g: 220 + Math.floor(Math.random() * 35),
-                    b: 230 + Math.floor(Math.random() * 25)
-                }
-            });
+        // Initialize stars if empty
+        if (stars.length === 0) {
+            for (let i = 0; i < targetStarCount; i++) {
+                stars.push(createStar(true));
+            }
         }
+    }
+
+    function createStar(initialSpawn = false) {
+        return {
+            x: initialSpawn ? Math.random() * width : width + Math.random() * 100,
+            y: Math.random() * height,
+            size: Math.random() * 1.5 + 0.5,
+            maxAlpha: Math.random() * 0.4 + 0.3,
+            flickerSpeed: Math.random() * 0.002 + 0.001, // 10x slower flicker
+            flickerOffset: Math.random() * Math.PI * 2,
+            color: {
+                r: 220 + Math.floor(Math.random() * 35),
+                g: 220 + Math.floor(Math.random() * 35),
+                b: 230 + Math.floor(Math.random() * 25)
+            },
+            // Lifecycle: fade in, live, fade out, dead
+            state: 'fadeIn',
+            opacity: 0,
+            lifeTime: 8000 + Math.random() * 12000, // 8-20 seconds alive
+            birthTime: performance.now(),
+            fadeInDuration: 2000 + Math.random() * 2000,
+            fadeOutDuration: 2000 + Math.random() * 2000
+        };
     }
 
     function animate(time) {
         ctx.clearRect(0, 0, width, height);
 
-        // Move and draw stars
-        for (const star of stars) {
+        let aliveCount = 0;
+
+        for (let i = stars.length - 1; i >= 0; i--) {
+            const star = stars[i];
+            const age = time - star.birthTime;
+
             // Move star left
             star.x -= scrollSpeed;
 
-            // Wrap around when off screen
-            if (star.x < -10) {
-                star.x = width + Math.random() * width;
-                star.y = Math.random() * height;
+            // Update lifecycle
+            if (star.state === 'fadeIn') {
+                star.opacity = Math.min(1, age / star.fadeInDuration);
+                if (age >= star.fadeInDuration) {
+                    star.state = 'alive';
+                }
+            } else if (star.state === 'alive') {
+                star.opacity = 1;
+                if (age >= star.fadeInDuration + star.lifeTime) {
+                    star.state = 'fadeOut';
+                    star.fadeOutStart = time;
+                }
+            } else if (star.state === 'fadeOut') {
+                const fadeAge = time - star.fadeOutStart;
+                star.opacity = Math.max(0, 1 - fadeAge / star.fadeOutDuration);
+                if (star.opacity <= 0) {
+                    star.state = 'dead';
+                }
             }
+
+            // Remove dead stars or stars that scrolled off screen
+            if (star.state === 'dead' || star.x < -20) {
+                stars.splice(i, 1);
+                continue;
+            }
+
+            aliveCount++;
 
             // Only draw if on screen
             if (star.x > width + 10) continue;
 
-            // Flickering effect
+            // Flickering effect (10x slower)
             const flicker = Math.sin(time * star.flickerSpeed + star.flickerOffset);
-            const alpha = star.baseAlpha * (0.5 + flicker * 0.5);
+            const flickerAlpha = 0.6 + flicker * 0.4; // Subtle flicker range
+            const alpha = star.maxAlpha * star.opacity * flickerAlpha;
 
-            // Skip very dim moments
-            if (alpha < 0.1) continue;
+            if (alpha < 0.05) continue;
 
             // Draw star
             ctx.beginPath();
@@ -96,7 +132,7 @@ function initProceduralStars() {
             ctx.fillStyle = `rgba(${star.color.r}, ${star.color.g}, ${star.color.b}, ${alpha})`;
             ctx.fill();
 
-            // Add subtle glow for larger stars
+            // Subtle glow for larger stars
             if (star.size > 1.2) {
                 ctx.beginPath();
                 ctx.arc(star.x, star.y, star.size * 2.5, 0, Math.PI * 2);
@@ -105,12 +141,17 @@ function initProceduralStars() {
             }
         }
 
+        // Spawn new stars to maintain count
+        while (stars.length < targetStarCount) {
+            stars.push(createStar(false));
+        }
+
         animationId = requestAnimationFrame(animate);
     }
 
     window.addEventListener('resize', resize);
     resize();
-    animate(0);
+    animate(performance.now());
 
     window.addEventListener('beforeunload', () => {
         cancelAnimationFrame(animationId);
