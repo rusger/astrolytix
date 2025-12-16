@@ -44,7 +44,7 @@ body {
     background: linear-gradient(to bottom, var(--sky-top), var(--sky-bottom));
     --sky-top: rgb(5, 5, 15);
     --sky-bottom: rgb(15, 15, 35);
-    animation: sky-top 90s ease-in-out infinite, sky-bottom 90s ease-in-out infinite;
+    animation: sky-top 45s ease-in-out infinite, sky-bottom 45s ease-in-out infinite;
 }
 
 @property --sky-top {
@@ -99,14 +99,14 @@ body {
     background-image: url('space_far.png');
     opacity: 0.7;
     mix-blend-mode: screen; /* Black becomes transparent, stars show through */
-    animation: parallax-scroll 240s linear infinite;
+    animation: parallax-scroll 120s linear infinite;
 }
 
 .parallax-near {
     background-image: url('space_near.png');
     opacity: 0.9;
     mix-blend-mode: screen;
-    animation: parallax-scroll 120s linear infinite;
+    animation: parallax-scroll 240s linear infinite;
 }
 
 @keyframes parallax-scroll {
