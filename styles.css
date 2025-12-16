@@ -92,7 +92,7 @@ body {
     height: 100%;
     width: 400%; /* 4x width for seamless loop */
     background-repeat: repeat-x;
-    background-size: 25% 100%; /* Each tile is 25% of 400% = 100% screen width */
+    background-size: auto 100%; /* Maintain aspect ratio, fill height */
 }
 
 .parallax-far {
