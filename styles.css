@@ -1130,6 +1130,40 @@ html {
     }
 }
 
+/* Coming Soon Overlay */
+.coming-soon-overlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(15, 12, 41, 0.95);
+    border: 2px solid var(--accent-gold);
+    border-radius: 16px;
+    padding: 2rem 3rem;
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem;
+    color: var(--accent-gold);
+    text-align: center;
+    z-index: 10000;
+    box-shadow: 0 0 40px rgba(212, 175, 55, 0.3),
+                0 20px 60px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    pointer-events: none;
+}
+
+.coming-soon-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.coming-soon-overlay.fade-out {
+    opacity: 0;
+    transition: opacity 1.5s ease-out, visibility 1.5s ease-out;
+}
+
 /* Extra small screens */
 @media (max-width: 380px) {
     .navbar {

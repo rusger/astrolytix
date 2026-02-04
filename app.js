@@ -21,6 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize feature detail visibility
     initFeatureDetailAnimations();
+
+    // Initialize app store buttons
+    initAppStoreButtons();
 });
 
 // Procedural flickering stars - third parallax layer
@@ -650,6 +653,72 @@ function initFeatureDetailAnimations() {
 
     sections.forEach(section => {
         observer.observe(section);
+    });
+}
+
+// Initialize App Store buttons with iOS "Coming soon" overlay
+function initAppStoreButtons() {
+    const appStoreBtn = document.getElementById('app-store-btn');
+    const overlay = document.getElementById('coming-soon-overlay');
+
+    if (!appStoreBtn || !overlay) return;
+
+    // Detect iOS devices (iPhone, iPad, iPod)
+    function isIOS() {
+        return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+               (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    }
+
+    let overlayTimeout = null;
+
+    // Handle App Store button click
+    appStoreBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        // Clear any existing timeout
+        if (overlayTimeout) {
+            clearTimeout(overlayTimeout);
+        }
+
+        // Reset overlay state
+        overlay.classList.remove('fade-out');
+        overlay.classList.add('visible');
+
+        // Start fade-out after a brief moment
+        overlayTimeout = setTimeout(() => {
+            overlay.classList.add('fade-out');
+
+            // Hide completely after fade animation
+            setTimeout(() => {
+                overlay.classList.remove('visible', 'fade-out');
+            }, 1500);
+        }, 500);
+    });
+
+    // Click anywhere to dismiss overlay immediately
+    document.addEventListener('click', (e) => {
+        if (overlay.classList.contains('visible') && e.target !== appStoreBtn && !appStoreBtn.contains(e.target)) {
+            if (overlayTimeout) {
+                clearTimeout(overlayTimeout);
+            }
+            overlay.classList.add('fade-out');
+            setTimeout(() => {
+                overlay.classList.remove('visible', 'fade-out');
+            }, 1500);
+        }
+    });
+
+    // Touch event for mobile
+    document.addEventListener('touchstart', (e) => {
+        if (overlay.classList.contains('visible') && e.target !== appStoreBtn && !appStoreBtn.contains(e.target)) {
+            if (overlayTimeout) {
+                clearTimeout(overlayTimeout);
+            }
+            overlay.classList.add('fade-out');
+            setTimeout(() => {
+                overlay.classList.remove('visible', 'fade-out');
+            }, 1500);
+        }
     });
 }
 
