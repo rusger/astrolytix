@@ -663,61 +663,51 @@ function initAppStoreButtons() {
 
     if (!appStoreBtn || !overlay) return;
 
-    // Detect iOS devices (iPhone, iPad, iPod)
-    function isIOS() {
-        return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-               (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    let fadeTimeout = null;
+    let hideTimeout = null;
+
+    function showOverlay() {
+        // Clear any existing timeouts
+        if (fadeTimeout) clearTimeout(fadeTimeout);
+        if (hideTimeout) clearTimeout(hideTimeout);
+
+        // Show overlay
+        overlay.classList.remove('fade-out');
+        overlay.classList.add('visible');
+
+        // Start fade-out after brief display
+        fadeTimeout = setTimeout(() => {
+            overlay.classList.add('fade-out');
+
+            // Hide completely after 2s fade animation
+            hideTimeout = setTimeout(() => {
+                overlay.classList.remove('visible', 'fade-out');
+            }, 2000);
+        }, 300);
     }
 
-    let overlayTimeout = null;
+    function dismissOverlay() {
+        if (!overlay.classList.contains('visible')) return;
+
+        if (fadeTimeout) clearTimeout(fadeTimeout);
+        if (hideTimeout) clearTimeout(hideTimeout);
+
+        overlay.classList.add('fade-out');
+        hideTimeout = setTimeout(() => {
+            overlay.classList.remove('visible', 'fade-out');
+        }, 2000);
+    }
 
     // Handle App Store button click
     appStoreBtn.addEventListener('click', (e) => {
         e.preventDefault();
-
-        // Clear any existing timeout
-        if (overlayTimeout) {
-            clearTimeout(overlayTimeout);
-        }
-
-        // Reset overlay state
-        overlay.classList.remove('fade-out');
-        overlay.classList.add('visible');
-
-        // Start fade-out after a brief moment
-        overlayTimeout = setTimeout(() => {
-            overlay.classList.add('fade-out');
-
-            // Hide completely after fade animation
-            setTimeout(() => {
-                overlay.classList.remove('visible', 'fade-out');
-            }, 1500);
-        }, 500);
+        showOverlay();
     });
 
-    // Click anywhere to dismiss overlay immediately
+    // Click/tap anywhere else to dismiss
     document.addEventListener('click', (e) => {
-        if (overlay.classList.contains('visible') && e.target !== appStoreBtn && !appStoreBtn.contains(e.target)) {
-            if (overlayTimeout) {
-                clearTimeout(overlayTimeout);
-            }
-            overlay.classList.add('fade-out');
-            setTimeout(() => {
-                overlay.classList.remove('visible', 'fade-out');
-            }, 1500);
-        }
-    });
-
-    // Touch event for mobile
-    document.addEventListener('touchstart', (e) => {
-        if (overlay.classList.contains('visible') && e.target !== appStoreBtn && !appStoreBtn.contains(e.target)) {
-            if (overlayTimeout) {
-                clearTimeout(overlayTimeout);
-            }
-            overlay.classList.add('fade-out');
-            setTimeout(() => {
-                overlay.classList.remove('visible', 'fade-out');
-            }, 1500);
+        if (e.target !== appStoreBtn && !appStoreBtn.contains(e.target)) {
+            dismissOverlay();
         }
     });
 }
