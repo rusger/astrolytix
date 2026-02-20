@@ -533,6 +533,108 @@
             padding: 30px !important;
         }
 
+        /* Usage Report section styles */
+        .usage-report-container {
+            max-width: 1200px;
+        }
+
+        .usage-report-unlock {
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        .usage-report-unlock .form-group {
+            max-width: 300px;
+            margin: 0 auto 20px;
+        }
+
+        .usage-report-unlock .btn {
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .usage-report-date-range {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .usage-report-date-range .form-group {
+            margin-bottom: 0;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .usage-report-date-range .btn {
+            flex: 0 0 auto;
+            width: auto;
+            padding: 12px 24px;
+        }
+
+        .usage-report-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .usage-report-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .usage-report-card .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+        }
+
+        .usage-report-card .label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 5px;
+        }
+
+        .usage-report-chart-container {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .usage-report-chart-container h3 {
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        .usage-report-table-section h3 {
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        .usage-report-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .usage-report-actions .btn {
+            width: auto;
+            flex: 0 0 auto;
+        }
+
         /* Users section styles */
         .users-container {
             max-width: 1200px;
@@ -1032,6 +1134,7 @@
             <button class="nav-tab active" onclick="showSection('subscriptions')">Subscriptions</button>
             <button class="nav-tab" onclick="showSection('users')">Users</button>
             <button class="nav-tab" onclick="showSection('analytics')">Analytics</button>
+            <button class="nav-tab" onclick="showSection('usageReport')">Usage Report</button>
         </div>
 
         <div class="step-indicator" id="stepIndicator">
@@ -1267,6 +1370,102 @@
                 <button class="btn btn-secondary" onclick="loadUsers()" style="margin-top: 15px;">
                     Refresh Users
                 </button>
+            </div>
+        </div>
+
+        <!-- Usage Report Section -->
+        <div id="usageReportSection" class="hidden">
+            <!-- Unlock form (shown before 2FA) -->
+            <div id="usageReportUnlock" class="usage-report-unlock">
+                <h3 style="color: #d4af37; font-family: 'Cinzel', serif; font-size: 1.1rem; margin-bottom: 10px;">Usage Report</h3>
+                <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.85rem; margin-bottom: 20px;">
+                    Detailed per-email, per-date usage breakdown with cost estimates.<br>
+                    Requires a verification code (2FA).
+                </p>
+                <div class="form-group">
+                    <label for="usageReportCode">Verification Code</label>
+                    <input type="text" id="usageReportCode" placeholder="6-digit code" maxlength="6" pattern="[0-9]{6}">
+                </div>
+                <button class="btn btn-primary" id="unlockReportBtn" onclick="unlockUsageReport()">
+                    Unlock Report
+                </button>
+                <p style="color: rgba(255, 255, 255, 0.4); font-size: 0.75rem; margin-top: 15px;">
+                    Need a code? Go to Subscriptions tab and request a new verification code.
+                </p>
+            </div>
+
+            <!-- Report content (shown after 2FA) -->
+            <div id="usageReportContent" class="hidden">
+                <!-- Date range selector -->
+                <div class="usage-report-date-range">
+                    <div class="form-group">
+                        <label for="reportStartDate">Start Date</label>
+                        <input type="date" id="reportStartDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="reportEndDate">End Date</label>
+                        <input type="date" id="reportEndDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="reportPeriod">Period</label>
+                        <select id="reportPeriod">
+                            <option value="daily">Daily</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="refreshUsageReport()" style="padding: 12px 24px;">
+                        Refresh (New Code)
+                    </button>
+                </div>
+
+                <!-- Summary cards -->
+                <div class="usage-report-summary">
+                    <div class="usage-report-card">
+                        <div class="value" id="reportTotalCalls">-</div>
+                        <div class="label">Total Calls</div>
+                    </div>
+                    <div class="usage-report-card">
+                        <div class="value" id="reportTotalUsers">-</div>
+                        <div class="label">Unique Users</div>
+                    </div>
+                    <div class="usage-report-card">
+                        <div class="value" id="reportTotalTokens">-</div>
+                        <div class="label">Total Tokens</div>
+                    </div>
+                    <div class="usage-report-card">
+                        <div class="value" id="reportTotalCost">-</div>
+                        <div class="label">Estimated Cost</div>
+                    </div>
+                </div>
+
+                <!-- By-date chart -->
+                <div class="usage-report-chart-container">
+                    <h3>Usage Over Time</h3>
+                    <canvas id="usageReportChart" height="300"></canvas>
+                </div>
+
+                <!-- By-user table -->
+                <div class="usage-report-table-section">
+                    <h3>Usage by User</h3>
+                    <div id="usageReportGrid"></div>
+                </div>
+
+                <!-- Expanded daily breakdown (shown when clicking a user row) -->
+                <div id="usageReportDailyBreakdown" class="hidden" style="margin-top: 20px;">
+                    <div class="usage-report-chart-container">
+                        <h3 id="dailyBreakdownTitle">Daily Breakdown</h3>
+                        <div id="usageReportDailyGrid"></div>
+                    </div>
+                </div>
+
+                <div class="usage-report-actions">
+                    <button class="btn btn-secondary" onclick="refreshUsageReport()">
+                        Request New Code & Refresh
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportUsageReportCSV()">
+                        Export CSV
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -1661,7 +1860,8 @@
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('analyticsSection').classList.add('hidden');
             document.getElementById('usersSection').classList.add('hidden');
-            document.getElementById('mainContainer').classList.remove('analytics-container', 'users-container');
+            document.getElementById('usageReportSection').classList.add('hidden');
+            document.getElementById('mainContainer').classList.remove('analytics-container', 'users-container', 'usage-report-container');
 
             if (section === 'subscriptions') {
                 document.getElementById('step2').classList.remove('hidden');
@@ -1677,6 +1877,9 @@
                 if (!usersData) {
                     loadUsers();
                 }
+            } else if (section === 'usageReport') {
+                document.getElementById('usageReportSection').classList.remove('hidden');
+                document.getElementById('mainContainer').classList.add('usage-report-container');
             }
         }
 
@@ -2571,6 +2774,319 @@
             document.getElementById('targetEmail').value = selectedUser.email;
             // Set super toggle based on user's current status
             document.getElementById('superToggle').checked = selectedUser.is_super;
+        }
+
+        // ========== Usage Report ==========
+        let usageReportData = null;
+        let usageReportChart = null;
+        let usageReportGridInstance = null;
+
+        async function unlockUsageReport() {
+            const code = document.getElementById('usageReportCode').value.trim();
+            if (!code) {
+                showMessage('Please enter a verification code', 'error');
+                return;
+            }
+            if (!storedAdminEmail || !storedAdminSecret) {
+                showMessage('Please complete Step 1 first to authenticate', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('unlockReportBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span>Loading Report...';
+            hideMessage();
+
+            const startDate = document.getElementById('reportStartDate').value;
+            const endDate = document.getElementById('reportEndDate').value;
+            const period = document.getElementById('reportPeriod') ? document.getElementById('reportPeriod').value : 'daily';
+
+            try {
+                let url = `${API_BASE}/api/admin/usage-report?admin_email=${encodeURIComponent(storedAdminEmail)}&admin_secret=${encodeURIComponent(storedAdminSecret)}&verification_code=${encodeURIComponent(code)}`;
+                if (startDate) url += `&start_date=${startDate}`;
+                if (endDate) url += `&end_date=${endDate}`;
+                if (period) url += `&period=${period}`;
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.success) {
+                    usageReportData = data.report;
+                    document.getElementById('usageReportUnlock').classList.add('hidden');
+                    document.getElementById('usageReportContent').classList.remove('hidden');
+                    document.getElementById('usageReportCode').value = '';
+                    renderUsageReport();
+                    showMessage('Usage report loaded successfully!', 'success');
+                } else {
+                    showMessage(data.error || 'Failed to load usage report', 'error');
+                }
+            } catch (error) {
+                console.error('Usage report error:', error);
+                showMessage('Network error loading usage report', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Unlock Report';
+            }
+        }
+
+        function refreshUsageReport() {
+            // Reset to unlock form so user can enter a new code
+            usageReportData = null;
+            if (usageReportChart) {
+                usageReportChart.destroy();
+                usageReportChart = null;
+            }
+            if (usageReportGridInstance) {
+                usageReportGridInstance.destroy();
+                usageReportGridInstance = null;
+            }
+            document.getElementById('usageReportGrid').innerHTML = '';
+            document.getElementById('usageReportDailyBreakdown').classList.add('hidden');
+            document.getElementById('usageReportContent').classList.add('hidden');
+            document.getElementById('usageReportUnlock').classList.remove('hidden');
+            showMessage('Enter a new verification code to refresh the report', 'success');
+        }
+
+        function renderUsageReport() {
+            if (!usageReportData) return;
+
+            const report = usageReportData;
+
+            // Summary cards
+            document.getElementById('reportTotalCalls').textContent = (report.totals.calls || 0).toLocaleString();
+            document.getElementById('reportTotalUsers').textContent = (report.totals.users || 0).toLocaleString();
+            document.getElementById('reportTotalTokens').textContent = formatTokenCount(report.totals.tokens || 0);
+            document.getElementById('reportTotalCost').textContent = report.totals.cost || '$0.00';
+
+            // By-date chart
+            renderUsageReportChart(report.by_date || []);
+
+            // By-user table
+            renderUsageReportTable(report.by_user || []);
+        }
+
+        function formatTokenCount(tokens) {
+            if (tokens >= 1000000) return (tokens / 1000000).toFixed(1) + 'M';
+            if (tokens >= 1000) return (tokens / 1000).toFixed(1) + 'K';
+            return tokens.toString();
+        }
+
+        function renderUsageReportChart(byDate) {
+            if (usageReportChart) {
+                usageReportChart.destroy();
+            }
+
+            const ctx = document.getElementById('usageReportChart').getContext('2d');
+            const labels = byDate.map(d => d.date);
+            const callsData = byDate.map(d => d.total_calls);
+            const usersData = byDate.map(d => d.unique_users);
+            const tokensData = byDate.map(d => d.tokens);
+
+            usageReportChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'API Calls',
+                            data: callsData,
+                            backgroundColor: 'rgba(212, 175, 55, 0.6)',
+                            borderColor: '#d4af37',
+                            borderWidth: 1,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Unique Users',
+                            data: usersData,
+                            backgroundColor: 'rgba(99, 102, 241, 0.6)',
+                            borderColor: '#6366f1',
+                            borderWidth: 1,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Tokens (K)',
+                            data: tokensData.map(t => t / 1000),
+                            type: 'line',
+                            borderColor: '#22c55e',
+                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 3,
+                            fill: true,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: 'rgba(255,255,255,0.6)', maxRotation: 45 },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        },
+                        y: {
+                            type: 'linear',
+                            position: 'left',
+                            ticks: { color: 'rgba(255,255,255,0.6)' },
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            title: { display: true, text: 'Count', color: 'rgba(255,255,255,0.6)' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            position: 'right',
+                            ticks: { color: 'rgba(34, 197, 94, 0.8)' },
+                            grid: { drawOnChartArea: false },
+                            title: { display: true, text: 'Tokens (K)', color: 'rgba(34, 197, 94, 0.8)' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: 'rgba(255,255,255,0.8)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderUsageReportTable(byUser) {
+            if (usageReportGridInstance) {
+                usageReportGridInstance.destroy();
+                usageReportGridInstance = null;
+            }
+            document.getElementById('usageReportGrid').innerHTML = '';
+
+            usageReportGridInstance = new gridjs.Grid({
+                columns: [
+                    { name: 'Email', width: '220px' },
+                    { name: 'Type', width: '80px' },
+                    { name: 'Astrolog', width: '90px', sort: true },
+                    { name: 'ChatGPT', width: '90px', sort: true },
+                    { name: 'Total', width: '80px', sort: true },
+                    { name: 'Tokens', width: '100px', sort: true },
+                    { name: 'Cost', width: '90px', sort: true },
+                    {
+                        name: 'Details',
+                        width: '80px',
+                        formatter: (cell, row) => {
+                            return gridjs.html(`<button style="background: rgba(212,175,55,0.2); border: 1px solid rgba(212,175,55,0.4); color: #d4af37; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem;" onclick="showUserDailyBreakdown('${row.cells[0].data}')">View</button>`);
+                        }
+                    }
+                ],
+                data: byUser.map(u => [
+                    u.email,
+                    u.type + (u.is_super ? ' *' : ''),
+                    u.astrolog_calls,
+                    u.chatgpt_calls,
+                    u.total_calls,
+                    formatTokenCount(u.total_tokens),
+                    u.estimated_cost
+                ]),
+                search: true,
+                sort: true,
+                pagination: {
+                    limit: 20
+                },
+                style: {
+                    table: { 'white-space': 'nowrap' },
+                    th: {
+                        'background-color': 'rgba(212, 175, 55, 0.15)',
+                        'color': '#d4af37',
+                        'border-color': 'rgba(212, 175, 55, 0.2)',
+                        'font-family': "'Cinzel', serif",
+                        'font-size': '0.75rem'
+                    },
+                    td: {
+                        'background-color': 'rgba(0, 0, 0, 0.2)',
+                        'color': '#fff',
+                        'border-color': 'rgba(212, 175, 55, 0.1)',
+                        'font-size': '0.8rem'
+                    }
+                }
+            }).render(document.getElementById('usageReportGrid'));
+        }
+
+        function showUserDailyBreakdown(email) {
+            if (!usageReportData || !usageReportData.by_user) return;
+            const user = usageReportData.by_user.find(u => u.email === email);
+            if (!user || !user.daily || user.daily.length === 0) {
+                showMessage('No daily breakdown available for this user', 'error');
+                return;
+            }
+
+            document.getElementById('dailyBreakdownTitle').textContent = `Daily Breakdown: ${email}`;
+            document.getElementById('usageReportDailyBreakdown').classList.remove('hidden');
+
+            const container = document.getElementById('usageReportDailyGrid');
+            container.innerHTML = '';
+
+            const dailyGrid = new gridjs.Grid({
+                columns: [
+                    { name: 'Date', width: '120px' },
+                    { name: 'Calls', width: '80px' },
+                    { name: 'Astrolog', width: '90px' },
+                    { name: 'ChatGPT', width: '90px' },
+                    { name: 'Tokens', width: '100px' },
+                    { name: 'Cost', width: '90px' }
+                ],
+                data: user.daily.map(d => [
+                    d.date,
+                    d.calls,
+                    d.astrolog_calls,
+                    d.chatgpt_calls,
+                    formatTokenCount(d.tokens),
+                    d.cost
+                ]),
+                sort: true,
+                style: {
+                    table: { 'white-space': 'nowrap' },
+                    th: {
+                        'background-color': 'rgba(212, 175, 55, 0.15)',
+                        'color': '#d4af37',
+                        'border-color': 'rgba(212, 175, 55, 0.2)',
+                        'font-family': "'Cinzel', serif",
+                        'font-size': '0.75rem'
+                    },
+                    td: {
+                        'background-color': 'rgba(0, 0, 0, 0.2)',
+                        'color': '#fff',
+                        'border-color': 'rgba(212, 175, 55, 0.1)',
+                        'font-size': '0.8rem'
+                    }
+                }
+            }).render(container);
+
+            // Scroll to the breakdown
+            document.getElementById('usageReportDailyBreakdown').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function exportUsageReportCSV() {
+            if (!usageReportData || !usageReportData.by_user) {
+                showMessage('No report data to export', 'error');
+                return;
+            }
+
+            const rows = [['Email', 'Type', 'Super', 'Astrolog Calls', 'ChatGPT Calls', 'Total Calls', 'Prompt Tokens', 'Completion Tokens', 'Total Tokens', 'Estimated Cost']];
+            for (const u of usageReportData.by_user) {
+                rows.push([
+                    u.email, u.type, u.is_super, u.astrolog_calls, u.chatgpt_calls,
+                    u.total_calls, u.prompt_tokens, u.completion_tokens, u.total_tokens, u.estimated_cost
+                ]);
+            }
+
+            const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `usage_report_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+            showMessage('CSV exported successfully!', 'success');
         }
     </script>
 </body>
