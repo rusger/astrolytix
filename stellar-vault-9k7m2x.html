@@ -907,6 +907,101 @@
             margin-left: 6px;
         }
 
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 10px;
+        }
+
+        .filter-label {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .filter-toggles {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+            user-select: none;
+            border: 1px solid transparent;
+        }
+
+        .filter-toggle.active {
+            border-color: currentColor;
+            opacity: 1;
+        }
+
+        .filter-toggle:not(.active) {
+            opacity: 0.4;
+        }
+
+        .filter-toggle:hover {
+            opacity: 0.8;
+        }
+
+        .filter-toggle .filter-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .filter-toggle .filter-count {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.7rem;
+        }
+
+        .filter-toggle[data-category="astrolog"] {
+            color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+        .filter-toggle[data-category="astrolog"] .filter-dot {
+            background: #d4af37;
+        }
+
+        .filter-toggle[data-category="chatgpt"] {
+            color: #a855f7;
+            background: rgba(168, 85, 247, 0.1);
+        }
+        .filter-toggle[data-category="chatgpt"] .filter-dot {
+            background: #a855f7;
+        }
+
+        .filter-toggle[data-category="transit-year"] {
+            color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+        .filter-toggle[data-category="transit-year"] .filter-dot {
+            background: #3b82f6;
+        }
+
+        .filter-toggle[data-category="unknown"] {
+            color: #9ca3af;
+            background: rgba(156, 163, 175, 0.1);
+        }
+        .filter-toggle[data-category="unknown"] .filter-dot {
+            background: #9ca3af;
+        }
+
         /* Make grid rows clickable */
         .gridjs-tr {
             cursor: pointer;
@@ -1106,6 +1201,12 @@
                         <p id="modelByUserProgressText" style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 8px; text-align: center;">Loading...</p>
                     </div>
                     <div id="modelByUserSummary" class="hidden"></div>
+                    <div id="modelByUserFilters" class="hidden">
+                        <div class="filter-bar">
+                            <span class="filter-label">Show:</span>
+                            <div class="filter-toggles" id="categoryToggles"></div>
+                        </div>
+                    </div>
                     <div id="modelByUserGrid" class="hidden"></div>
                 </div>
 
@@ -2172,6 +2273,15 @@
         // ============================================
 
         let modelByUserGridInstance = null;
+        let modelByUserRawData = null; // cached server response
+        let activeCategories = {};     // category -> boolean
+
+        const CATEGORY_LABELS = {
+            'astrolog': 'Astrology Charts',
+            'chatgpt': 'ChatGPT Models',
+            'transit-year': 'Transit Years',
+            'unknown': 'Other'
+        };
 
         async function loadModelUsageByUser() {
             if (!storedAdminEmail || !storedAdminSecret) {
@@ -2184,16 +2294,15 @@
             const progress = document.getElementById('modelByUserProgress');
             const progressBar = document.getElementById('modelByUserProgressBar');
             const progressText = document.getElementById('modelByUserProgressText');
-            const gridContainer = document.getElementById('modelByUserGrid');
-            const summaryContainer = document.getElementById('modelByUserSummary');
 
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner"></span>Loading...';
             progress.classList.remove('hidden');
             progressBar.style.width = '50%';
             progressText.textContent = 'Fetching aggregated model usage from server...';
-            summaryContainer.classList.add('hidden');
-            gridContainer.classList.add('hidden');
+            document.getElementById('modelByUserSummary').classList.add('hidden');
+            document.getElementById('modelByUserFilters').classList.add('hidden');
+            document.getElementById('modelByUserGrid').classList.add('hidden');
 
             try {
                 const response = await fetch(
@@ -2211,15 +2320,16 @@
                     return;
                 }
 
-                const modelList = data.models || [];
-                const globalModelTotals = data.model_totals || {};
-                // Filter out @device.astrolytix.app emails
-                const userModelData = (data.users || []).filter(u => !u.email.includes('@device.astrolytix.app'));
+                // Filter out device-based emails
+                data.users = (data.users || []).filter(u => !u.email.includes('@device.astrolytix.app'));
+
+                modelByUserRawData = data;
 
                 progress.classList.add('hidden');
                 container.classList.add('hidden');
 
-                if (userModelData.length === 0) {
+                if (data.users.length === 0) {
+                    const gridContainer = document.getElementById('modelByUserGrid');
                     gridContainer.classList.remove('hidden');
                     gridContainer.innerHTML = '<p class="no-calls-message">No model usage data found</p>';
                     container.classList.remove('hidden');
@@ -2228,76 +2338,25 @@
                     return;
                 }
 
-                // Show summary chips
-                summaryContainer.classList.remove('hidden');
-                const totalAllCalls = Object.values(globalModelTotals).reduce((s, v) => s + v, 0);
-                summaryContainer.innerHTML = `
-                    <div class="model-summary-row">
-                        ${modelList.map(m => `
-                            <div class="model-summary-chip">
-                                <span class="chip-model">${m}</span>
-                                <span class="chip-count">${(globalModelTotals[m] || 0).toLocaleString()} calls (${totalAllCalls ? Math.round((globalModelTotals[m] || 0) / totalAllCalls * 100) : 0}%)</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
+                // Build category groups
+                const categories = {};
+                const modelCats = data.model_categories || {};
+                const modelTotals = data.model_totals || {};
+                (data.models || []).forEach(m => {
+                    const cat = modelCats[m] || 'unknown';
+                    if (!categories[cat]) categories[cat] = { models: [], total: 0 };
+                    categories[cat].models.push(m);
+                    categories[cat].total += modelTotals[m] || 0;
+                });
 
-                // Build grid columns
-                const columns = [
-                    { name: 'Email', width: '200px', sort: true, formatter: (cell) => gridjs.html(`<span class="user-email" title="${cell}">${cell}</span>`) },
-                    { name: 'Type', width: '80px', sort: true, formatter: (cell) => {
-                        const cls = cell === 'paid' ? 'badge-paid' : 'badge-free';
-                        return gridjs.html(`<span class="badge ${cls}">${cell}</span>`);
-                    }},
-                    ...modelList.map(m => ({
-                        name: m,
-                        width: '100px',
-                        sort: true,
-                        formatter: (cell) => {
-                            if (!cell) return '-';
-                            return gridjs.html(`<span style="color: #d4af37; font-weight: 600;">${cell}</span>`);
-                        }
-                    })),
-                    { name: 'Total', width: '80px', sort: true, formatter: (cell) => gridjs.html(`<span style="color: #f4d03f; font-weight: 700;">${cell}</span>`) }
-                ];
-
-                const rows = userModelData.map(u => [
-                    u.email,
-                    u.type,
-                    ...modelList.map(m => (u.models && u.models[m]) || 0),
-                    u.total
-                ]);
-
-                // Render grid
-                gridContainer.classList.remove('hidden');
-                gridContainer.innerHTML = '';
-
-                if (modelByUserGridInstance) {
-                    modelByUserGridInstance.destroy();
-                    modelByUserGridInstance = null;
+                // Default: enable astrolog and chatgpt, disable transit-year
+                activeCategories = {};
+                for (const cat in categories) {
+                    activeCategories[cat] = (cat !== 'transit-year');
                 }
 
-                modelByUserGridInstance = new gridjs.Grid({
-                    columns: columns,
-                    data: rows,
-                    search: { enabled: true, placeholder: 'Search users...' },
-                    sort: true,
-                    pagination: { enabled: true, limit: 20, summary: true },
-                    style: { table: { width: '100%' } }
-                }).render(gridContainer);
-
-                // Add refresh button and stats
-                const footer = document.createElement('div');
-                footer.style.cssText = 'margin-top: 15px; text-align: center;';
-                footer.innerHTML = `
-                    <button class="btn btn-secondary" onclick="reloadModelUsageByUser()" style="max-width: 200px; display: inline-block;">
-                        Refresh Data
-                    </button>
-                    <p style="color: rgba(255,255,255,0.4); font-size: 0.75rem; margin-top: 8px;">
-                        ${userModelData.length} users with API calls &middot; ${modelList.length} models detected &middot; ${totalAllCalls.toLocaleString()} total calls
-                    </p>
-                `;
-                gridContainer.appendChild(footer);
+                renderCategoryFilters(categories);
+                renderModelByUserView();
 
             } catch (error) {
                 console.error('Model usage error:', error);
@@ -2308,14 +2367,190 @@
             }
         }
 
+        function renderCategoryFilters(categories) {
+            const filtersDiv = document.getElementById('modelByUserFilters');
+            const togglesDiv = document.getElementById('categoryToggles');
+            filtersDiv.classList.remove('hidden');
+
+            const order = ['astrolog', 'chatgpt', 'transit-year', 'unknown'];
+            const sortedCats = Object.keys(categories).sort((a, b) => {
+                const ai = order.indexOf(a), bi = order.indexOf(b);
+                return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+            });
+
+            togglesDiv.innerHTML = sortedCats.map(cat => {
+                const label = CATEGORY_LABELS[cat] || cat;
+                const count = categories[cat].models.length;
+                const total = categories[cat].total;
+                const isActive = activeCategories[cat];
+                return `
+                    <div class="filter-toggle ${isActive ? 'active' : ''}"
+                         data-category="${cat}"
+                         onclick="toggleModelCategory('${cat}')">
+                        <span class="filter-dot"></span>
+                        <span>${label}</span>
+                        <span class="filter-count">(${count} · ${total.toLocaleString()})</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleModelCategory(cat) {
+            activeCategories[cat] = !activeCategories[cat];
+
+            // Update toggle UI
+            document.querySelectorAll(`.filter-toggle[data-category="${cat}"]`).forEach(el => {
+                el.classList.toggle('active', activeCategories[cat]);
+            });
+
+            renderModelByUserView();
+        }
+
+        function renderModelByUserView() {
+            const data = modelByUserRawData;
+            if (!data) return;
+
+            const modelCats = data.model_categories || {};
+            const globalModelTotals = data.model_totals || {};
+
+            // Filter models by active categories
+            const filteredModels = (data.models || []).filter(m => {
+                const cat = modelCats[m] || 'unknown';
+                return activeCategories[cat];
+            });
+
+            // Recalculate user data with only filtered models
+            const userModelData = data.users.map(u => {
+                let filteredTotal = 0;
+                filteredModels.forEach(m => {
+                    filteredTotal += (u.models && u.models[m]) || 0;
+                });
+                return { ...u, filteredTotal };
+            }).filter(u => u.filteredTotal > 0);
+
+            // Sort by filtered total
+            userModelData.sort((a, b) => b.filteredTotal - a.filteredTotal);
+
+            // Update summary chips (only filtered models)
+            const summaryContainer = document.getElementById('modelByUserSummary');
+            summaryContainer.classList.remove('hidden');
+            const filteredTotalCalls = filteredModels.reduce((s, m) => s + (globalModelTotals[m] || 0), 0);
+
+            // Group summary chips by category
+            const chipsByCategory = {};
+            filteredModels.forEach(m => {
+                const cat = modelCats[m] || 'unknown';
+                if (!chipsByCategory[cat]) chipsByCategory[cat] = [];
+                chipsByCategory[cat].push(m);
+            });
+
+            // Only show top models per category in summary (max 5 per category to avoid clutter)
+            let summaryHtml = '<div class="model-summary-row">';
+            for (const cat in chipsByCategory) {
+                const models = chipsByCategory[cat].slice(0, cat === 'transit-year' ? 3 : 10);
+                const remaining = chipsByCategory[cat].length - models.length;
+                models.forEach(m => {
+                    summaryHtml += `
+                        <div class="model-summary-chip">
+                            <span class="chip-model">${m}</span>
+                            <span class="chip-count">${(globalModelTotals[m] || 0).toLocaleString()} calls (${filteredTotalCalls ? Math.round((globalModelTotals[m] || 0) / filteredTotalCalls * 100) : 0}%)</span>
+                        </div>`;
+                });
+                if (remaining > 0) {
+                    summaryHtml += `
+                        <div class="model-summary-chip">
+                            <span class="chip-model">+${remaining} more ${CATEGORY_LABELS[cat] || cat}</span>
+                        </div>`;
+                }
+            }
+            summaryHtml += '</div>';
+            summaryContainer.innerHTML = summaryHtml;
+
+            // Build grid
+            const gridContainer = document.getElementById('modelByUserGrid');
+            gridContainer.classList.remove('hidden');
+            gridContainer.innerHTML = '';
+
+            if (modelByUserGridInstance) {
+                modelByUserGridInstance.destroy();
+                modelByUserGridInstance = null;
+            }
+
+            if (userModelData.length === 0) {
+                gridContainer.innerHTML = '<p class="no-calls-message">No data for selected categories</p>';
+                return;
+            }
+
+            const categoryColors = {
+                'astrolog': '#d4af37',
+                'chatgpt': '#a855f7',
+                'transit-year': '#3b82f6',
+                'unknown': '#9ca3af'
+            };
+
+            const columns = [
+                { name: 'Email', width: '200px', sort: true, formatter: (cell) => gridjs.html(`<span class="user-email" title="${cell}">${cell}</span>`) },
+                { name: 'Type', width: '80px', sort: true, formatter: (cell) => {
+                    const cls = cell === 'paid' ? 'badge-paid' : 'badge-free';
+                    return gridjs.html(`<span class="badge ${cls}">${cell}</span>`);
+                }},
+                ...filteredModels.map(m => {
+                    const cat = modelCats[m] || 'unknown';
+                    const color = categoryColors[cat] || '#d4af37';
+                    return {
+                        name: m,
+                        width: '100px',
+                        sort: true,
+                        formatter: (cell) => {
+                            if (!cell) return '-';
+                            return gridjs.html(`<span style="color: ${color}; font-weight: 600;">${cell}</span>`);
+                        }
+                    };
+                }),
+                { name: 'Total', width: '80px', sort: true, formatter: (cell) => gridjs.html(`<span style="color: #f4d03f; font-weight: 700;">${cell}</span>`) }
+            ];
+
+            const rows = userModelData.map(u => [
+                u.email,
+                u.type,
+                ...filteredModels.map(m => (u.models && u.models[m]) || 0),
+                u.filteredTotal
+            ]);
+
+            modelByUserGridInstance = new gridjs.Grid({
+                columns: columns,
+                data: rows,
+                search: { enabled: true, placeholder: 'Search users...' },
+                sort: true,
+                pagination: { enabled: true, limit: 20, summary: true },
+                style: { table: { width: '100%' } }
+            }).render(gridContainer);
+
+            // Footer
+            const footer = document.createElement('div');
+            footer.style.cssText = 'margin-top: 15px; text-align: center;';
+            footer.innerHTML = `
+                <button class="btn btn-secondary" onclick="reloadModelUsageByUser()" style="max-width: 200px; display: inline-block;">
+                    Refresh Data
+                </button>
+                <p style="color: rgba(255,255,255,0.4); font-size: 0.75rem; margin-top: 8px;">
+                    ${userModelData.length} users &middot; ${filteredModels.length} models &middot; ${filteredTotalCalls.toLocaleString()} total calls
+                </p>
+            `;
+            gridContainer.appendChild(footer);
+        }
+
         function reloadModelUsageByUser() {
             const container = document.getElementById('modelByUserContainer');
             const gridContainer = document.getElementById('modelByUserGrid');
             const summaryContainer = document.getElementById('modelByUserSummary');
+            const filtersDiv = document.getElementById('modelByUserFilters');
             container.classList.remove('hidden');
             gridContainer.classList.add('hidden');
             gridContainer.innerHTML = '';
             summaryContainer.classList.add('hidden');
+            filtersDiv.classList.add('hidden');
+            modelByUserRawData = null;
             if (modelByUserGridInstance) {
                 modelByUserGridInstance.destroy();
                 modelByUserGridInstance = null;
