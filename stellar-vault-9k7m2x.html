@@ -1413,8 +1413,11 @@
                             <option value="monthly">Monthly</option>
                         </select>
                     </div>
-                    <button class="btn btn-primary" onclick="refreshUsageReport()" style="padding: 12px 24px;">
-                        Refresh (New Code)
+                    <button class="btn btn-primary" onclick="applyDateFilter()" style="padding: 12px 24px;">
+                        Apply Filter
+                    </button>
+                    <button class="btn btn-secondary" onclick="refreshUsageReport()" style="padding: 12px 24px; width: auto;">
+                        New Code
                     </button>
                 </div>
 
@@ -2855,15 +2858,9 @@
             btn.innerHTML = '<span class="spinner"></span>Loading Report...';
             hideMessage();
 
-            const startDate = document.getElementById('reportStartDate').value;
-            const endDate = document.getElementById('reportEndDate').value;
-            const period = document.getElementById('reportPeriod') ? document.getElementById('reportPeriod').value : 'daily';
-
             try {
+                // Load ALL data (no date filter) — filtering is done client-side
                 let url = `${API_BASE}/api/admin/usage-report?admin_email=${encodeURIComponent(storedAdminEmail)}&admin_secret=${encodeURIComponent(storedAdminSecret)}&verification_code=${encodeURIComponent(code)}`;
-                if (startDate) url += `&start_date=${startDate}`;
-                if (endDate) url += `&end_date=${endDate}`;
-                if (period) url += `&period=${period}`;
 
                 const response = await fetch(url);
                 const data = await response.json();
@@ -2887,6 +2884,19 @@
             }
         }
 
+        function applyDateFilter() {
+            if (!usageReportData) {
+                showMessage('No data loaded yet. Enter a verification code first.', 'error');
+                return;
+            }
+            renderUsageReport();
+            // Also re-fetch OpenAI costs with new dates if key is in memory
+            if (openaiAdminKeyInMemory) {
+                fetchOpenAICosts();
+            }
+            showMessage('Filter applied!', 'success');
+        }
+
         function refreshUsageReport() {
             // Reset to unlock form so user can enter a new code
             usageReportData = null;
@@ -2907,10 +2917,77 @@
             showMessage('Enter a new verification code to refresh the report', 'success');
         }
 
-        function renderUsageReport() {
-            if (!usageReportData) return;
-
+        function getFilteredReport() {
+            if (!usageReportData) return null;
             const report = usageReportData;
+            const startDate = document.getElementById('reportStartDate').value;
+            const endDate = document.getElementById('reportEndDate').value;
+
+            if (!startDate && !endDate) return report;
+
+            // Filter by_date
+            const filteredByDate = (report.by_date || []).filter(d => {
+                if (startDate && d.date < startDate) return false;
+                if (endDate && d.date > endDate) return false;
+                return true;
+            });
+
+            // Filter by_user daily entries and recalculate totals
+            let totalCalls = 0, totalTokens = 0, totalCostNum = 0;
+            const uniqueUsers = new Set();
+
+            const filteredByUser = (report.by_user || []).map(u => {
+                const filteredDaily = (u.daily || []).filter(d => {
+                    if (startDate && d.date < startDate) return false;
+                    if (endDate && d.date > endDate) return false;
+                    return true;
+                });
+                if (filteredDaily.length === 0) return null;
+
+                const calls = filteredDaily.reduce((s, d) => s + d.calls, 0);
+                const astrologCalls = filteredDaily.reduce((s, d) => s + d.astrolog_calls, 0);
+                const chatgptCalls = filteredDaily.reduce((s, d) => s + d.chatgpt_calls, 0);
+                const promptToks = filteredDaily.reduce((s, d) => s + (d.prompt_tokens || 0), 0);
+                const completionToks = filteredDaily.reduce((s, d) => s + (d.completion_tokens || 0), 0);
+                const totalToks = filteredDaily.reduce((s, d) => s + (d.tokens || 0), 0);
+                const costSum = filteredDaily.reduce((s, d) => s + parseFloat((d.cost || '$0').replace('$', '')), 0);
+
+                totalCalls += calls;
+                totalTokens += totalToks;
+                totalCostNum += costSum;
+                uniqueUsers.add(u.email);
+
+                return {
+                    ...u,
+                    total_calls: calls,
+                    astrolog_calls: astrologCalls,
+                    chatgpt_calls: chatgptCalls,
+                    prompt_tokens: promptToks,
+                    completion_tokens: completionToks,
+                    total_tokens: totalToks,
+                    estimated_cost: `$${costSum.toFixed(4)}`,
+                    daily: filteredDaily
+                };
+            }).filter(Boolean);
+
+            // Sort by total_calls descending
+            filteredByUser.sort((a, b) => b.total_calls - a.total_calls);
+
+            return {
+                by_date: filteredByDate,
+                by_user: filteredByUser,
+                totals: {
+                    calls: totalCalls,
+                    users: uniqueUsers.size,
+                    tokens: totalTokens,
+                    cost: `$${totalCostNum.toFixed(4)}`
+                }
+            };
+        }
+
+        function renderUsageReport() {
+            const report = getFilteredReport();
+            if (!report) return;
 
             // Summary cards
             document.getElementById('reportTotalCalls').textContent = (report.totals.calls || 0).toLocaleString();
@@ -2923,6 +3000,9 @@
 
             // By-user table
             renderUsageReportTable(report.by_user || []);
+
+            // Hide daily breakdown when re-rendering
+            document.getElementById('usageReportDailyBreakdown').classList.add('hidden');
         }
 
         function formatTokenCount(tokens) {
@@ -3071,8 +3151,9 @@
         }
 
         function showUserDailyBreakdown(email) {
-            if (!usageReportData || !usageReportData.by_user) return;
-            const user = usageReportData.by_user.find(u => u.email === email);
+            const filtered = getFilteredReport();
+            if (!filtered || !filtered.by_user) return;
+            const user = filtered.by_user.find(u => u.email === email);
             if (!user || !user.daily || user.daily.length === 0) {
                 showMessage('No daily breakdown available for this user', 'error');
                 return;
@@ -3127,13 +3208,14 @@
         }
 
         function exportUsageReportCSV() {
-            if (!usageReportData || !usageReportData.by_user) {
+            const filtered = getFilteredReport();
+            if (!filtered || !filtered.by_user) {
                 showMessage('No report data to export', 'error');
                 return;
             }
 
             const rows = [['Email', 'Type', 'Super', 'Astrolog Calls', 'ChatGPT Calls', 'Total Calls', 'Prompt Tokens', 'Completion Tokens', 'Total Tokens', 'Estimated Cost']];
-            for (const u of usageReportData.by_user) {
+            for (const u of filtered.by_user) {
                 rows.push([
                     u.email, u.type, u.is_super, u.astrolog_calls, u.chatgpt_calls,
                     u.total_calls, u.prompt_tokens, u.completion_tokens, u.total_tokens, u.estimated_cost
@@ -3251,7 +3333,8 @@
             document.getElementById('openaiTotalRequests').textContent = (totals.requests || 0).toLocaleString();
 
             // Compare with our tracked estimate
-            const ourEstimate = usageReportData ? usageReportData.totals.cost : '$0.00';
+            const filtered = getFilteredReport();
+            const ourEstimate = filtered ? filtered.totals.cost : '$0.00';
             document.getElementById('openaiEstimatedCost').textContent = ourEstimate;
             document.getElementById('openaiEstimatedCost').closest('.usage-report-card').querySelector('.label').textContent = 'Our Tracked Estimate';
 
