@@ -3236,22 +3236,32 @@
             const costs = openaiCostsData;
             const totals = costs.totals;
 
-            // Summary cards
-            document.getElementById('openaiActualCost').textContent = totals.actual_cost || '$0.00';
+            // Use calculated_cost (from Usage API tokens) as primary — Costs API often returns $0
+            const actualCostStr = totals.actual_cost || '$0.00';
+            const calculatedCostStr = totals.calculated_cost || '$0.00';
+            const actualVal = parseFloat(actualCostStr.replace('$', ''));
+            const calculatedVal = parseFloat(calculatedCostStr.replace('$', ''));
+
+            // Show the best available cost: Costs API if > 0, otherwise calculated from tokens
+            const bestCost = actualVal > 0 ? actualVal : calculatedVal;
+            const bestCostLabel = actualVal > 0 ? 'Actual Cost (OpenAI)' : 'Cost (from tokens)';
+
+            document.getElementById('openaiActualCost').textContent = `$${bestCost.toFixed(4)}`;
+            document.getElementById('openaiActualCost').closest('.usage-report-card').querySelector('.label').textContent = bestCostLabel;
             document.getElementById('openaiTotalRequests').textContent = (totals.requests || 0).toLocaleString();
 
-            // Compare with our estimate
+            // Compare with our tracked estimate
             const ourEstimate = usageReportData ? usageReportData.totals.cost : '$0.00';
             document.getElementById('openaiEstimatedCost').textContent = ourEstimate;
+            document.getElementById('openaiEstimatedCost').closest('.usage-report-card').querySelector('.label').textContent = 'Our Tracked Estimate';
 
-            const actualVal = parseFloat((totals.actual_cost || '$0').replace('$', ''));
             const estimateVal = parseFloat((ourEstimate || '$0').replace('$', ''));
-            const diff = actualVal - estimateVal;
+            const diff = bestCost - estimateVal;
             const diffEl = document.getElementById('openaiCostDiff');
-            if (diff > 0) {
+            if (diff > 0.0001) {
                 diffEl.textContent = `+$${diff.toFixed(4)}`;
                 diffEl.style.color = '#ef4444';
-            } else if (diff < 0) {
+            } else if (diff < -0.0001) {
                 diffEl.textContent = `-$${Math.abs(diff).toFixed(4)}`;
                 diffEl.style.color = '#22c55e';
             } else {
@@ -3259,7 +3269,7 @@
                 diffEl.style.color = '#d4af37';
             }
 
-            // Chart: actual cost per day
+            // Chart: cost per day
             renderOpenAICostsChart(costs.daily || []);
 
             // Model breakdown table
@@ -3273,7 +3283,7 @@
 
             const ctx = document.getElementById('openaiCostsChart').getContext('2d');
             const labels = daily.map(d => d.date);
-            const costData = daily.map(d => d.actual_cost_raw || 0);
+            const costData = daily.map(d => d.actual_cost_raw || d.calculated_cost_raw || 0);
             const requestData = daily.map(d => d.requests || 0);
             const inputTokenData = daily.map(d => (d.input_tokens || 0) / 1000);
             const outputTokenData = daily.map(d => (d.output_tokens || 0) / 1000);
@@ -3350,16 +3360,18 @@
 
             new gridjs.Grid({
                 columns: [
-                    { name: 'Model', width: '250px' },
-                    { name: 'Requests', width: '100px', sort: true },
-                    { name: 'Input Tokens', width: '120px', sort: true },
-                    { name: 'Output Tokens', width: '120px', sort: true }
+                    { name: 'Model', width: '220px' },
+                    { name: 'Requests', width: '90px', sort: true },
+                    { name: 'Input Tokens', width: '110px', sort: true },
+                    { name: 'Output Tokens', width: '110px', sort: true },
+                    { name: 'Cost', width: '90px', sort: true }
                 ],
                 data: models.map(m => [
                     m.model,
                     (m.requests || 0).toLocaleString(),
                     formatTokenCount(m.input_tokens || 0),
-                    formatTokenCount(m.output_tokens || 0)
+                    formatTokenCount(m.output_tokens || 0),
+                    m.calculated_cost || '$0.00'
                 ]),
                 sort: true,
                 style: {
