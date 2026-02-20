@@ -865,6 +865,48 @@
             margin: 0 auto 10px;
         }
 
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #d4af37, #f4d03f);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .model-summary-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .model-summary-chip {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 0.8rem;
+        }
+
+        .model-summary-chip .chip-model {
+            color: #d4af37;
+            font-weight: 600;
+        }
+
+        .model-summary-chip .chip-count {
+            color: rgba(255, 255, 255, 0.6);
+            margin-left: 6px;
+        }
+
         /* Make grid rows clickable */
         .gridjs-tr {
             cursor: pointer;
@@ -1044,6 +1086,27 @@
                     <div class="chart-wrapper" style="height: 200px;">
                         <canvas id="modelChart"></canvas>
                     </div>
+                </div>
+
+                <!-- Model Usage by User -->
+                <div class="chart-container">
+                    <h3>Model Usage by User</h3>
+                    <div id="modelByUserContainer">
+                        <button class="btn btn-primary" onclick="loadModelUsageByUser()" id="loadModelByUserBtn" style="max-width: 300px;">
+                            Load User Model Breakdown
+                        </button>
+                        <p style="color: rgba(255,255,255,0.4); font-size: 0.75rem; margin-top: 10px;">
+                            Fetches API call data for each user (may take a moment)
+                        </p>
+                    </div>
+                    <div id="modelByUserProgress" class="hidden">
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" id="modelByUserProgressBar"></div>
+                        </div>
+                        <p id="modelByUserProgressText" style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 8px; text-align: center;">Loading...</p>
+                    </div>
+                    <div id="modelByUserSummary" class="hidden"></div>
+                    <div id="modelByUserGrid" class="hidden"></div>
                 </div>
 
                 <!-- Highlights -->
@@ -2102,6 +2165,165 @@
                     ${logins.length} login${logins.length !== 1 ? 's' : ''} recorded
                 </p>
             `;
+        }
+
+        // ============================================
+        // MODEL USAGE BY USER
+        // ============================================
+
+        let modelByUserGridInstance = null;
+
+        async function loadModelUsageByUser() {
+            if (!storedAdminEmail || !storedAdminSecret) {
+                showMessage('Please authenticate first', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('loadModelByUserBtn');
+            const container = document.getElementById('modelByUserContainer');
+            const progress = document.getElementById('modelByUserProgress');
+            const progressBar = document.getElementById('modelByUserProgressBar');
+            const progressText = document.getElementById('modelByUserProgressText');
+            const gridContainer = document.getElementById('modelByUserGrid');
+            const summaryContainer = document.getElementById('modelByUserSummary');
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span>Loading...';
+            progress.classList.remove('hidden');
+            progressBar.style.width = '50%';
+            progressText.textContent = 'Fetching aggregated model usage from server...';
+            summaryContainer.classList.add('hidden');
+            gridContainer.classList.add('hidden');
+
+            try {
+                const response = await fetch(
+                    `${API_BASE}/api/admin/model-usage-by-user?admin_email=${encodeURIComponent(storedAdminEmail)}&admin_secret=${encodeURIComponent(storedAdminSecret)}`
+                );
+                const data = await response.json();
+
+                progressBar.style.width = '100%';
+
+                if (!data.success) {
+                    showMessage(data.error || 'Failed to load model usage', 'error');
+                    progress.classList.add('hidden');
+                    btn.disabled = false;
+                    btn.innerHTML = 'Load User Model Breakdown';
+                    return;
+                }
+
+                const modelList = data.models || [];
+                const globalModelTotals = data.model_totals || {};
+                // Filter out @device.astrolytix.app emails
+                const userModelData = (data.users || []).filter(u => !u.email.includes('@device.astrolytix.app'));
+
+                progress.classList.add('hidden');
+                container.classList.add('hidden');
+
+                if (userModelData.length === 0) {
+                    gridContainer.classList.remove('hidden');
+                    gridContainer.innerHTML = '<p class="no-calls-message">No model usage data found</p>';
+                    container.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.innerHTML = 'Load User Model Breakdown';
+                    return;
+                }
+
+                // Show summary chips
+                summaryContainer.classList.remove('hidden');
+                const totalAllCalls = Object.values(globalModelTotals).reduce((s, v) => s + v, 0);
+                summaryContainer.innerHTML = `
+                    <div class="model-summary-row">
+                        ${modelList.map(m => `
+                            <div class="model-summary-chip">
+                                <span class="chip-model">${m}</span>
+                                <span class="chip-count">${(globalModelTotals[m] || 0).toLocaleString()} calls (${totalAllCalls ? Math.round((globalModelTotals[m] || 0) / totalAllCalls * 100) : 0}%)</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+
+                // Build grid columns
+                const columns = [
+                    { name: 'Email', width: '200px', sort: true, formatter: (cell) => gridjs.html(`<span class="user-email" title="${cell}">${cell}</span>`) },
+                    { name: 'Type', width: '80px', sort: true, formatter: (cell) => {
+                        const cls = cell === 'paid' ? 'badge-paid' : 'badge-free';
+                        return gridjs.html(`<span class="badge ${cls}">${cell}</span>`);
+                    }},
+                    ...modelList.map(m => ({
+                        name: m,
+                        width: '100px',
+                        sort: true,
+                        formatter: (cell) => {
+                            if (!cell) return '-';
+                            return gridjs.html(`<span style="color: #d4af37; font-weight: 600;">${cell}</span>`);
+                        }
+                    })),
+                    { name: 'Total', width: '80px', sort: true, formatter: (cell) => gridjs.html(`<span style="color: #f4d03f; font-weight: 700;">${cell}</span>`) }
+                ];
+
+                const rows = userModelData.map(u => [
+                    u.email,
+                    u.type,
+                    ...modelList.map(m => (u.models && u.models[m]) || 0),
+                    u.total
+                ]);
+
+                // Render grid
+                gridContainer.classList.remove('hidden');
+                gridContainer.innerHTML = '';
+
+                if (modelByUserGridInstance) {
+                    modelByUserGridInstance.destroy();
+                    modelByUserGridInstance = null;
+                }
+
+                modelByUserGridInstance = new gridjs.Grid({
+                    columns: columns,
+                    data: rows,
+                    search: { enabled: true, placeholder: 'Search users...' },
+                    sort: true,
+                    pagination: { enabled: true, limit: 20, summary: true },
+                    style: { table: { width: '100%' } }
+                }).render(gridContainer);
+
+                // Add refresh button and stats
+                const footer = document.createElement('div');
+                footer.style.cssText = 'margin-top: 15px; text-align: center;';
+                footer.innerHTML = `
+                    <button class="btn btn-secondary" onclick="reloadModelUsageByUser()" style="max-width: 200px; display: inline-block;">
+                        Refresh Data
+                    </button>
+                    <p style="color: rgba(255,255,255,0.4); font-size: 0.75rem; margin-top: 8px;">
+                        ${userModelData.length} users with API calls &middot; ${modelList.length} models detected &middot; ${totalAllCalls.toLocaleString()} total calls
+                    </p>
+                `;
+                gridContainer.appendChild(footer);
+
+            } catch (error) {
+                console.error('Model usage error:', error);
+                showMessage('Network error loading model usage', 'error');
+                progress.classList.add('hidden');
+                btn.disabled = false;
+                btn.innerHTML = 'Load User Model Breakdown';
+            }
+        }
+
+        function reloadModelUsageByUser() {
+            const container = document.getElementById('modelByUserContainer');
+            const gridContainer = document.getElementById('modelByUserGrid');
+            const summaryContainer = document.getElementById('modelByUserSummary');
+            container.classList.remove('hidden');
+            gridContainer.classList.add('hidden');
+            gridContainer.innerHTML = '';
+            summaryContainer.classList.add('hidden');
+            if (modelByUserGridInstance) {
+                modelByUserGridInstance.destroy();
+                modelByUserGridInstance = null;
+            }
+            const btn = document.getElementById('loadModelByUserBtn');
+            btn.disabled = false;
+            btn.innerHTML = 'Load User Model Breakdown';
+            loadModelUsageByUser();
         }
 
         function prefillUserEmail() {
