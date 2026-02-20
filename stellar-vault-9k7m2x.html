@@ -1450,6 +1450,10 @@
                 <!-- By-user table -->
                 <div class="usage-report-table-section">
                     <h3>Usage by User</h3>
+                    <p style="color: rgba(255,255,255,0.4); font-size: 0.75rem; margin-bottom: 10px;">
+                        In/Out tokens and cost are tracked for calls made after Feb 19, 2026. Older calls show 0 tokens.
+                        Set dates and click "Apply Filter" to view a specific period. Click "View" to see daily breakdown per user.
+                    </p>
                     <div id="usageReportGrid"></div>
                 </div>
 
@@ -3100,19 +3104,34 @@
 
             usageReportGridInstance = new gridjs.Grid({
                 columns: [
-                    { name: 'Email', width: '200px' },
-                    { name: 'Type', width: '70px' },
-                    { name: 'Astrolog', width: '80px', sort: true },
-                    { name: 'ChatGPT', width: '80px', sort: true },
-                    { name: 'Total', width: '70px', sort: true },
-                    { name: 'In Tokens', width: '90px', sort: true },
-                    { name: 'Out Tokens', width: '90px', sort: true },
-                    { name: 'Cost', width: '85px', sort: true },
+                    {
+                        name: 'User',
+                        width: '180px',
+                        formatter: (cell) => {
+                            // Truncate long device IDs, show full email for real users
+                            const val = cell || '';
+                            if (val.includes('@') && !val.includes('@device.')) {
+                                return val; // real email
+                            }
+                            // Device ID — show shortened
+                            if (val.length > 25) {
+                                return gridjs.html(`<span title="${val}" style="cursor:help">${val.substring(0, 22)}...</span>`);
+                            }
+                            return val;
+                        }
+                    },
+                    { name: 'Type', width: '60px' },
+                    { name: 'Chart', width: '55px', sort: true },
+                    { name: 'Chat', width: '55px', sort: true },
+                    { name: 'Total', width: '55px', sort: true },
+                    { name: 'In Tok', width: '75px', sort: true },
+                    { name: 'Out Tok', width: '75px', sort: true },
+                    { name: 'Cost', width: '80px', sort: true },
                     {
                         name: '',
-                        width: '65px',
+                        width: '55px',
                         formatter: (cell, row) => {
-                            return gridjs.html(`<button style="background: rgba(212,175,55,0.2); border: 1px solid rgba(212,175,55,0.4); color: #d4af37; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem;" onclick="showUserDailyBreakdown('${row.cells[0].data}')">View</button>`);
+                            return gridjs.html(`<button style="background: rgba(212,175,55,0.2); border: 1px solid rgba(212,175,55,0.4); color: #d4af37; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 0.7rem;" onclick="showUserDailyBreakdown('${row.cells[0].data.replace(/'/g, "\\'") }')">View</button>`);
                         }
                     }
                 ],
@@ -3159,7 +3178,8 @@
                 return;
             }
 
-            document.getElementById('dailyBreakdownTitle').textContent = `Daily Breakdown: ${email}`;
+            const displayEmail = email.length > 35 ? email.substring(0, 32) + '...' : email;
+            document.getElementById('dailyBreakdownTitle').textContent = `Daily Breakdown: ${displayEmail}`;
             document.getElementById('usageReportDailyBreakdown').classList.remove('hidden');
 
             const container = document.getElementById('usageReportDailyGrid');
