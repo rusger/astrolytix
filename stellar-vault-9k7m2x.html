@@ -1458,6 +1458,64 @@
                     </div>
                 </div>
 
+                <!-- OpenAI Actual Costs Section -->
+                <div class="usage-report-chart-container" style="margin-top: 25px; border-color: rgba(249, 115, 22, 0.3);">
+                    <h3 style="color: #f97316;">OpenAI Actual Costs</h3>
+                    <p style="color: rgba(255, 255, 255, 0.5); font-size: 0.8rem; margin-bottom: 15px;">
+                        Enter your OpenAI Admin API key to fetch real billing data. The key is kept in browser memory only and never stored on our server.
+                    </p>
+
+                    <div id="openaiCostsUnlock">
+                        <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
+                            <div class="form-group" style="flex: 1; min-width: 250px; margin-bottom: 0;">
+                                <label for="openaiAdminKey" style="color: #f97316;">OpenAI Admin API Key</label>
+                                <input type="password" id="openaiAdminKey" placeholder="sk-admin-..." autocomplete="off">
+                            </div>
+                            <button class="btn btn-primary" id="fetchOpenAICostsBtn" onclick="fetchOpenAICosts()" style="width: auto; padding: 12px 24px; background: rgba(249, 115, 22, 0.3); border-color: rgba(249, 115, 22, 0.5);">
+                                Fetch Actual Costs
+                            </button>
+                        </div>
+                        <p style="color: rgba(255, 255, 255, 0.35); font-size: 0.7rem; margin-top: 8px;">
+                            Get an Admin key at platform.openai.com > Settings > API Keys (requires Admin role)
+                        </p>
+                    </div>
+
+                    <div id="openaiCostsContent" class="hidden">
+                        <!-- Comparison summary -->
+                        <div class="usage-report-summary" style="margin-top: 15px;">
+                            <div class="usage-report-card" style="border-color: rgba(249, 115, 22, 0.3);">
+                                <div class="value" style="color: #f97316;" id="openaiActualCost">-</div>
+                                <div class="label">Actual Cost (OpenAI)</div>
+                            </div>
+                            <div class="usage-report-card">
+                                <div class="value" id="openaiEstimatedCost">-</div>
+                                <div class="label">Our Estimate</div>
+                            </div>
+                            <div class="usage-report-card">
+                                <div class="value" id="openaiCostDiff">-</div>
+                                <div class="label">Difference</div>
+                            </div>
+                            <div class="usage-report-card">
+                                <div class="value" id="openaiTotalRequests">-</div>
+                                <div class="label">OpenAI Requests</div>
+                            </div>
+                        </div>
+
+                        <!-- Actual costs chart -->
+                        <div style="margin-bottom: 20px;">
+                            <canvas id="openaiCostsChart" height="250"></canvas>
+                        </div>
+
+                        <!-- Model breakdown table -->
+                        <h4 style="color: #f97316; font-family: 'Cinzel', serif; font-size: 0.9rem; margin-bottom: 10px;">Cost by Model</h4>
+                        <div id="openaiModelGrid"></div>
+
+                        <button class="btn btn-secondary" onclick="clearOpenAICosts()" style="margin-top: 15px; width: auto; background: rgba(249, 115, 22, 0.1); border-color: rgba(249, 115, 22, 0.3); color: #f97316;">
+                            Clear & Re-enter Key
+                        </button>
+                    </div>
+                </div>
+
                 <div class="usage-report-actions">
                     <button class="btn btn-secondary" onclick="refreshUsageReport()">
                         Request New Code & Refresh
@@ -2842,6 +2900,8 @@
             }
             document.getElementById('usageReportGrid').innerHTML = '';
             document.getElementById('usageReportDailyBreakdown').classList.add('hidden');
+            // Also clear OpenAI costs
+            clearOpenAICosts();
             document.getElementById('usageReportContent').classList.add('hidden');
             document.getElementById('usageReportUnlock').classList.remove('hidden');
             showMessage('Enter a new verification code to refresh the report', 'success');
@@ -2960,16 +3020,17 @@
 
             usageReportGridInstance = new gridjs.Grid({
                 columns: [
-                    { name: 'Email', width: '220px' },
-                    { name: 'Type', width: '80px' },
-                    { name: 'Astrolog', width: '90px', sort: true },
-                    { name: 'ChatGPT', width: '90px', sort: true },
-                    { name: 'Total', width: '80px', sort: true },
-                    { name: 'Tokens', width: '100px', sort: true },
-                    { name: 'Cost', width: '90px', sort: true },
+                    { name: 'Email', width: '200px' },
+                    { name: 'Type', width: '70px' },
+                    { name: 'Astrolog', width: '80px', sort: true },
+                    { name: 'ChatGPT', width: '80px', sort: true },
+                    { name: 'Total', width: '70px', sort: true },
+                    { name: 'In Tokens', width: '90px', sort: true },
+                    { name: 'Out Tokens', width: '90px', sort: true },
+                    { name: 'Cost', width: '85px', sort: true },
                     {
-                        name: 'Details',
-                        width: '80px',
+                        name: '',
+                        width: '65px',
                         formatter: (cell, row) => {
                             return gridjs.html(`<button style="background: rgba(212,175,55,0.2); border: 1px solid rgba(212,175,55,0.4); color: #d4af37; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem;" onclick="showUserDailyBreakdown('${row.cells[0].data}')">View</button>`);
                         }
@@ -2981,7 +3042,8 @@
                     u.astrolog_calls,
                     u.chatgpt_calls,
                     u.total_calls,
-                    formatTokenCount(u.total_tokens),
+                    formatTokenCount(u.prompt_tokens),
+                    formatTokenCount(u.completion_tokens),
                     u.estimated_cost
                 ]),
                 search: true,
@@ -3024,19 +3086,21 @@
 
             const dailyGrid = new gridjs.Grid({
                 columns: [
-                    { name: 'Date', width: '120px' },
-                    { name: 'Calls', width: '80px' },
-                    { name: 'Astrolog', width: '90px' },
-                    { name: 'ChatGPT', width: '90px' },
-                    { name: 'Tokens', width: '100px' },
-                    { name: 'Cost', width: '90px' }
+                    { name: 'Date', width: '110px' },
+                    { name: 'Calls', width: '70px' },
+                    { name: 'Astrolog', width: '80px' },
+                    { name: 'ChatGPT', width: '80px' },
+                    { name: 'In Tokens', width: '90px' },
+                    { name: 'Out Tokens', width: '90px' },
+                    { name: 'Cost', width: '85px' }
                 ],
                 data: user.daily.map(d => [
                     d.date,
                     d.calls,
                     d.astrolog_calls,
                     d.chatgpt_calls,
-                    formatTokenCount(d.tokens),
+                    formatTokenCount(d.prompt_tokens || 0),
+                    formatTokenCount(d.completion_tokens || 0),
                     d.cost
                 ]),
                 sort: true,
@@ -3087,6 +3151,234 @@
             window.URL.revokeObjectURL(url);
             a.remove();
             showMessage('CSV exported successfully!', 'success');
+        }
+
+        // ========== OpenAI Actual Costs ==========
+        let openaiCostsData = null;
+        let openaiCostsChart = null;
+        let openaiAdminKeyInMemory = null; // kept in JS memory only, never persisted
+
+        async function fetchOpenAICosts() {
+            const key = document.getElementById('openaiAdminKey').value.trim();
+            if (!key) {
+                showMessage('Please enter your OpenAI Admin API key', 'error');
+                return;
+            }
+            if (!storedAdminEmail || !storedAdminSecret) {
+                showMessage('Please authenticate first (Step 1)', 'error');
+                return;
+            }
+
+            // Store in memory only
+            openaiAdminKeyInMemory = key;
+            // Clear from input immediately for security
+            document.getElementById('openaiAdminKey').value = '';
+
+            const btn = document.getElementById('fetchOpenAICostsBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span>Fetching...';
+            hideMessage();
+
+            const startDate = document.getElementById('reportStartDate').value;
+            const endDate = document.getElementById('reportEndDate').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/openai-costs`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        admin_email: storedAdminEmail,
+                        admin_secret: storedAdminSecret,
+                        openai_admin_key: openaiAdminKeyInMemory,
+                        start_date: startDate || '',
+                        end_date: endDate || ''
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    openaiCostsData = data.costs;
+                    document.getElementById('openaiCostsUnlock').classList.add('hidden');
+                    document.getElementById('openaiCostsContent').classList.remove('hidden');
+                    renderOpenAICosts();
+                    showMessage('OpenAI actual costs loaded!', 'success');
+                } else {
+                    showMessage(data.error || 'Failed to fetch OpenAI costs', 'error');
+                    // Restore input so they can re-enter
+                    document.getElementById('openaiAdminKey').value = openaiAdminKeyInMemory || '';
+                }
+            } catch (error) {
+                console.error('OpenAI costs error:', error);
+                showMessage('Network error fetching OpenAI costs', 'error');
+                document.getElementById('openaiAdminKey').value = openaiAdminKeyInMemory || '';
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Fetch Actual Costs';
+            }
+        }
+
+        function clearOpenAICosts() {
+            openaiAdminKeyInMemory = null;
+            openaiCostsData = null;
+            if (openaiCostsChart) {
+                openaiCostsChart.destroy();
+                openaiCostsChart = null;
+            }
+            document.getElementById('openaiModelGrid').innerHTML = '';
+            document.getElementById('openaiCostsContent').classList.add('hidden');
+            document.getElementById('openaiCostsUnlock').classList.remove('hidden');
+        }
+
+        function renderOpenAICosts() {
+            if (!openaiCostsData) return;
+
+            const costs = openaiCostsData;
+            const totals = costs.totals;
+
+            // Summary cards
+            document.getElementById('openaiActualCost').textContent = totals.actual_cost || '$0.00';
+            document.getElementById('openaiTotalRequests').textContent = (totals.requests || 0).toLocaleString();
+
+            // Compare with our estimate
+            const ourEstimate = usageReportData ? usageReportData.totals.cost : '$0.00';
+            document.getElementById('openaiEstimatedCost').textContent = ourEstimate;
+
+            const actualVal = parseFloat((totals.actual_cost || '$0').replace('$', ''));
+            const estimateVal = parseFloat((ourEstimate || '$0').replace('$', ''));
+            const diff = actualVal - estimateVal;
+            const diffEl = document.getElementById('openaiCostDiff');
+            if (diff > 0) {
+                diffEl.textContent = `+$${diff.toFixed(4)}`;
+                diffEl.style.color = '#ef4444';
+            } else if (diff < 0) {
+                diffEl.textContent = `-$${Math.abs(diff).toFixed(4)}`;
+                diffEl.style.color = '#22c55e';
+            } else {
+                diffEl.textContent = '$0.00';
+                diffEl.style.color = '#d4af37';
+            }
+
+            // Chart: actual cost per day
+            renderOpenAICostsChart(costs.daily || []);
+
+            // Model breakdown table
+            renderOpenAIModelTable(costs.models || []);
+        }
+
+        function renderOpenAICostsChart(daily) {
+            if (openaiCostsChart) {
+                openaiCostsChart.destroy();
+            }
+
+            const ctx = document.getElementById('openaiCostsChart').getContext('2d');
+            const labels = daily.map(d => d.date);
+            const costData = daily.map(d => d.actual_cost_raw || 0);
+            const requestData = daily.map(d => d.requests || 0);
+            const inputTokenData = daily.map(d => (d.input_tokens || 0) / 1000);
+            const outputTokenData = daily.map(d => (d.output_tokens || 0) / 1000);
+
+            openaiCostsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Actual Cost ($)',
+                            data: costData,
+                            backgroundColor: 'rgba(249, 115, 22, 0.6)',
+                            borderColor: '#f97316',
+                            borderWidth: 1,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Input Tokens (K)',
+                            data: inputTokenData,
+                            type: 'line',
+                            borderColor: '#6366f1',
+                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 2,
+                            fill: false,
+                            yAxisID: 'y1'
+                        },
+                        {
+                            label: 'Output Tokens (K)',
+                            data: outputTokenData,
+                            type: 'line',
+                            borderColor: '#22c55e',
+                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 2,
+                            fill: false,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    interaction: { mode: 'index', intersect: false },
+                    scales: {
+                        x: {
+                            ticks: { color: 'rgba(255,255,255,0.6)', maxRotation: 45 },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        },
+                        y: {
+                            type: 'linear',
+                            position: 'left',
+                            ticks: { color: 'rgba(249, 115, 22, 0.8)' },
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            title: { display: true, text: 'Cost ($)', color: 'rgba(249, 115, 22, 0.8)' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            position: 'right',
+                            ticks: { color: 'rgba(99, 102, 241, 0.8)' },
+                            grid: { drawOnChartArea: false },
+                            title: { display: true, text: 'Tokens (K)', color: 'rgba(99, 102, 241, 0.8)' }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: 'rgba(255,255,255,0.8)' } }
+                    }
+                }
+            });
+        }
+
+        function renderOpenAIModelTable(models) {
+            document.getElementById('openaiModelGrid').innerHTML = '';
+
+            new gridjs.Grid({
+                columns: [
+                    { name: 'Model', width: '250px' },
+                    { name: 'Requests', width: '100px', sort: true },
+                    { name: 'Input Tokens', width: '120px', sort: true },
+                    { name: 'Output Tokens', width: '120px', sort: true }
+                ],
+                data: models.map(m => [
+                    m.model,
+                    (m.requests || 0).toLocaleString(),
+                    formatTokenCount(m.input_tokens || 0),
+                    formatTokenCount(m.output_tokens || 0)
+                ]),
+                sort: true,
+                style: {
+                    table: { 'white-space': 'nowrap' },
+                    th: {
+                        'background-color': 'rgba(249, 115, 22, 0.15)',
+                        'color': '#f97316',
+                        'border-color': 'rgba(249, 115, 22, 0.2)',
+                        'font-family': "'Cinzel', serif",
+                        'font-size': '0.75rem'
+                    },
+                    td: {
+                        'background-color': 'rgba(0, 0, 0, 0.2)',
+                        'color': '#fff',
+                        'border-color': 'rgba(249, 115, 22, 0.1)',
+                        'font-size': '0.8rem'
+                    }
+                }
+            }).render(document.getElementById('openaiModelGrid'));
         }
     </script>
 </body>
